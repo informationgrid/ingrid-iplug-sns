@@ -3,7 +3,7 @@
     <pomVersion>3</pomVersion>
     <artifactId>ingrid-iplug-sns</artifactId>
     <name>ingrid-iplug-sns</name>
-    <groupId>ingrid-iplug-sns</groupId>
+    <groupId>ingrid</groupId>
     <currentVersion>0.1</currentVersion>
     <inceptionYear>2005</inceptionYear>
     <logo>/images/logo.gif</logo>
