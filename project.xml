@@ -1,10 +1,9 @@
-
 <project>
     <pomVersion>3</pomVersion>
     <artifactId>ingrid-iplug-sns</artifactId>
     <name>ingrid-iplug-sns</name>
     <groupId>ingrid</groupId>
-    <currentVersion>0.1</currentVersion>
+    <currentVersion>0.1-SNAPSHOT</currentVersion>
     <inceptionYear>2005</inceptionYear>
     <logo>/images/logo.gif</logo>
     <mailingLists>
@@ -15,6 +14,9 @@
             <name>${pom.name} User List</name>
         </mailingList>
     </mailingLists>
+    <repository>
+        <connection>scm:svn:http://torwald.gistec-online.de/svn/ingrid:ingrid-iplug-sns</connection>
+    </repository>
     <build>
         <sourceDirectory>src/java</sourceDirectory>
         <unitTestSourceDirectory>src/test</unitTestSourceDirectory>
