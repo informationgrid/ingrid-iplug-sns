@@ -6,6 +6,11 @@
     <currentVersion>0.1-SNAPSHOT</currentVersion>
     <inceptionYear>2005</inceptionYear>
     <logo>/images/logo.gif</logo>
+    <description>description</description>
+    <shortDescription>short description</shortDescription>
+    <issueTrackingUrl>http://jira.media-style.com/browse/INGRID</issueTrackingUrl>
+    <siteAddress>http://torwald.gistec-online.de/~ms/ingrid-iplug-sns</siteAddress>
+    <siteDirectory>/home/ms/public_html/ingrid-iplug-sns</siteDirectory>
     <mailingLists>
         <mailingList>
             <name>${pom.name} Dev List</name>
