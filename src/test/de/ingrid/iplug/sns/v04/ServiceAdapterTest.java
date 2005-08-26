@@ -15,7 +15,9 @@ import junit.framework.TestCase;
  * @author hs
  */
 public class ServiceAdapterTest extends TestCase {
-	
+	/**
+	 * 
+	 */
 	public void testCommunicationWithSNS(){
 		fail("INGRID-100 not yet implemented");
 	}
