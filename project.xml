@@ -72,20 +72,7 @@
         <connection>scm:svn:http://torwald.gistec-online.de/svn/ingrid:ingrid-iplug-sns</connection>
     </repository>
 	<dependencies>
-      <!--dependency>
-        <groupId>ingrid</groupId>
-        <artifactId>ingrid-iplug</artifactId>
-        <version>0.1-SNAPSHOT</version>
-	    <url>http://torwald.gistec-online.de/ingrid/maven/ingrid/jars/ingrid-iplug-0.1-SNAPSHOT.jar</url>
-      </dependency>
-      <dependency>
-        <groupId>weta</groupId>
-        <artifactId>weta-g</artifactId>
-        <version>latest</version>
-        <type>zip</type>
-        <url>http://weta-group.net/maven</url>
-        <properties/>
-      </dependency-->
+
       <dependency>
         <groupId>axis</groupId>
         <artifactId>axis</artifactId>
