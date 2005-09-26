@@ -15,11 +15,11 @@ import com.slb.taxi.webservice.xtm.stubs._topicMapFragment;
  *
  * @author hs
  */
-public class SNSServiceAdapterTest extends TestCase {
-    private static SNSServiceAdapter adapter = null;
+public class SNSServiceClientTest extends TestCase {
+    private static SNSServiceClient adapter = null;
     static {
         try {
-            adapter = new SNSServiceAdapter("ms", "m3d1asyl3", "de");
+            adapter = new SNSServiceClient("ms", "m3d1asyl3", "de");
         } catch (Exception e) {
             fail(e.getMessage());
         }
