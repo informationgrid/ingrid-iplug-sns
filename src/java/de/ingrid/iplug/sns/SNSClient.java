@@ -27,7 +27,7 @@ import com.slb.taxi.webservice.xtm.stubs._topicMapFragment;
  * 
  * @author hs
  */
-public class SNSServiceClient {
+public class SNSClient {
     private String fUserName = null;
 
     private String fPassword = null;
@@ -48,7 +48,7 @@ public class SNSServiceClient {
      * @throws Exception
      */
 
-    public SNSServiceClient(String userName, String password, String language) throws Exception {
+    public SNSClient(String userName, String password, String language) throws Exception {
         this(userName, password, language, null);
     }
 
@@ -64,7 +64,7 @@ public class SNSServiceClient {
      * @param url
      * @throws Exception
      */
-    public SNSServiceClient(String userName, String password, String language, URL url) throws Exception {
+    public SNSClient(String userName, String password, String language, URL url) throws Exception {
         this.fUserName = userName;
         this.fPassword = password;
         this.fLanguage = language;
