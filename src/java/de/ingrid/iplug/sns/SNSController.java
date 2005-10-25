@@ -253,7 +253,7 @@ public class SNSController {
 
     /**
      * @param maxResults
-     * @param topic
+     * @param topics
      * @return an array of Topic with the given lenght
      * @throws Exception
      */

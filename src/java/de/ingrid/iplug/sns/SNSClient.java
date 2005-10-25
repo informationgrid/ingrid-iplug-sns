@@ -147,7 +147,7 @@ public class SNSClient {
      *            The text to analyze.
      * @param analyzeMaxWords
      *            The number of words to analyze.
-     * @return
+     * @return a topic map fragment
      * @throws Exception
      */
 
@@ -169,7 +169,7 @@ public class SNSClient {
 
     /**
      * 
-     * @return
+     * @return a topic map fragment
      * @throws RemoteException
      */
     public _topicMapFragment getTypes() throws RemoteException {

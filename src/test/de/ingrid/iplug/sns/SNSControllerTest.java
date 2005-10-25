@@ -10,9 +10,22 @@ import de.ingrid.iplug.sns.utils.Topic;
 import de.ingrid.iplug.sns.utils.DetailedTopic;
 import junit.framework.TestCase;
 
+/**
+ * SNSControllerTest
+ * 
+ * <p/>created on 29.09.2005
+ * 
+ * @version $Revision: $
+ * @author sg
+ * @author $Author: ${lastedit}
+ * 
+ */
 public class SNSControllerTest extends TestCase {
     private final static String VALID_TOPIC_ID = "uba_thes_19054";
 
+    /**
+     * @throws Exception
+     */
     public void testTopicsForTerm() throws Exception {
         SNSClient client = new SNSClient("ms", "m3d1asyl3", "de");
         SNSController controller = new SNSController(client);
@@ -21,10 +34,12 @@ public class SNSControllerTest extends TestCase {
         for (int i = 0; i < topicsForTerm.length; i++) {
             Topic topic = topicsForTerm[i];
             System.out.println(topic);
-
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public void testGetAssociatedTopics() throws Exception {
         SNSClient client = new SNSClient("ms", "m3d1asyl3", "de");
         SNSController controller = new SNSController(client);
@@ -39,6 +54,9 @@ public class SNSControllerTest extends TestCase {
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public void testGetDocumentRelatedTopics() throws Exception {
         SNSClient client = new SNSClient("ms", "m3d1asyl3", "de");
         SNSController controller = new SNSController(client);
@@ -49,7 +67,6 @@ public class SNSControllerTest extends TestCase {
         text = "yyy xxx zzz";
         topics = controller.getTopicsForText(text, 100);
         assertNotNull(topics);
-
     }
 
 }
