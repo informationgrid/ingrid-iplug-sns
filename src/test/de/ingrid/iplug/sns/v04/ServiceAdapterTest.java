@@ -7,6 +7,8 @@
 package de.ingrid.iplug.sns.v04;
 
 import junit.framework.TestCase;
+import de.ingrid.iplug.sns.SNSControllerTest;
+import de.ingrid.iplug.sns.SNSServiceClientTest;
 
 /**
  * Test for service-adapter-feature (INGRID-17).
@@ -16,10 +18,18 @@ import junit.framework.TestCase;
  */
 public class ServiceAdapterTest extends TestCase {
 	/**
-	 * 
+	 * INGRID-100 
+	 * @throws Exception 
 	 */
-	public void testCommunicationWithSNS(){
-		fail("INGRID-100 not yet implemented");
+	public void testCommunicationWithSNS() throws Exception{
+		new SNSControllerTest().testGetAssociatedTopics();
+        new SNSControllerTest().testGetDocumentRelatedTopics();
+        new SNSControllerTest().testTopicsForTerm();
+        
+        new SNSServiceClientTest().testAutoClassify();
+        new SNSServiceClientTest().testFindTopics();
+        new SNSServiceClientTest().testGetPSI();
+        new SNSServiceClientTest().testGetTypes();
 	}
 	
 }
