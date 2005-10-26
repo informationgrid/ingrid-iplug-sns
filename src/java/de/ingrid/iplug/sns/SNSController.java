@@ -55,8 +55,8 @@ public class SNSController {
      *         not found as topic
      * @throws Exception
      */
-    public Topic[] getTopicsForTerm(String queryTerm, int maxResults) throws Exception {
-        _topic topic = getTopic(queryTerm, THESAURUS_DESCRIPTOR);
+    public Topic[] getTopicsForTerm(String queryTerm, int start, int maxResults) throws Exception {
+        _topic topic = getTopic(queryTerm, THESAURUS_DESCRIPTOR, start);
         if (topic != null) {
             _topic[] associatedTopics = getAssociatedTopics(topic, fTypeFilters);
             Topic[] topics = copyToTopicArray(associatedTopics, maxResults);
@@ -219,17 +219,18 @@ public class SNSController {
     /**
      * @param queryTerm
      * @param topicType
+     * @param offSet 
      * @return just one matching topic, in case more topics match or no topic
      *         match we return null
      * @throws Exception
      */
-    private _topic getTopic(String queryTerm, String topicType) throws Exception {
+    private _topic getTopic(String queryTerm, String topicType, long offSet) throws Exception {
         // TODO why does this fail?
         // _topicMapFragment mapFragment =
         // this.fServiceClient.findTopics(queryTerm, topicType,
         // SearchType.exact,
         // FieldsType.allfields, 0);
-        _topicMapFragment mapFragment = this.fServiceClient.findTopics(queryTerm, topicType, SearchType.exact, null, 0);
+        _topicMapFragment mapFragment = this.fServiceClient.findTopics(queryTerm, topicType, SearchType.exact, null, offSet);
         _topic[] topics = mapFragment.getTopicMap().getTopic();
         if (topics.length == 1) {
             return topics[0];

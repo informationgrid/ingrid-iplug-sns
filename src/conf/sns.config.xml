@@ -1,0 +1,31 @@
+<configuration>
+  <properties>
+<!-- SNS connection settings -->
+    <property>
+      <key>username</key>
+      <value>ms</value>
+      <description>a sns user name</description>
+    </property>
+    
+    <property>
+      <key>password</key>
+      <value>m3d1asyl3</value>
+      <description>a sns password</description>
+    </property>
+    
+    <property>
+      <key>language</key>
+      <value>de</value>
+      <description>a sns language</description>
+    </property>
+    
+     <property>
+      <key>maxWordForAnalyzing</key>
+      <value>1000</value>
+      <description>number of maximal words that are used to analyze a text</description>
+    </property>
+
+    
+ </configuration>
+</properties>
+   
