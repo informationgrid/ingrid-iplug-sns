@@ -139,7 +139,13 @@
         <artifactId>ingrid-utils</artifactId>
         <version>0.1-SNAPSHOT</version>
 	    <type>jar</type>
-      </dependency>       
+      </dependency>
+      <dependency>
+        <groupId>ingrid</groupId>
+        <artifactId>ingrid-iplug</artifactId>
+        <version>0.1-SNAPSHOT</version>
+	    <type>jar</type>
+      </dependency>
   </dependencies>
     <build>
         <sourceDirectory>src/java</sourceDirectory>
@@ -152,9 +158,8 @@
     </build>
 	<reports>
 		<report>maven-junit-report-plugin</report>
-        <!--
 		<report>maven-jcoverage-plugin</report>
-			-->
+		<report>maven-checkstyle-plugin</report>
         <report>maven-tasklist-plugin</report>
 	</reports>
     <properties/>

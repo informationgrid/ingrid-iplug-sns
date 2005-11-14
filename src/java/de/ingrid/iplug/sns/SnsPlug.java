@@ -13,6 +13,8 @@ import de.ingrid.utils.query.IngridQuery;
 import de.ingrid.utils.query.TermQuery;
 import de.ingrid.utils.queryparser.IDataTypes;
 
+/**
+ */
 public class SnsPlug implements IPlug {
 
     private static final String CONFIGURATIONFILE = "sns.config.xml";
@@ -44,23 +46,23 @@ public class SnsPlug implements IPlug {
         this.fSnsController = new SNSController(new SNSClient(username, password, language));
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see de.ingrid.iplug.IPlug#search(de.ingrid.utils.query.IngridQuery, int,
-     *      int)
+    /**
+     * @see de.ingrid.iplug.IPlug#search(de.ingrid.utils.query.IngridQuery, int, int)
      */
-    public IngridDocument[] search(IngridQuery query, int start, int lenght) throws Exception {
+    public IngridDocument[] search(IngridQuery query, int start, int lenght) {
         if (query.getDataType().equals(IDataTypes.SNS)) {
             String type = (String) query.get(REQUEST_TYPE);
-            if (type.equals(TOPIC_FROM_TERM)) {
-                this.fSnsController.getTopicsForTerm(getSearchTerm(query), start, lenght);
-            } else if (type.equals(TOPIC_FROM_TEXT)) {
-                this.fSnsController.getTopicsForText((String) query.getContent(), this.fMaximalAnalyzedWord);
-            } else if (type.equals(TOPIC_FROM_TOPIC)) {
-                this.fSnsController.getTopicsForTopic(getSearchTerm(query), lenght);
+            try {
+                if (type.equals(TOPIC_FROM_TERM)) {
+                    this.fSnsController.getTopicsForTerm(getSearchTerm(query), start, lenght);
+                } else if (type.equals(TOPIC_FROM_TEXT)) {
+                    this.fSnsController.getTopicsForText((String) query.getContent(), this.fMaximalAnalyzedWord);
+                } else if (type.equals(TOPIC_FROM_TOPIC)) {
+                    this.fSnsController.getTopicsForTopic(getSearchTerm(query), lenght);
+                }
+            } catch (Exception e) {
+                //TODO: log/react
             }
-
         }
         return null;
 
@@ -74,6 +76,5 @@ public class SnsPlug implements IPlug {
         String searchTerm = terms[0].getTerm();
         return searchTerm;
     }
-    
-    
+
 }
