@@ -25,7 +25,6 @@
       <description>number of maximal words that are used to analyze a text</description>
     </property>
 
-    
- </configuration>
-</properties>
+	</properties>    
+</configuration>
    
