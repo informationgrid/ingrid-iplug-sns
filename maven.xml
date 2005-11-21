@@ -12,7 +12,7 @@
 		<attainGoal name="site"/>
 	</goal>
 	
-	<goal name="test:test">
+	<goal name="test:test" prereqs="test:compile">
         <j:if test="${context.getVariable('maven.test.skip') != 'true'}">
 			<attainGoal name="test:match" />
         </j:if>
