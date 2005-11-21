@@ -1,5 +1,4 @@
-<project xmlns:j="jelly:core"
-         xmlns:deploy="deploy">
+<project xmlns:j="jelly:core" xmlns:deploy="deploy">
 	
 	<goal name="jar">
 		<j:set var="testmatchpattern" value="**/*"/>
@@ -14,7 +13,9 @@
 	</goal>
 	
 	<goal name="test:test">
-		<attainGoal name="test:match" />	
+        <j:if test="${context.getVariable('maven.test.skip') != 'true'}">
+			<attainGoal name="test:match" />
+        </j:if>
 	</goal>
 	
 	<preGoal name="maven-jcoverage-plugin:report">
