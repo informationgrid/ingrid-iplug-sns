@@ -18,10 +18,22 @@ import junit.framework.TestCase;
  * @version $Revision: $
  * @author sg
  * @author $Author: ${lastedit}
- * 
+ *  
  */
 public class SNSControllerTest extends TestCase {
+
+    private boolean fToStdout = false;
+
     private final static String VALID_TOPIC_ID = "uba_thes_19054";
+
+    /**
+     * @see junit.framework.TestCase#setUp()
+     */
+    protected void setUp() throws Exception {
+        super.setUp();
+
+        this.fToStdout = true;
+    }
 
     /**
      * @throws Exception
@@ -33,7 +45,9 @@ public class SNSControllerTest extends TestCase {
         assertTrue(topicsForTerm.length > 0);
         for (int i = 0; i < topicsForTerm.length; i++) {
             Topic topic = topicsForTerm[i];
-            System.out.println(topic);
+            if (this.fToStdout) {
+                System.out.println(topic);
+            }
         }
     }
 
@@ -49,8 +63,9 @@ public class SNSControllerTest extends TestCase {
         assertTrue(topicsForTerm.length > 0);
         for (int i = 0; i < topicsForTerm.length; i++) {
             Topic topic = topicsForTerm[i];
-            System.out.println(topic);
-
+            if (this.fToStdout) {
+                System.out.println(topic);
+            }
         }
     }
 
