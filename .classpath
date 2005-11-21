@@ -12,8 +12,8 @@
 	<classpathentry kind="var" path="MAVEN_REPO/axis/jars/axis-1.1.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/axis/jars/axis-jaxrpc-1.2.1.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/axis/jars/axis-saaj-1.2.1.jar"/>
-	<classpathentry kind="lib" path="lib/xtmStubs.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/ingrid-utils"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/ingrid-iplug"/>
+	<classpathentry sourcepath="lib/xtmStubs.jar" kind="lib" path="lib/xtmStubs.jar"/>
+	<classpathentry kind="src" path="/ingrid-utils"/>
+	<classpathentry kind="src" path="/ingrid-iplug"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
