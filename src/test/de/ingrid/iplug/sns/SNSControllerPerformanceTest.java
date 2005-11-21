@@ -1,6 +1,9 @@
 /*
- * Created on 21.11.2005
+ * Copyright (c) 1997-2005 by media style GmbH
+ * 
+ * $Source: $
  */
+
 package de.ingrid.iplug.sns;
 
 import junit.framework.TestCase;
