@@ -22,7 +22,7 @@
     </mailingLists>
 	<developers>
     <developer>
-      <id>0</id>
+      <id>sg</id>
       <name>Sefan Groschupf</name>
       <email>sg(at)media-style.com</email>
       <organization>media style GmbH</organization>
@@ -33,7 +33,7 @@
 	  </roles>
     </developer>
 	<developer>
-      <id>1</id>
+      <id>fh</id>
       <name>Frank Henze</name>
       <email>fh(at)media-style.com</email>
       <organization>media style GmbH</organization>
@@ -44,7 +44,7 @@
 	  </roles>
     </developer>
 	<developer>
-      <id>2</id>
+      <id>hs</id>
       <name>Holger Schulze</name>
       <email>hs(at)media-style.com</email>
       <organization>media style GmbH</organization>
@@ -54,9 +54,19 @@
 	  </roles>
     </developer>
 	<developer>
-      <id>3</id>
+      <id>mb</id>
       <name>Marko Bauhardt</name>
       <email>mb(at)media-style.com</email>
+      <organization>media style GmbH</organization>
+      <organizationUrl>http://www.media-style.com</organizationUrl>
+      <roles>
+		  <role>developer</role>
+	  </roles>
+    </developer>
+    <developer>
+      <id>ms</id>
+      <name>Martin Schaaf</name>
+      <email>ms(at)media(stripe)style(dot)com</email>
       <organization>media style GmbH</organization>
       <organizationUrl>http://www.media-style.com</organizationUrl>
       <roles>
@@ -158,9 +168,19 @@
     </build>
 	<reports>
 		<report>maven-junit-report-plugin</report>
-		<report>maven-jcoverage-plugin</report>
-		<report>maven-checkstyle-plugin</report>
+        <report>maven-jcoverage-plugin</report>
+        <report>maven-simian-plugin</report>
+        <report>maven-javadoc-plugin</report>
+        <report>maven-pmd-plugin</report>
+        <report>maven-changes-plugin</report>
+        <report>maven-developer-activity-plugin</report>
+        <report>maven-file-activity-plugin</report>
+        <report>maven-jdepend-plugin</report>
         <report>maven-tasklist-plugin</report>
+        <report>maven-license-plugin</report>
+        <report>maven-checkstyle-plugin</report>
+        <report>maven-jxr-plugin</report>
+        <report>maven-changelog-plugin</report>
 	</reports>
     <properties/>
 </project>
