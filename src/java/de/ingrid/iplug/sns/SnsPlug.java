@@ -8,6 +8,7 @@ package de.ingrid.iplug.sns;
 
 import de.ingrid.iplug.IPlug;
 import de.ingrid.utils.IngridDocument;
+import de.ingrid.utils.IngridHits;
 import de.ingrid.utils.config.Configuration;
 import de.ingrid.utils.query.IngridQuery;
 import de.ingrid.utils.query.TermQuery;
@@ -49,7 +50,7 @@ public class SnsPlug implements IPlug {
     /**
      * @see de.ingrid.iplug.IPlug#search(de.ingrid.utils.query.IngridQuery, int, int)
      */
-    public IngridDocument[] search(IngridQuery query, int start, int lenght) {
+    public IngridHits search(IngridQuery query, int start, int lenght) {
         if (query.getDataType().equals(IDataTypes.SNS)) {
             String type = (String) query.get(REQUEST_TYPE);
             try {
