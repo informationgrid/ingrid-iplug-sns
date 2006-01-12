@@ -7,7 +7,6 @@
 package de.ingrid.iplug.sns;
 
 import de.ingrid.iplug.IPlug;
-import de.ingrid.utils.IngridDocument;
 import de.ingrid.utils.IngridHits;
 import de.ingrid.utils.config.Configuration;
 import de.ingrid.utils.query.IngridQuery;
