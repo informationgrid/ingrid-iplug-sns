@@ -197,14 +197,14 @@ public class SNSClient {
      * @return A topic map fragment.
      */
     public synchronized _topicMapFragment findEvents(String query, boolean ignoreCase, SearchType searchType,
-            String lang, String[] pathArray, String fieldTypeName, long offset, String at) {
+            String[] pathArray, String fieldTypeName, long offset, String at) {
         _findEvents findEvents = new _findEvents();
         findEvents.setUser(this.fUserName);
         findEvents.setPassword(this.fPassword);
         findEvents.setQueryTerm(query);
         findEvents.setIgnoreCase(ignoreCase);
         findEvents.setSearchType(searchType);
-        findEvents.setLang(lang);
+        findEvents.setLang(this.fLanguage);
         findEvents.setPath(pathArray);
         findEvents.setFields(fieldTypeName);
         findEvents.setOffset(offset);
@@ -226,7 +226,7 @@ public class SNSClient {
      * @return A topic map fragment.
      */
     public synchronized _topicMapFragment findEvents(String query, boolean ignoreCase, SearchType searchType,
-            String lang, String[] pathArray, String fieldTypeName, long offset, String from, String to) {
+            String[] pathArray, String fieldTypeName, long offset, String from, String to) {
         _findEvents findEvents = new _findEvents();
         findEvents.setUser(this.fUserName);
         findEvents.setPassword(this.fPassword);
@@ -237,7 +237,7 @@ public class SNSClient {
             findEvents.setIgnoreCase("false");
         }
         findEvents.setSearchType(searchType);
-        findEvents.setLang(lang);
+        findEvents.setLang(this.fLanguage);
         findEvents.setPath(pathArray);
         findEvents.setFields(fieldTypeName);
         findEvents.setOffset(offset);
@@ -274,7 +274,7 @@ public class SNSClient {
      * @param terms
      * @return A topic map fragment.
      */
-    public synchronized _topicMapFragment getSimilarTerms(String lang, boolean ignoreCase, String[] terms) {
+    public synchronized _topicMapFragment getSimilarTerms(boolean ignoreCase, String[] terms) {
         if ((null == terms) || (terms.length < 1)) {
             throw new IllegalArgumentException("No terms set.");
         }
@@ -282,7 +282,7 @@ public class SNSClient {
         _getSimilarTerms getSimilarTerms = new _getSimilarTerms();
         getSimilarTerms.setUser(this.fUserName);
         getSimilarTerms.setPassword(this.fPassword);
-        getSimilarTerms.setLang(lang);
+        getSimilarTerms.setLang(this.fLanguage);
         if (ignoreCase) {
             getSimilarTerms.setIgnoreCase("true");
         } else {
