@@ -8,6 +8,8 @@ package de.ingrid.iplug.sns;
 
 import de.ingrid.iplug.IPlug;
 import de.ingrid.iplug.PlugDescription;
+import de.ingrid.utils.IngridDocument;
+import de.ingrid.utils.IngridHit;
 import de.ingrid.utils.IngridHits;
 import de.ingrid.utils.config.Configuration;
 import de.ingrid.utils.query.IngridQuery;
@@ -79,6 +81,10 @@ public class SnsPlug implements IPlug {
     }
 
     public void configure(PlugDescription plugDescription) throws Exception {
-        // TODO Auto-generated method stub
+        // need some config
+    }
+
+    public IngridDocument getDetails(IngridHit hit) throws Exception {
+        return null;
     }
 }
