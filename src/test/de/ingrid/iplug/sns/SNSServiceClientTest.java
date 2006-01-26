@@ -123,7 +123,7 @@ public class SNSServiceClientTest extends TestCase {
         _topicMapFragment fragment = adapter.getTypes();
         assertNotNull(fragment);
     }
-    
+
     /**
      * @throws Exception
      */
@@ -131,20 +131,21 @@ public class SNSServiceClientTest extends TestCase {
         _topicMapFragment fragment = adapter.anniversary("1976-08-31");
         assertNotNull(fragment);
     }
-    
+
     /**
      * @throws Exception
      */
     public void testGetSimilarTerms() throws Exception {
-        _topicMapFragment fragment = adapter.getSimilarTerms("de", true, new String[] {"1976-08-31"});
+        _topicMapFragment fragment = adapter.getSimilarTerms(true, new String[] { "1976-08-31" });
         assertNotNull(fragment);
     }
-    
+
     /**
      * @throws Exception
      */
     public void testFindEventsAt() throws Exception {
-        _topicMapFragment fragment = adapter.findEvents("query", true, SearchType.contains, "de", new String[] {"path"} , "feld typ name", 0, "1976-08-31");
+        _topicMapFragment fragment = adapter.findEvents("query", true, SearchType.contains, new String[] { "path" },
+                "feld typ name", 0, "1976-08-31");
         assertNotNull(fragment);
     }
 }
