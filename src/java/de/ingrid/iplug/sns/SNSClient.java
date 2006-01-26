@@ -28,6 +28,7 @@ import com.slb.taxi.webservice.xtm.stubs._topicMapFragment;
  * @author hs
  */
 public class SNSClient {
+
     private String fUserName = null;
 
     private String fPassword = null;
@@ -47,7 +48,6 @@ public class SNSClient {
      *            Is used to specify the preferred language for requests.
      * @throws Exception
      */
-
     public SNSClient(String userName, String password, String language) throws Exception {
         this(userName, password, language, null);
     }
@@ -93,8 +93,7 @@ public class SNSClient {
      * @see SearchType
      * @see FieldsType
      */
-
-    public _topicMapFragment findTopics(String queryTerm, String path, SearchType searchType, FieldsType fieldsType,
+    public synchronized _topicMapFragment findTopics(String queryTerm, String path, SearchType searchType, FieldsType fieldsType,
             long offset) throws Exception {
         if (queryTerm == null) {
             throw new IllegalArgumentException("QueryTerm can not be null");
@@ -123,8 +122,7 @@ public class SNSClient {
      * @return The response object.
      * @throws Exception
      */
-
-    public _topicMapFragment getPSI(String topicID, int distance) throws Exception {
+    public synchronized _topicMapFragment getPSI(String topicID, int distance) throws Exception {
         if (topicID == null) {
             throw new IllegalArgumentException("TopicID can not be  null");
         }
@@ -140,18 +138,17 @@ public class SNSClient {
     }
 
     /**
-     * Sends a autoClassify request by using the underlaying webservice client.<br>
+     * Sends a autoClassify request by using the underlying webservice client.<br>
      * All parameters will passed to a _autoClassiy request object.
      * 
      * @param document
      *            The text to analyze.
      * @param analyzeMaxWords
      *            The number of words to analyze.
-     * @return a topic map fragment
+     * @return A topic map fragment.
      * @throws Exception
      */
-
-    public _topicMapFragment autoClassify(String document, int analyzeMaxWords) throws Exception {
+    public synchronized _topicMapFragment autoClassify(String document, int analyzeMaxWords) throws Exception {
         if (document == null) {
             throw new IllegalArgumentException("document can not be null");
         }
@@ -172,7 +169,7 @@ public class SNSClient {
      * @return a topic map fragment
      * @throws RemoteException
      */
-    public _topicMapFragment getTypes() throws RemoteException {
+    public synchronized _topicMapFragment getTypes() throws RemoteException {
         _getTypes typeRequest = new _getTypes();
         typeRequest.setUser(this.fUserName);
         typeRequest.setPassword(this.fPassword);
