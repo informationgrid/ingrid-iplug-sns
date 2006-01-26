@@ -7,6 +7,7 @@
 package de.ingrid.iplug.sns;
 
 import de.ingrid.iplug.IPlug;
+import de.ingrid.iplug.PlugDescription;
 import de.ingrid.utils.IngridHits;
 import de.ingrid.utils.config.Configuration;
 import de.ingrid.utils.query.IngridQuery;
@@ -64,8 +65,8 @@ public class SnsPlug implements IPlug {
                 //TODO: log/react
             }
         }
-        return null;
 
+        return null;
     }
 
     private String getSearchTerm(IngridQuery query) {
@@ -77,4 +78,7 @@ public class SnsPlug implements IPlug {
         return searchTerm;
     }
 
+    public void configure(PlugDescription plugDescription) throws Exception {
+        // TODO Auto-generated method stub
+    }
 }
