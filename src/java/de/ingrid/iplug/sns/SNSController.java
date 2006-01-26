@@ -55,7 +55,7 @@ public class SNSController {
      *         not found as topic
      * @throws Exception
      */
-    public Topic[] getTopicsForTerm(String queryTerm, int start, int maxResults) throws Exception {
+    public synchronized Topic[] getTopicsForTerm(String queryTerm, int start, int maxResults) throws Exception {
         _topic topic = getTopic(queryTerm, THESAURUS_DESCRIPTOR, start);
         if (topic != null) {
             _topic[] associatedTopics = getAssociatedTopics(topic, fTypeFilters);
@@ -71,7 +71,7 @@ public class SNSController {
      * @return an array of associated topics for a type identified by id
      * @throws Exception
      */
-    public Topic[] getTopicsForTopic(String topicId, int maxResults) throws Exception {
+    public synchronized Topic[] getTopicsForTopic(String topicId, int maxResults) throws Exception {
         _topic topic = new _topic();
         topic.setId(topicId);
         _topic[] associatedTopics = getAssociatedTopics(topic, fTypeFilters);
@@ -87,7 +87,7 @@ public class SNSController {
      * @return array of detailed topics for the given text
      * @throws Exception
      */
-    public DetailedTopic[] getTopicsForText(String documentText, int maxToAnalyzeWords) throws Exception {
+    public synchronized DetailedTopic[] getTopicsForText(String documentText, int maxToAnalyzeWords) throws Exception {
         final _topicMapFragment mapFragment = this.fServiceClient.autoClassify(documentText, maxToAnalyzeWords);
         final _topic[] topics = mapFragment.getTopicMap().getTopic();
         if (topics != null) {
@@ -100,7 +100,7 @@ public class SNSController {
      * @param topics
      * @return an array of detailed topics, we ignoring all topics of typ synonymType
      */
-    private DetailedTopic[] toDetailedTopicArray(_topic[] topics) {
+    private synchronized DetailedTopic[] toDetailedTopicArray(_topic[] topics) {
         final List returnList = new ArrayList();
         for (int i = 0; i < topics.length; i++) {
             System.out.println(topics[i].getInstanceOf()[0].getTopicRef().getHref());
@@ -115,7 +115,7 @@ public class SNSController {
      * @param topic
      * @return a detailed topic from _topic
      */
-    private DetailedTopic buildDetailedTopicFrom_topic(_topic topic) {
+    private synchronized DetailedTopic buildDetailedTopicFrom_topic(_topic topic) {
         DetailedTopic metaData = new DetailedTopic(topic.getId(), topic.getBaseName()[0].getBaseNameString().getValue());
         pushTimes(metaData, topic);
         if (containsTypes(fAdministrativeTypes, topic.getInstanceOf()[0].getTopicRef().getHref())) {
@@ -130,7 +130,7 @@ public class SNSController {
      * @param metaData
      * @param topic
      */
-    private void pushTimes(DetailedTopic metaData, _topic topic) {
+    private synchronized void pushTimes(DetailedTopic metaData, _topic topic) {
         _occurrence[] occurrences = topic.getOccurrence();
         String type = null;
         if (occurrences != null) {
@@ -157,7 +157,7 @@ public class SNSController {
      * @param topic
      * @return a ingrid topic from a _topic
      */
-    private Topic buildTopicFrom_topic(_topic topic) {
+    private synchronized Topic buildTopicFrom_topic(_topic topic) {
         return new Topic(topic.getId(), topic.getBaseName()[0].getBaseNameString().getValue());
     }
 
@@ -169,7 +169,7 @@ public class SNSController {
      * @return _topic array of associated topics filter by the given patterns
      * @throws Exception
      */
-    private _topic[] getAssociatedTopics(_topic baseTopic, String[] typePattern) throws Exception {
+    private synchronized _topic[] getAssociatedTopics(_topic baseTopic, String[] typePattern) throws Exception {
         ArrayList resultList = new ArrayList();
 
         _topicMapFragment mapFragment = this.fServiceClient.getPSI(baseTopic.getId(), 1);
@@ -199,6 +199,7 @@ public class SNSController {
             }
             return (_topic[]) resultList.toArray(new _topic[resultList.size()]);
         }
+
         return null;
     }
 
@@ -259,7 +260,6 @@ public class SNSController {
      * @throws Exception
      */
     private Topic[] copyToTopicArray(_topic[] topics, int maxResults) throws Exception {
-
         int count = Math.min(maxResults, topics.length);
         Topic[] ingridTopics = new Topic[count];
         for (int i = 0; i < count; i++) {
