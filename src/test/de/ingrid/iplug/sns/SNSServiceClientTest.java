@@ -11,12 +11,15 @@ import com.slb.taxi.webservice.xtm.stubs._topicMapFragment;
 
 /**
  * 
- * created on 21.07.2005 <p>
- *
+ * created on 21.07.2005
+ * <p>
+ * 
  * @author hs
  */
 public class SNSServiceClientTest extends TestCase {
+
     private static SNSClient adapter = null;
+
     static {
         try {
             adapter = new SNSClient("ms", "m3d1asyl3", "de");
@@ -24,7 +27,7 @@ public class SNSServiceClientTest extends TestCase {
             fail(e.getMessage());
         }
     }
-    
+
     /**
      * 
      * @throws Exception
@@ -32,14 +35,14 @@ public class SNSServiceClientTest extends TestCase {
     public void testFindTopics() throws Exception {
         String queryTerm = null;
         int offset = -1;
-        
+
         try {
             adapter.findTopics(queryTerm, null, null, null, offset);
             fail("Should throw an exception");
         } catch (Exception e) {
             assertTrue(e instanceof IllegalArgumentException);
         }
-        
+
         queryTerm = "xyz";
         try {
             adapter.findTopics(queryTerm, null, null, null, offset);
@@ -87,18 +90,18 @@ public class SNSServiceClientTest extends TestCase {
     /**
      * @throws Exception
      * 
-     *
+     * 
      */
     public void testAutoClassify() throws Exception {
         String document = null;
-        int maxWords = -1; 
+        int maxWords = -1;
         try {
             adapter.autoClassify(document, maxWords);
             fail("Should throw an exception");
         } catch (Exception e) {
             assertTrue(e instanceof IllegalArgumentException);
         }
-        document = "Die Ozonschicht ist sehr dünn";
+        document = "Die Ozonschicht ist sehr dï¿½nn";
         try {
             adapter.autoClassify(document, maxWords);
             fail("Should throw an exception");
@@ -110,13 +113,13 @@ public class SNSServiceClientTest extends TestCase {
         maxWords = Integer.MAX_VALUE;
         assertNotNull(adapter.autoClassify(document, maxWords));
     }
-    
+
     /**
      * @throws Exception
      */
-     
-    public void testGetTypes() throws Exception{
-        _topicMapFragment fragment = adapter.getTypes(); 
+
+    public void testGetTypes() throws Exception {
+        _topicMapFragment fragment = adapter.getTypes();
         assertNotNull(fragment);
     }
 }
