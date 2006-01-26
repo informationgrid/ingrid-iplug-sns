@@ -7,6 +7,7 @@ package de.ingrid.iplug.sns;
 
 import junit.framework.TestCase;
 
+import com.slb.taxi.webservice.xtm.stubs.SearchType;
 import com.slb.taxi.webservice.xtm.stubs._topicMapFragment;
 
 /**
@@ -120,6 +121,30 @@ public class SNSServiceClientTest extends TestCase {
 
     public void testGetTypes() throws Exception {
         _topicMapFragment fragment = adapter.getTypes();
+        assertNotNull(fragment);
+    }
+    
+    /**
+     * @throws Exception
+     */
+    public void testAnniversary() throws Exception {
+        _topicMapFragment fragment = adapter.anniversary("1976-08-31");
+        assertNotNull(fragment);
+    }
+    
+    /**
+     * @throws Exception
+     */
+    public void testGetSimilarTerms() throws Exception {
+        _topicMapFragment fragment = adapter.getSimilarTerms("de", true, new String[] {"1976-08-31"});
+        assertNotNull(fragment);
+    }
+    
+    /**
+     * @throws Exception
+     */
+    public void testFindEventsAt() throws Exception {
+        _topicMapFragment fragment = adapter.findEvents("query", true, SearchType.contains, "de", new String[] {"path"} , "feld typ name", 0, "1976-08-31");
         assertNotNull(fragment);
     }
 }
