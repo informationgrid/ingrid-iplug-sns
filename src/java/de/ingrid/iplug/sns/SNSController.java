@@ -50,6 +50,7 @@ public class SNSController {
 
     /**
      * @param queryTerm
+     * @param start 
      * @param maxResults
      * @return an array of assiciated topics or null in case the term itself is
      *         not found as topic
@@ -175,7 +176,7 @@ public class SNSController {
         _topicMapFragment mapFragment = this.fServiceClient.getPSI(baseTopic.getId(), 1);
         _topic[] topics = mapFragment.getTopicMap().getTopic();
         _association[] associations = mapFragment.getTopicMap().getAssociation();
-        // iterate throw associations to find the correct association types
+        // iterate through associations to find the correct association types
         if (associations != null) {
             for (int i = 0; i < associations.length; i++) {
                 _association association = associations[i];
