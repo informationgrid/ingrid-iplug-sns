@@ -35,11 +35,10 @@ public class SnsPlug implements IPlug {
     private int fMaximalAnalyzedWord;
 
     /**
-     * connects to the sns server
-     * 
      * @throws Exception
      */
     public SnsPlug() throws Exception {
+        // TODO: SHOULD this values come from the PlugDescription?
         Configuration configuration = new Configuration();
         configuration.load(this.getClass().getResourceAsStream(CONFIGURATIONFILE));
         String username = configuration.get("username", "");
@@ -64,7 +63,7 @@ public class SnsPlug implements IPlug {
                     this.fSnsController.getTopicsForTopic(getSearchTerm(query), lenght);
                 }
             } catch (Exception e) {
-                //TODO: log/react
+                // TODO: log/react
             }
         }
 
@@ -81,7 +80,7 @@ public class SnsPlug implements IPlug {
     }
 
     public void configure(PlugDescription plugDescription) throws Exception {
-        // need some config
+        // nothing for now
     }
 
     public IngridDocument getDetails(IngridHit hit) throws Exception {

@@ -13,11 +13,11 @@ import com.slb.taxi.webservice.xtm.stubs.xtm._topic;
 import de.ingrid.iplug.sns.utils.Topic;
 import de.ingrid.iplug.sns.utils.DetailedTopic;
 
-
 /**
  * A API to access the main SNS WebService functionality
  * 
  * created on 29.09.2005
+ * 
  * @author sg
  * @version $Revision: 1.2 $
  * 
@@ -40,7 +40,6 @@ public class SNSController {
     private static final String[] fAdministrativeTypes = new String[] { "communityType", "districtType", "quarterType",
             "stateType", "nationType" };
 
-  
     /**
      * @param client
      */
@@ -50,10 +49,9 @@ public class SNSController {
 
     /**
      * @param queryTerm
-     * @param start 
+     * @param start
      * @param maxResults
-     * @return an array of assiciated topics or null in case the term itself is
-     *         not found as topic
+     * @return an array of assiciated topics or null in case the term itself is not found as topic
      * @throws Exception
      */
     public synchronized Topic[] getTopicsForTerm(String queryTerm, int start, int maxResults) throws Exception {
@@ -162,8 +160,6 @@ public class SNSController {
         return new Topic(topic.getId(), topic.getBaseName()[0].getBaseNameString().getValue());
     }
 
-  
-
     /**
      * @param baseTopic
      * @param typePattern
@@ -221,9 +217,8 @@ public class SNSController {
     /**
      * @param queryTerm
      * @param topicType
-     * @param offSet 
-     * @return just one matching topic, in case more topics match or no topic
-     *         match we return null
+     * @param offSet
+     * @return just one matching topic, in case more topics match or no topic match we return null
      * @throws Exception
      */
     private _topic getTopic(String queryTerm, String topicType, long offSet) throws Exception {
@@ -232,7 +227,8 @@ public class SNSController {
         // this.fServiceClient.findTopics(queryTerm, topicType,
         // SearchType.exact,
         // FieldsType.allfields, 0);
-        _topicMapFragment mapFragment = this.fServiceClient.findTopics(queryTerm, topicType, SearchType.exact, null, offSet);
+        _topicMapFragment mapFragment = this.fServiceClient.findTopics(queryTerm, topicType, SearchType.exact, null,
+                offSet);
         _topic[] topics = mapFragment.getTopicMap().getTopic();
         if (topics.length == 1) {
             return topics[0];

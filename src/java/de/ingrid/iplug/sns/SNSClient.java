@@ -197,7 +197,7 @@ public class SNSClient {
      * @param offset
      * @param at
      * @return A topic map fragment.
-     * @throws RemoteException 
+     * @throws RemoteException
      */
     public synchronized _topicMapFragment findEvents(String query, boolean ignoreCase, SearchType searchType,
             String[] pathArray, FieldsType fieldsType, long offset, String at) throws RemoteException {
@@ -225,12 +225,12 @@ public class SNSClient {
      * @param ignoreCase
      * @param searchType
      * @param pathArray
-     * @param fieldsType 
+     * @param fieldsType
      * @param offset
      * @param from
      * @param to
      * @return A topic map fragment.
-     * @throws RemoteException 
+     * @throws RemoteException
      */
     public synchronized _topicMapFragment findEvents(String query, boolean ignoreCase, SearchType searchType,
             String[] pathArray, FieldsType fieldsType, long offset, String from, String to) throws RemoteException {
@@ -259,7 +259,7 @@ public class SNSClient {
      * 
      * @param date
      * @return A topic map fragment.
-     * @throws RemoteException 
+     * @throws RemoteException
      */
     public synchronized _topicMapFragment anniversary(String date) throws RemoteException {
         if (null == date) {
@@ -280,7 +280,7 @@ public class SNSClient {
      * @param ignoreCase
      * @param terms
      * @return A topic map fragment.
-     * @throws RemoteException 
+     * @throws RemoteException
      */
     public synchronized _topicMapFragment getSimilarTerms(boolean ignoreCase, String[] terms) throws RemoteException {
         if ((null == terms) || (terms.length < 1)) {
