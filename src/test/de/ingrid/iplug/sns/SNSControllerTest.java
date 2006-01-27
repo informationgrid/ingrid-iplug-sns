@@ -29,6 +29,20 @@ public class SNSControllerTest extends TestCase {
     private final static String VALID_TOPIC_ID = "uba_thes_19054";
 
     /**
+     * 
+     */
+    public SNSControllerTest() {
+        super();
+    }
+
+    /**
+     * @param name
+     */
+    public SNSControllerTest(String name) {
+        super(name);
+    }
+
+    /**
      * @param client
      * @throws Exception
      */
