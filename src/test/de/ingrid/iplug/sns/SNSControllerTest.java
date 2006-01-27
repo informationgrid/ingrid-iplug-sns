@@ -18,9 +18,11 @@ import junit.framework.TestCase;
  * @version $Revision: $
  * @author sg
  * @author $Author: ${lastedit}
- *  
+ * 
  */
 public class SNSControllerTest extends TestCase {
+
+    private static SNSClient fClient = null;
 
     private boolean fToStdout = false;
 
@@ -32,6 +34,12 @@ public class SNSControllerTest extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
 
+        try {
+            fClient = new SNSClient("ms", "portalu2006", "de");
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+
         this.fToStdout = true;
     }
 
@@ -39,8 +47,7 @@ public class SNSControllerTest extends TestCase {
      * @throws Exception
      */
     public void testTopicsForTerm() throws Exception {
-        SNSClient client = new SNSClient("ms", "portalu2006", "de");
-        SNSController controller = new SNSController(client);
+        SNSController controller = new SNSController(fClient);
         Topic[] topicsForTerm = controller.getTopicsForTerm("Wasser", 0, 1000);
         assertTrue(topicsForTerm.length > 0);
         for (int i = 0; i < topicsForTerm.length; i++) {
@@ -55,8 +62,7 @@ public class SNSControllerTest extends TestCase {
      * @throws Exception
      */
     public void testGetAssociatedTopics() throws Exception {
-        SNSClient client = new SNSClient("ms", "m3d1asyl3", "de");
-        SNSController controller = new SNSController(client);
+        SNSController controller = new SNSController(fClient);
         Topic[] topicsForTerm = controller.getTopicsForTopic("Wasser", 23);
         assertNull(topicsForTerm);
         topicsForTerm = controller.getTopicsForTopic(VALID_TOPIC_ID, 23);
@@ -73,8 +79,7 @@ public class SNSControllerTest extends TestCase {
      * @throws Exception
      */
     public void testGetDocumentRelatedTopics() throws Exception {
-        SNSClient client = new SNSClient("ms", "m3d1asyl3", "de");
-        SNSController controller = new SNSController(client);
+        SNSController controller = new SNSController(fClient);
         String text = "Tschernobyl liegt in Halle gefunden";
         DetailedTopic[] topics = controller.getTopicsForText(text, 100);
         assertNotNull(topics);
@@ -83,5 +88,4 @@ public class SNSControllerTest extends TestCase {
         topics = controller.getTopicsForText(text, 100);
         assertNotNull(topics);
     }
-
 }
