@@ -9,7 +9,7 @@ package de.ingrid.iplug.sns;
 import junit.framework.TestCase;
 
 /**
- *  
+ * 
  */
 public class SNSControllerPerformanceTest extends TestCase {
 
@@ -23,12 +23,12 @@ public class SNSControllerPerformanceTest extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
 
-        this.fSNSControllerTest = new SNSControllerTest();
+        this.fSNSControllerTest = new SNSControllerTest(new SNSClient("ms", "portalu2006", "de"));
     }
 
     /**
      * @throws Exception
-     *  
+     * 
      */
     public void testTopicsForTerm100() throws Exception {
         final long start = System.currentTimeMillis();

@@ -14,6 +14,7 @@ import com.slb.taxi.webservice.xtm.stubs._topicMapFragment;
 
 /**
  * created on 21.07.2005
+ * 
  * @author hs
  */
 public class SNSServiceClientTest extends TestCase {

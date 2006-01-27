@@ -29,16 +29,20 @@ public class SNSControllerTest extends TestCase {
     private final static String VALID_TOPIC_ID = "uba_thes_19054";
 
     /**
+     * @param client
+     * @throws Exception
+     */
+    public SNSControllerTest(SNSClient client) throws Exception {
+        fClient = client;
+    }
+
+    /**
      * @see junit.framework.TestCase#setUp()
      */
     protected void setUp() throws Exception {
         super.setUp();
 
-        try {
-            fClient = new SNSClient("ms", "portalu2006", "de");
-        } catch (Exception e) {
-            fail(e.getMessage());
-        }
+        fClient = new SNSClient("ms", "portalu2006", "de");
 
         this.fToStdout = true;
     }
