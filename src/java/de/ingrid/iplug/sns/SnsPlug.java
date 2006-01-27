@@ -102,7 +102,7 @@ public class SnsPlug implements IPlug {
             final int dataSourceId = 1;
 
             IngridHit ingridHit = new IngridHit(this.fProviderId, id, dataSourceId, score);
-            ingridHit.setIPlugId(fPlugId);
+            ingridHit.setIPlugId(this.fPlugId);
             hits[i - start] = ingridHit;
         }
 
