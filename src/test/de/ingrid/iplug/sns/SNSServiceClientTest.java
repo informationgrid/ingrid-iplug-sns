@@ -3,18 +3,17 @@
  * 
  * $Source: DispatcherTest.java,v $
  */
+
 package de.ingrid.iplug.sns;
 
 import junit.framework.TestCase;
 
+import com.slb.taxi.webservice.xtm.stubs.FieldsType;
 import com.slb.taxi.webservice.xtm.stubs.SearchType;
 import com.slb.taxi.webservice.xtm.stubs._topicMapFragment;
 
 /**
- * 
  * created on 21.07.2005
- * <p>
- * 
  * @author hs
  */
 public class SNSServiceClientTest extends TestCase {
@@ -23,7 +22,7 @@ public class SNSServiceClientTest extends TestCase {
 
     static {
         try {
-            adapter = new SNSClient("ms", "m3d1asyl3", "de");
+            adapter = new SNSClient("ms", "portalu2006", "de");
         } catch (Exception e) {
             fail(e.getMessage());
         }
@@ -144,8 +143,8 @@ public class SNSServiceClientTest extends TestCase {
      * @throws Exception
      */
     public void testFindEventsAt() throws Exception {
-        _topicMapFragment fragment = adapter.findEvents("query", true, SearchType.contains, new String[] { "path" },
-                "feld typ name", 0, "1976-08-31");
+        _topicMapFragment fragment = adapter.findEvents("query", true, SearchType.contains, new String[] { "/event" },
+                FieldsType.allfields, 0, "1976-08-31");
         assertNotNull(fragment);
     }
 }

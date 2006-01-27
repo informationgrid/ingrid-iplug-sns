@@ -13,9 +13,12 @@ import com.slb.taxi.webservice.xtm.stubs.FieldsType;
 import com.slb.taxi.webservice.xtm.stubs.SearchType;
 import com.slb.taxi.webservice.xtm.stubs.XTMESoapPortType;
 import com.slb.taxi.webservice.xtm.stubs.XTMserviceLocator;
+import com.slb.taxi.webservice.xtm.stubs._anniversary;
 import com.slb.taxi.webservice.xtm.stubs._autoClassify;
+import com.slb.taxi.webservice.xtm.stubs._findEvents;
 import com.slb.taxi.webservice.xtm.stubs._findTopics;
 import com.slb.taxi.webservice.xtm.stubs._getPSI;
+import com.slb.taxi.webservice.xtm.stubs._getSimilarTerms;
 import com.slb.taxi.webservice.xtm.stubs._getTypes;
 import com.slb.taxi.webservice.xtm.stubs._topicMapFragment;
 
@@ -189,44 +192,15 @@ public class SNSClient {
      * @param query
      * @param ignoreCase
      * @param searchType
-     * @param lang
      * @param pathArray
-     * @param fieldTypeName
+     * @param fieldsType
      * @param offset
      * @param at
      * @return A topic map fragment.
+     * @throws RemoteException 
      */
     public synchronized _topicMapFragment findEvents(String query, boolean ignoreCase, SearchType searchType,
-            String[] pathArray, String fieldTypeName, long offset, String at) {
-        _findEvents findEvents = new _findEvents();
-        findEvents.setUser(this.fUserName);
-        findEvents.setPassword(this.fPassword);
-        findEvents.setQueryTerm(query);
-        findEvents.setIgnoreCase(ignoreCase);
-        findEvents.setSearchType(searchType);
-        findEvents.setLang(this.fLanguage);
-        findEvents.setPath(pathArray);
-        findEvents.setFields(fieldTypeName);
-        findEvents.setOffset(offset);
-        findEvents.setAt(at);
-
-        return this.fXtmSoapPortType.findEventsOp(findEvents);
-    }
-
-    /**
-     * @param query
-     * @param ignoreCase
-     * @param searchType
-     * @param lang
-     * @param pathArray
-     * @param fieldTypeName
-     * @param offset
-     * @param from
-     * @param to
-     * @return A topic map fragment.
-     */
-    public synchronized _topicMapFragment findEvents(String query, boolean ignoreCase, SearchType searchType,
-            String[] pathArray, String fieldTypeName, long offset, String from, String to) {
+            String[] pathArray, FieldsType fieldsType, long offset, String at) throws RemoteException {
         _findEvents findEvents = new _findEvents();
         findEvents.setUser(this.fUserName);
         findEvents.setPassword(this.fPassword);
@@ -239,8 +213,41 @@ public class SNSClient {
         findEvents.setSearchType(searchType);
         findEvents.setLang(this.fLanguage);
         findEvents.setPath(pathArray);
-        findEvents.setFields(fieldTypeName);
-        findEvents.setOffset(offset);
+        findEvents.setFields(fieldsType);
+        findEvents.setOffset(BigInteger.valueOf(offset));
+        findEvents.setAt(at);
+
+        return this.fXtmSoapPortType.findEventsOp(findEvents);
+    }
+
+    /**
+     * @param query
+     * @param ignoreCase
+     * @param searchType
+     * @param pathArray
+     * @param fieldsType 
+     * @param offset
+     * @param from
+     * @param to
+     * @return A topic map fragment.
+     * @throws RemoteException 
+     */
+    public synchronized _topicMapFragment findEvents(String query, boolean ignoreCase, SearchType searchType,
+            String[] pathArray, FieldsType fieldsType, long offset, String from, String to) throws RemoteException {
+        _findEvents findEvents = new _findEvents();
+        findEvents.setUser(this.fUserName);
+        findEvents.setPassword(this.fPassword);
+        findEvents.setQueryTerm(query);
+        if (ignoreCase) {
+            findEvents.setIgnoreCase("true");
+        } else {
+            findEvents.setIgnoreCase("false");
+        }
+        findEvents.setSearchType(searchType);
+        findEvents.setLang(this.fLanguage);
+        findEvents.setPath(pathArray);
+        findEvents.setFields(fieldsType);
+        findEvents.setOffset(BigInteger.valueOf(offset));
         findEvents.setFrom(from);
         findEvents.setTo(to);
 
@@ -252,8 +259,9 @@ public class SNSClient {
      * 
      * @param date
      * @return A topic map fragment.
+     * @throws RemoteException 
      */
-    public synchronized _topicMapFragment anniversary(String date) {
+    public synchronized _topicMapFragment anniversary(String date) throws RemoteException {
         if (null == date) {
             throw new IllegalArgumentException("Date must be set.");
         }
@@ -261,20 +269,20 @@ public class SNSClient {
         _anniversary anniversary = new _anniversary();
         anniversary.setUser(this.fUserName);
         anniversary.setPassword(this.fPassword);
-        anniversary.refDate(date);
+        anniversary.setRefDate(date);
 
         return this.fXtmSoapPortType.anniversaryOp(anniversary);
     }
 
     /**
-     * Similiar terms.
+     * Similar terms.
      * 
-     * @param lang
      * @param ignoreCase
      * @param terms
      * @return A topic map fragment.
+     * @throws RemoteException 
      */
-    public synchronized _topicMapFragment getSimilarTerms(boolean ignoreCase, String[] terms) {
+    public synchronized _topicMapFragment getSimilarTerms(boolean ignoreCase, String[] terms) throws RemoteException {
         if ((null == terms) || (terms.length < 1)) {
             throw new IllegalArgumentException("No terms set.");
         }
