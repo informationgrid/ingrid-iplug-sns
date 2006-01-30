@@ -23,7 +23,8 @@ public class SNSControllerPerformanceTest extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
 
-        this.fSNSControllerTest = new SNSControllerTest(new SNSClient("ms", "portalu2006", "de"));
+        this.fSNSControllerTest = new SNSControllerTest();
+        this.fSNSControllerTest.setSNSClient(new SNSClient("ms", "portalu2006", "de"));
     }
 
     /**

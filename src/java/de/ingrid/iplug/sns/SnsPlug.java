@@ -9,10 +9,9 @@ package de.ingrid.iplug.sns;
 import de.ingrid.iplug.IPlug;
 import de.ingrid.iplug.PlugDescription;
 import de.ingrid.iplug.sns.utils.Topic;
-import de.ingrid.utils.IngridDocument;
 import de.ingrid.utils.IngridHit;
+import de.ingrid.utils.IngridHitDetail;
 import de.ingrid.utils.IngridHits;
-import de.ingrid.utils.config.Configuration;
 import de.ingrid.utils.query.IngridQuery;
 import de.ingrid.utils.query.TermQuery;
 import de.ingrid.utils.queryparser.IDataTypes;
@@ -20,8 +19,6 @@ import de.ingrid.utils.queryparser.IDataTypes;
 /**
  */
 public class SnsPlug implements IPlug {
-
-    private static final String CONFIGURATIONFILE = "sns.config.xml";
 
     private static final String REQUEST_TYPE = "sns_request_type";
 
@@ -35,22 +32,19 @@ public class SnsPlug implements IPlug {
 
     private int fMaximalAnalyzedWord;
 
-    private String fProviderId;
-
     private String fPlugId;
+
+    private String fUserName;
+
+    private String fPassWord;
+
+    private String fLanguage;
 
     /**
      * @throws Exception
      */
     public SnsPlug() throws Exception {
-        // TODO: SHOULD these values come from the PlugDescription?
-        Configuration configuration = new Configuration();
-        configuration.load(this.getClass().getResourceAsStream(CONFIGURATIONFILE));
-        String username = configuration.get("username", "");
-        String password = configuration.get("password", "");
-        String language = configuration.get("language", "de");
-        this.fMaximalAnalyzedWord = configuration.getAsInt("maxWordForAnalyzing", 1000);
-        this.fSnsController = new SNSController(new SNSClient(username, password, language));
+        this.fSnsController = new SNSController(new SNSClient(this.fUserName, this.fPassWord, this.fLanguage));
     }
 
     /**
@@ -88,7 +82,7 @@ public class SnsPlug implements IPlug {
             }
         }
 
-        return new IngridHits(this.fProviderId, count, hits);
+        return new IngridHits(this.fPlugId, count, hits);
     }
 
     private IngridHit[] translateTopicToHit(Topic[] topic, int start, int max) {
@@ -101,8 +95,7 @@ public class SnsPlug implements IPlug {
             // FIXME: What is the datasource ID?
             final int dataSourceId = 1;
 
-            IngridHit ingridHit = new IngridHit(this.fProviderId, id, dataSourceId, score);
-            ingridHit.setIPlugId(this.fPlugId);
+            IngridHit ingridHit = new IngridHit(this.fPlugId, id, dataSourceId, score);
             hits[i - start] = ingridHit;
         }
 
@@ -119,11 +112,14 @@ public class SnsPlug implements IPlug {
     }
 
     public void configure(PlugDescription plugDescription) throws Exception {
-        this.fProviderId = plugDescription.getIPlugClass() + plugDescription.getOrganisation();
         this.fPlugId = plugDescription.getPlugId();
+        this.fUserName = (String) plugDescription.get("username");
+        this.fPassWord = (String) plugDescription.get("password");
+        this.fLanguage = (String) plugDescription.get("language");
+        this.fMaximalAnalyzedWord = plugDescription.getInt("maxWordForAnalyzing");
     }
 
-    public IngridDocument getDetails(IngridHit hit) throws Exception {
+    public IngridHitDetail getDetails(IngridHit hit, IngridQuery query) throws Exception {
         return null;
     }
 }

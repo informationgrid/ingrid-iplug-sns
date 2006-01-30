@@ -25,9 +25,12 @@ public class ServiceAdapterTest extends TestCase {
      * @throws Exception
      */
     public void testCommunicationWithSNS() throws Exception {
-        new SNSControllerTest(new SNSClient("ms", "portalu2006", "de")).testGetAssociatedTopics();
-        new SNSControllerTest(new SNSClient("ms", "portalu2006", "de")).testGetDocumentRelatedTopics();
-        new SNSControllerTest(new SNSClient("ms", "portalu2006", "de")).testTopicsForTerm();
+        SNSControllerTest controller = new SNSControllerTest();
+        controller.setSNSClient(new SNSClient("ms", "portalu2006", "de"));
+        
+        controller.testGetAssociatedTopics();
+        controller.testGetDocumentRelatedTopics();
+        controller.testTopicsForTerm();
 
         new SNSServiceClientTest().testAutoClassify();
         new SNSServiceClientTest().testFindTopics();
