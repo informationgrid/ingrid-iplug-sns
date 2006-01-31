@@ -6,6 +6,9 @@
 
 package de.ingrid.iplug.sns;
 
+import java.io.File;
+import java.io.IOException;
+
 import junit.framework.TestCase;
 import de.ingrid.iplug.PlugDescription;
 import de.ingrid.iplug.sns.utils.DetailedTopic;
@@ -16,6 +19,7 @@ import de.ingrid.utils.query.IngridQuery;
 import de.ingrid.utils.query.TermQuery;
 import de.ingrid.utils.queryparser.IDataTypes;
 import de.ingrid.utils.queryparser.QueryStringParser;
+import de.ingrid.utils.xml.XMLSerializer;
 
 public class SnsPlugTest extends TestCase {
     private static PlugDescription fPlugDescription;
@@ -26,6 +30,14 @@ public class SnsPlugTest extends TestCase {
         fPlugDescription.put("password", "portalu2006");
         fPlugDescription.put("language", "de");
         fPlugDescription.putInt("maxWordForAnalyzing", 100);
+//        XMLSerializer serializer = new XMLSerializer();
+//        serializer.aliasClass(PlugDescription.class.getName(), PlugDescription.class);
+//        try {
+//            serializer.serialize(fPlugDescription, new File("/desc.xml"));
+//        } catch (IOException e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        }
 
     }
 

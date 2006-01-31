@@ -36,6 +36,10 @@ public class SnsPlug implements IPlug {
     private String fPassWord;
 
     private String fLanguage;
+    
+    public SnsPlug() {
+     // default constructor for server instantiation..
+    }
 
     /**
      * @throws Exception
