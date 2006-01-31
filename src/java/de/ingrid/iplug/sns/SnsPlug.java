@@ -6,6 +6,9 @@
 
 package de.ingrid.iplug.sns;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import de.ingrid.iplug.IPlug;
 import de.ingrid.iplug.PlugDescription;
 import de.ingrid.iplug.sns.utils.Topic;
@@ -20,13 +23,7 @@ import de.ingrid.utils.queryparser.IDataTypes;
  */
 public class SnsPlug implements IPlug {
 
-    private static final String REQUEST_TYPE = "sns_request_type";
-
-    private static final String TOPIC_FROM_TERM = "topicFromTerm";
-
-    private static final String TOPIC_FROM_TEXT = "topicFromText";
-
-    private static final String TOPIC_FROM_TOPIC = "topicFromTopic";
+    private static Log log = LogFactory.getLog(SnsPlug.class);
 
     private SNSController fSnsController;
 
@@ -43,69 +40,71 @@ public class SnsPlug implements IPlug {
     /**
      * @throws Exception
      */
-    public SnsPlug() throws Exception {
-        this.fSnsController = new SNSController(new SNSClient(this.fUserName, this.fPassWord, this.fLanguage));
+    public SnsPlug(PlugDescription description) throws Exception {
+        configure(description);
     }
 
     /**
-     * @see de.ingrid.iplug.IPlug#search(de.ingrid.utils.query.IngridQuery, int, int)
+     * @see de.ingrid.iplug.IPlug#search(de.ingrid.utils.query.IngridQuery, int,
+     *      int)
      */
     public IngridHits search(IngridQuery query, int start, int length) {
-        int count = 0;
-        IngridHit[] hits = new IngridHit[0];
 
         if (query.getDataType().equals(IDataTypes.SNS)) {
-            Topic[] topic = new Topic[0];
-            String type = (String) query.get(REQUEST_TYPE);
+            Topic[] hits = new Topic[0];
+            int type = query.getInt(Topic.REQUEST_TYPE);
 
-            // FIXME: By TOPIC FROM TOPIC i get the range by the other i must select my range. Is this correct?
+            // FIXME: By TOPIC FROM TOPIC i get the range by the other i must
+            // select my range. Is this correct?
             try {
-                if (type.equals(TOPIC_FROM_TERM)) {
-                    topic = this.fSnsController.getTopicsForTerm(getSearchTerm(query), start, length);
-                } else if (type.equals(TOPIC_FROM_TEXT)) {
-                    topic = this.fSnsController
-                            .getTopicsForText((String) query.getContent(), this.fMaximalAnalyzedWord);
-                } else if (type.equals(TOPIC_FROM_TOPIC)) {
-                    topic = this.fSnsController.getTopicsForTopic(getSearchTerm(query), length);
+                if (type == Topic.TOPIC_FROM_TERM) {
+                    hits = this.fSnsController.getTopicsForTerm(
+                            getSearchTerm(query), start, length);
+                } else if (type == Topic.TOPIC_FROM_TEXT) {
+                    hits = this.fSnsController.getTopicsForText(getSearchTerm(query)
+                            , this.fMaximalAnalyzedWord);
+                } else if (type == Topic.TOPIC_FROM_TOPIC) {
+                    hits = this.fSnsController.getTopicsForTopic(
+                            getSearchTerm(query), length);
                 }
 
-                count = topic.length;
-                int max = 0;
-                final int countMinusStart = topic.length - start;
-                if (countMinusStart >= 0) {
-                    max = Math.min(length, countMinusStart);
-                }
-
-                hits = translateTopicToHit(topic, start, max);
+                int max = Math.min(hits.length, length);
+                IngridHit[] finalHits = new IngridHit[max];
+                System.arraycopy(hits, start, finalHits, 0, max);
+                return new IngridHits(this.fPlugId, hits.length, finalHits);
             } catch (Exception e) {
-                // TODO: log/react
+                e.printStackTrace();
+                log.error(e.getMessage());
             }
         }
 
-        return new IngridHits(this.fPlugId, count, hits);
+        return new IngridHits(this.fPlugId, 0, new IngridHit[0]);
     }
 
-    private IngridHit[] translateTopicToHit(Topic[] topic, int start, int max) {
-        IngridHit[] hits = new IngridHit[max];
-        for (int i = start; i < (max + start); i++) {
-            // FIXME: What is the id?
-            final int id = 1;
-            // FIXME: What is the score?
-            final float score = 1;
-            // FIXME: What is the datasource ID?
-            final int dataSourceId = 1;
-
-            IngridHit ingridHit = new IngridHit(this.fPlugId, id, dataSourceId, score);
-            hits[i - start] = ingridHit;
-        }
-
-        return hits;
-    }
+    // private IngridHitSns[] translateTopicToHit(Topic[] topic, int type, int
+    // start, int max) {
+    // IngridHitSns[] hits = new IngridHitSns[max];
+    // for (int i = start; i < (max + start); i++) {
+    // // FIXME: What is the id?
+    // final int id = 1;
+    // // FIXME: What is the score?
+    // final float score = 1;
+    // // FIXME: What is the datasource ID?
+    // final int dataSourceId = 1;
+    //
+    // IngridHitSns ingridHit = new IngridHitSns(this.fPlugId, id, dataSourceId,
+    // score, type,topic[i].toString());
+    //
+    // hits[i - start] = ingridHit;
+    // }
+    // return hits;
+    // }
 
     private String getSearchTerm(IngridQuery query) {
         TermQuery[] terms = query.getTerms();
         if (terms.length > 1) {
-            throw new IllegalArgumentException("only one term per query is allowed");
+            throw new IllegalArgumentException(
+                    "only one term per query is allowed");
         }
         String searchTerm = terms[0].getTerm();
         return searchTerm;
@@ -116,10 +115,14 @@ public class SnsPlug implements IPlug {
         this.fUserName = (String) plugDescription.get("username");
         this.fPassWord = (String) plugDescription.get("password");
         this.fLanguage = (String) plugDescription.get("language");
-        this.fMaximalAnalyzedWord = plugDescription.getInt("maxWordForAnalyzing");
+        this.fMaximalAnalyzedWord = plugDescription
+                .getInt("maxWordForAnalyzing");
+        this.fSnsController = new SNSController(new SNSClient(this.fUserName,
+                this.fPassWord, this.fLanguage));
     }
 
-    public IngridHitDetail getDetails(IngridHit hit, IngridQuery query) throws Exception {
+    public IngridHitDetail getDetails(IngridHit hit, IngridQuery query)
+            throws Exception {
         return null;
     }
 }
