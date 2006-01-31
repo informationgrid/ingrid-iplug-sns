@@ -54,7 +54,7 @@ public class SnsPlug implements IPlug {
      */
     public IngridHits search(IngridQuery query, int start, int length) {
 
-        if (query.getDataType().equals(IDataTypes.SNS)) {
+        if (query.getDataType()!=null && query.getDataType().equals(IDataTypes.SNS)) {
             Topic[] hits = new Topic[0];
             int type = query.getInt(Topic.REQUEST_TYPE);
 
