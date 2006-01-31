@@ -67,7 +67,6 @@ public class SnsPlugTest extends TestCase {
         SnsPlug plug = new SnsPlug(fPlugDescription);
         String q = "uba_thes_500855";
         IngridQuery query = QueryStringParser.parse(q);
-        
         query.setDataType(IDataTypes.SNS);
         query.putInt(Topic.REQUEST_TYPE, Topic.TOPIC_FROM_TOPIC);
         IngridHits hits = plug.search(query, 0, 10);
