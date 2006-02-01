@@ -24,6 +24,7 @@ import de.ingrid.iplug.sns.utils.Topic;
  * 
  */
 public class SNSController {
+
     private static final String TEMPORAL_TO_OCCURRENCE = "temporalToOcc";
 
     private static final String TEMPORAL_FROM_OCCURRENCE = "temporalFromOcc";
