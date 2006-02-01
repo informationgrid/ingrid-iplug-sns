@@ -283,7 +283,7 @@ public class SNSController {
      * @param atDate
      * @param start
      * @param length
-     * @return
+     * @return A topic array of events.
      * @throws Exception
      */
     public Topic[] getEventFromTopic(String searchTerm, String eventType, String atDate, int start, int length)
