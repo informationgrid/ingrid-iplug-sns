@@ -291,13 +291,13 @@ public class SNSController {
         String[] eventPath = null;
 
         if (null != eventType) {
-            eventPath = new String[] { "/event/" + eventType };
+            eventPath = new String[] { "/event/" + eventType + "/" };
         } else {
-            eventPath = new String[] { "/event" };
+            eventPath = new String[] { "/event/" };
         }
 
         _topicMapFragment topicMapFragment = this.fServiceClient.findEvents(searchTerm, true, SearchType.exact,
-                eventPath, FieldsType.allfields, start, atDate);
+                eventPath, FieldsType.captors, start, atDate);
         _topic[] topic = topicMapFragment.getTopicMap().getTopic();
         if (topic != null) {
             Topic[] topics = copyToTopicArray(topic, length);
@@ -361,13 +361,13 @@ public class SNSController {
         String[] eventPath = null;
 
         if (null != eventType) {
-            eventPath = new String[] { "/event/" + eventType };
+            eventPath = new String[] { "/event/" + eventType + "/" };
         } else {
-            eventPath = new String[] { "/event" };
+            eventPath = new String[] { "/event/" };
         }
 
         _topicMapFragment topicMapFragment = this.fServiceClient.findEvents(searchTerm, true, SearchType.exact,
-                eventPath, FieldsType.allfields, start, fromDate, toDate);
+                eventPath, FieldsType.captors, start, fromDate, toDate);
         _topic[] topic = topicMapFragment.getTopicMap().getTopic();
         if (topic != null) {
             Topic[] topics = copyToTopicArray(topic, length);
