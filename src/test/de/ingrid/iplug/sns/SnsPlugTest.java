@@ -6,9 +6,6 @@
 
 package de.ingrid.iplug.sns;
 
-import java.io.File;
-import java.io.IOException;
-
 import junit.framework.TestCase;
 import de.ingrid.iplug.PlugDescription;
 import de.ingrid.iplug.sns.utils.DetailedTopic;
@@ -19,8 +16,10 @@ import de.ingrid.utils.query.IngridQuery;
 import de.ingrid.utils.query.TermQuery;
 import de.ingrid.utils.queryparser.IDataTypes;
 import de.ingrid.utils.queryparser.QueryStringParser;
-import de.ingrid.utils.xml.XMLSerializer;
 
+/**
+ * 
+ */
 public class SnsPlugTest extends TestCase {
     private static PlugDescription fPlugDescription;
     static {
@@ -30,17 +29,11 @@ public class SnsPlugTest extends TestCase {
         fPlugDescription.put("password", "portalu2006");
         fPlugDescription.put("language", "de");
         fPlugDescription.putInt("maxWordForAnalyzing", 100);
-//        XMLSerializer serializer = new XMLSerializer();
-//        serializer.aliasClass(PlugDescription.class.getName(), PlugDescription.class);
-//        try {
-//            serializer.serialize(fPlugDescription, new File("/desc.xml"));
-//        } catch (IOException e) {
-//            // TODO Auto-generated catch block
-//            e.printStackTrace();
-//        }
-
     }
 
+    /**
+     * @throws Exception
+     */
     public void testTOPIC_FROM_TERM() throws Exception {
         SnsPlug plug = new SnsPlug(fPlugDescription);
         String q = "Wasser";
@@ -48,22 +41,24 @@ public class SnsPlugTest extends TestCase {
         query.setDataType(IDataTypes.SNS);
         query.putInt(Topic.REQUEST_TYPE, Topic.TOPIC_FROM_TERM);
         IngridHits hits = plug.search(query, 0, 10);
-        IngridHit[] hitsArray =  hits.getHits();
+        IngridHit[] hitsArray = hits.getHits();
         assertNotNull(hitsArray);
         for (int i = 0; i < hitsArray.length; i++) {
             Topic hit = (Topic) hitsArray[i];
-            System.out.println(hit.getTopicName()+":"+hit.getTopicID());
+            System.out.println(hit.getTopicName() + ":" + hit.getTopicID());
         }
         System.out.println("##########");
     }
-    
-    
+
+    /**
+     * @throws Exception
+     */
     public void testTOPIC_FROM_TEXT() throws Exception {
         SnsPlug plug = new SnsPlug(fPlugDescription);
         String q = "\"Tschernobyl liegt in Halle gefunden\"";
-//        IngridQuery query = QueryStringParser.parse(q);
+        // IngridQuery query = QueryStringParser.parse(q);
         IngridQuery query = new IngridQuery();
-        query.addTerm(new TermQuery(TermQuery.AND, q));
+        query.addTerm(new TermQuery(IngridQuery.AND, q));
         query.setDataType(IDataTypes.SNS);
         query.putInt(Topic.REQUEST_TYPE, Topic.TOPIC_FROM_TEXT);
         IngridHits hits = plug.search(query, 0, 10);
@@ -71,10 +66,13 @@ public class SnsPlugTest extends TestCase {
         assertNotNull(hitsArray);
         for (int i = 0; i < hitsArray.length; i++) {
             DetailedTopic hit = (DetailedTopic) hitsArray[i];
-            System.out.println(hit.getTopicName()+":"+hit.getAdministrativeID());
+            System.out.println(hit.getTopicName() + ":" + hit.getAdministrativeID());
         }
     }
-    
+
+    /**
+     * @throws Exception
+     */
     public void testTOPIC_FROM_TOPIC() throws Exception {
         SnsPlug plug = new SnsPlug(fPlugDescription);
         String q = "uba_thes_500855";
@@ -86,10 +84,138 @@ public class SnsPlugTest extends TestCase {
         assertNotNull(hitsArray);
         for (int i = 0; i < hitsArray.length; i++) {
             Topic hit = (Topic) hitsArray[i];
-            System.out.println(hit.getTopicName()+":"+hit.getTopicID());
+            System.out.println(hit.getTopicName() + ":" + hit.getTopicID());
         }
     }
     
+    /**
+     * @throws Exception
+     */
+    public void testANNIVERSARY() throws Exception {
+        SnsPlug plug = new SnsPlug(fPlugDescription);
+        String q = "1976-08-31";
+        IngridQuery query = QueryStringParser.parse(q);
+        query.setDataType(IDataTypes.SNS);
+        query.putInt(Topic.REQUEST_TYPE, Topic.ANNIVERSARY_FROM_TOPIC);
+        IngridHits hits = plug.search(query, 0, 10);
+        IngridHit[] hitsArray = hits.getHits();
+        assertNotNull(hitsArray);
+        for (int i = 0; i < hitsArray.length; i++) {
+            Topic hit = (Topic) hitsArray[i];
+            System.out.println(hit.getTopicName() + ":" + hit.getTopicID());
+        }
+    }
     
-
+    /**
+     * @throws Exception
+     */
+    public void testSIMILARTERMS() throws Exception {
+        SnsPlug plug = new SnsPlug(fPlugDescription);
+        String q = "blau";
+        IngridQuery query = QueryStringParser.parse(q);
+        query.setDataType(IDataTypes.SNS);
+        query.putInt(Topic.REQUEST_TYPE, Topic.SIMILARTERMS_FROM_TOPIC);
+        IngridHits hits = plug.search(query, 0, 10);
+        IngridHit[] hitsArray = hits.getHits();
+        assertNotNull(hitsArray);
+        for (int i = 0; i < hitsArray.length; i++) {
+            Topic hit = (Topic) hitsArray[i];
+            System.out.println(hit.getTopicName() + ":" + hit.getTopicID());
+        }
+    }
+    
+    /**
+     * @throws Exception
+     */
+    public void testEVENT_AT() throws Exception {
+        SnsPlug plug = new SnsPlug(fPlugDescription);
+        String q = "hochzeit";
+        IngridQuery query = QueryStringParser.parse(q);
+        query.setDataType(IDataTypes.SNS);
+        query.putInt(Topic.REQUEST_TYPE, Topic.EVENT_FROM_TOPIC);
+        query.put("t0", "1999-09-09");
+        IngridHits hits = plug.search(query, 0, 10);
+        IngridHit[] hitsArray = hits.getHits();
+        assertNotNull(hitsArray);
+        for (int i = 0; i < hitsArray.length; i++) {
+            Topic hit = (Topic) hitsArray[i];
+            System.out.println(hit.getTopicName() + ":" + hit.getTopicID());
+        }
+    }
+    
+    /**
+     * @throws Exception
+     */
+    public void testEVENT_BETWEEN() throws Exception {
+        SnsPlug plug = new SnsPlug(fPlugDescription);
+        String q = "ohio";
+        IngridQuery query = QueryStringParser.parse(q);
+        query.setDataType(IDataTypes.SNS);
+        query.putInt(Topic.REQUEST_TYPE, Topic.EVENT_FROM_TOPIC);
+        query.put("t1", "1800-09-09");
+        query.put("t2", "2005-09-09");
+        IngridHits hits = plug.search(query, 0, 10);
+        IngridHit[] hitsArray = hits.getHits();
+        assertNotNull(hitsArray);
+        for (int i = 0; i < hitsArray.length; i++) {
+            Topic hit = (Topic) hitsArray[i];
+            System.out.println(hit.getTopicName() + ":" + hit.getTopicID());
+        }
+    }
+    
+    /**
+     * @throws Exception
+     */
+    public void testEVENT_FROM() throws Exception {
+        SnsPlug plug = new SnsPlug(fPlugDescription);
+        String q = "ohio";
+        IngridQuery query = QueryStringParser.parse(q);
+        query.setDataType(IDataTypes.SNS);
+        query.putInt(Topic.REQUEST_TYPE, Topic.EVENT_FROM_TOPIC);
+        query.put("t1", "1800-09-09");
+        IngridHits hits = plug.search(query, 0, 10);
+        IngridHit[] hitsArray = hits.getHits();
+        assertNotNull(hitsArray);
+        for (int i = 0; i < hitsArray.length; i++) {
+            Topic hit = (Topic) hitsArray[i];
+            System.out.println(hit.getTopicName() + ":" + hit.getTopicID());
+        }
+    }
+    
+    /**
+     * @throws Exception
+     */
+    public void testEVENT_TO() throws Exception {
+        SnsPlug plug = new SnsPlug(fPlugDescription);
+        String q = "ohio";
+        IngridQuery query = QueryStringParser.parse(q);
+        query.setDataType(IDataTypes.SNS);
+        query.putInt(Topic.REQUEST_TYPE, Topic.EVENT_FROM_TOPIC);
+        query.put("t2", "2006-01-01");
+        IngridHits hits = plug.search(query, 0, 10);
+        IngridHit[] hitsArray = hits.getHits();
+        assertNotNull(hitsArray);
+        for (int i = 0; i < hitsArray.length; i++) {
+            Topic hit = (Topic) hitsArray[i];
+            System.out.println(hit.getTopicName() + ":" + hit.getTopicID());
+        }
+    }
+    
+    /**
+     * @throws Exception
+     */
+    public void testEVENT_NODATESET() throws Exception {
+        SnsPlug plug = new SnsPlug(fPlugDescription);
+        String q = "ohio";
+        IngridQuery query = QueryStringParser.parse(q);
+        query.setDataType(IDataTypes.SNS);
+        query.putInt(Topic.REQUEST_TYPE, Topic.EVENT_FROM_TOPIC);
+        IngridHits hits = plug.search(query, 0, 10);
+        IngridHit[] hitsArray = hits.getHits();
+        assertNotNull(hitsArray);
+        for (int i = 0; i < hitsArray.length; i++) {
+            Topic hit = (Topic) hitsArray[i];
+            System.out.println(hit.getTopicName() + ":" + hit.getTopicID());
+        }
+    }
 }
