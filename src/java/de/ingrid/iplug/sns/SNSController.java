@@ -1,8 +1,10 @@
 package de.ingrid.iplug.sns;
 
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.slb.taxi.webservice.xtm.stubs.FieldsType;
 import com.slb.taxi.webservice.xtm.stubs.SearchType;
 import com.slb.taxi.webservice.xtm.stubs._topicMapFragment;
 import com.slb.taxi.webservice.xtm.stubs.xtm._association;
@@ -12,6 +14,7 @@ import com.slb.taxi.webservice.xtm.stubs.xtm._topic;
 
 import de.ingrid.iplug.sns.utils.Topic;
 import de.ingrid.iplug.sns.utils.DetailedTopic;
+import de.ingrid.utils.IngridHitDetail;
 
 /**
  * A API to access the main SNS WebService functionality
@@ -55,13 +58,15 @@ public class SNSController {
      * @throws Exception
      */
     public synchronized Topic[] getTopicsForTerm(String queryTerm, int start, int maxResults) throws Exception {
+        Topic[] result = new Topic[0];
+
         _topic topic = getTopic(queryTerm, THESAURUS_DESCRIPTOR, start);
         if (topic != null) {
             _topic[] associatedTopics = getAssociatedTopics(topic, fTypeFilters);
             Topic[] topics = copyToTopicArray(associatedTopics, maxResults);
-            return topics;
+            result = topics;
         }
-        return null;
+        return result;
     }
 
     /**
@@ -265,4 +270,101 @@ public class SNSController {
         return ingridTopics;
     }
 
+    /**
+     * @param searchTerm
+     * @param atDate
+     * @param start
+     * @param length
+     * @return
+     * @throws Exception
+     */
+    public Topic[] getEventFromTopic(String searchTerm, String atDate, int start, int length) throws Exception {
+        Topic[] result = new Topic[0];
+
+        _topicMapFragment topicMapFragment = this.fServiceClient.findEvents(searchTerm, true, SearchType.exact,
+                new String[] { "/event" }, FieldsType.allfields, start, atDate);
+        _topic[] topic = topicMapFragment.getTopicMap().getTopic();
+        if (topic != null) {
+            Topic[] topics = copyToTopicArray(topic, length);
+            result = topics;
+        }
+        return result;
+    }
+
+    /**
+     * @param searchTerm
+     * @param length
+     * @return
+     * @throws Exception
+     */
+    public Topic[] getSimilarTermsFromTopic(String searchTerm, int length) throws Exception {
+        Topic[] result = new Topic[0];
+
+        _topicMapFragment topicMapFragment = this.fServiceClient.getSimilarTerms(true, new String[] { searchTerm });
+        _topic[] topic = topicMapFragment.getTopicMap().getTopic();
+        if (topic != null) {
+            Topic[] topics = copyToTopicArray(topic, length);
+            result = topics;
+        }
+        return result;
+    }
+
+    /**
+     * @param searchTerm
+     * @param length
+     * @return
+     * @throws Exception
+     */
+    public Topic[] getAnniversaryFromTopic(String searchTerm, int length) throws Exception {
+        Topic[] result = new Topic[0];
+
+        _topicMapFragment topicMapFragment = this.fServiceClient.anniversary(searchTerm);
+        _topic[] topic = topicMapFragment.getTopicMap().getTopic();
+        if (topic != null) {
+            Topic[] topics = copyToTopicArray(topic, length);
+            result = topics;
+        }
+        return result;
+    }
+
+    /**
+     * @param searchTerm
+     * @param fromDate
+     * @param toDate
+     * @param start
+     * @param length
+     * @return
+     * @throws Exception
+     */
+    public Topic[] getEventFromTopic(String searchTerm, String fromDate, String toDate, int start, int length)
+            throws Exception {
+        Topic[] result = new Topic[0];
+
+        _topicMapFragment topicMapFragment = this.fServiceClient.findEvents(searchTerm, true, SearchType.exact,
+                new String[] { "/event" }, FieldsType.allfields, start, fromDate, toDate);
+        _topic[] topic = topicMapFragment.getTopicMap().getTopic();
+        if (topic != null) {
+            Topic[] topics = copyToTopicArray(topic, length);
+            result = topics;
+        }
+        return result;
+    }
+
+    /**
+     * @param topicID
+     * @return
+     * @throws Exception
+     */
+    public DetailedTopic getTopicDetail(String topicID) throws Exception {
+        DetailedTopic result = null;
+
+        _topicMapFragment mapFragment = this.fServiceClient.getPSI(topicID, 0);
+        _topic[] topics = mapFragment.getTopicMap().getTopic();
+        if (topics.length == 1) {
+            DetailedTopic topic = buildDetailedTopicFrom_topic(topics[0]);
+            result = topic;
+        }
+
+        return result;
+    }
 }
