@@ -147,6 +147,23 @@ public class SnsPlugTest extends TestCase {
     /**
      * @throws Exception
      */
+    public void testEVENT_AT_FILTER_NOOUTPUT() throws Exception {
+        SnsPlug plug = new SnsPlug(fPlugDescription);
+        String q = "Tschernobyl";
+        IngridQuery query = QueryStringParser.parse(q);
+        query.setDataType(IDataTypes.SNS);
+        query.putInt(Topic.REQUEST_TYPE, Topic.EVENT_FROM_TOPIC);
+        query.put("eventtype", "marineAccident");
+        query.put("t0", "1999-03-08");
+        IngridHits hits = plug.search(query, 0, 10);
+        IngridHit[] hitsArray = hits.getHits();
+        assertNotNull(hitsArray);
+        assertEquals(0, hitsArray.length);
+    }
+    
+    /**
+     * @throws Exception
+     */
     public void testEVENT_BETWEEN() throws Exception {
         SnsPlug plug = new SnsPlug(fPlugDescription);
         String q = "Tschernobyl";
