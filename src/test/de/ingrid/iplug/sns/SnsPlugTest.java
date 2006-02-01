@@ -66,7 +66,7 @@ public class SnsPlugTest extends TestCase {
         assertNotNull(hitsArray);
         for (int i = 0; i < hitsArray.length; i++) {
             DetailedTopic hit = (DetailedTopic) hitsArray[i];
-            System.out.println(hit.getTopicName() + ":" + hit.getAdministrativeID());
+            System.out.println(hit.getTopicName() + ":" + hit.getAdministrativeID() + ":" + hit.getTopicID());
         }
     }
 
@@ -87,7 +87,7 @@ public class SnsPlugTest extends TestCase {
             System.out.println(hit.getTopicName() + ":" + hit.getTopicID());
         }
     }
-    
+
     /**
      * @throws Exception
      */
@@ -105,7 +105,7 @@ public class SnsPlugTest extends TestCase {
             System.out.println(hit.getTopicName() + ":" + hit.getTopicID());
         }
     }
-    
+
     /**
      * @throws Exception
      */
@@ -123,18 +123,18 @@ public class SnsPlugTest extends TestCase {
             System.out.println(hit.getTopicName() + ":" + hit.getTopicID());
         }
     }
-    
+
     /**
      * @throws Exception
      */
     public void testEVENT_AT() throws Exception {
         SnsPlug plug = new SnsPlug(fPlugDescription);
-        String q = "ohio";
+        String q = "Tschernobyl";
         IngridQuery query = QueryStringParser.parse(q);
         query.setDataType(IDataTypes.SNS);
         query.putInt(Topic.REQUEST_TYPE, Topic.EVENT_FROM_TOPIC);
         query.put("eventtype", "industrialAccident");
-        query.put("t0", "1976-08-31");
+        query.put("t0", "1999-03-08");
         IngridHits hits = plug.search(query, 0, 10);
         IngridHit[] hitsArray = hits.getHits();
         assertNotNull(hitsArray);
@@ -143,17 +143,17 @@ public class SnsPlugTest extends TestCase {
             System.out.println(hit.getTopicName() + ":" + hit.getTopicID());
         }
     }
-    
+
     /**
      * @throws Exception
      */
     public void testEVENT_BETWEEN() throws Exception {
         SnsPlug plug = new SnsPlug(fPlugDescription);
-        String q = "ohio";
+        String q = "Tschernobyl";
         IngridQuery query = QueryStringParser.parse(q);
         query.setDataType(IDataTypes.SNS);
         query.putInt(Topic.REQUEST_TYPE, Topic.EVENT_FROM_TOPIC);
-        query.put("eventtype", "disaster");
+        query.put("eventtype", "industrialAccident");
         query.put("t1", "1800-09-09");
         query.put("t2", "2005-09-09");
         IngridHits hits = plug.search(query, 0, 10);
@@ -164,13 +164,13 @@ public class SnsPlugTest extends TestCase {
             System.out.println(hit.getTopicName() + ":" + hit.getTopicID());
         }
     }
-    
+
     /**
      * @throws Exception
      */
     public void testEVENT_FROM() throws Exception {
         SnsPlug plug = new SnsPlug(fPlugDescription);
-        String q = "ohio";
+        String q = "Tschernobyl";
         IngridQuery query = QueryStringParser.parse(q);
         query.setDataType(IDataTypes.SNS);
         query.putInt(Topic.REQUEST_TYPE, Topic.EVENT_FROM_TOPIC);
@@ -184,13 +184,13 @@ public class SnsPlugTest extends TestCase {
             System.out.println(hit.getTopicName() + ":" + hit.getTopicID());
         }
     }
-    
+
     /**
      * @throws Exception
      */
     public void testEVENT_TO() throws Exception {
         SnsPlug plug = new SnsPlug(fPlugDescription);
-        String q = "ohio";
+        String q = "Tschernobyl";
         IngridQuery query = QueryStringParser.parse(q);
         query.setDataType(IDataTypes.SNS);
         query.putInt(Topic.REQUEST_TYPE, Topic.EVENT_FROM_TOPIC);
@@ -204,13 +204,13 @@ public class SnsPlugTest extends TestCase {
             System.out.println(hit.getTopicName() + ":" + hit.getTopicID());
         }
     }
-    
+
     /**
      * @throws Exception
      */
     public void testEVENT_NODATESET() throws Exception {
         SnsPlug plug = new SnsPlug(fPlugDescription);
-        String q = "ohio";
+        String q = "tschernobyl";
         IngridQuery query = QueryStringParser.parse(q);
         query.setDataType(IDataTypes.SNS);
         query.putInt(Topic.REQUEST_TYPE, Topic.EVENT_FROM_TOPIC);
