@@ -1,6 +1,5 @@
 package de.ingrid.iplug.sns;
 
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,9 +11,8 @@ import com.slb.taxi.webservice.xtm.stubs.xtm._member;
 import com.slb.taxi.webservice.xtm.stubs.xtm._occurrence;
 import com.slb.taxi.webservice.xtm.stubs.xtm._topic;
 
-import de.ingrid.iplug.sns.utils.Topic;
 import de.ingrid.iplug.sns.utils.DetailedTopic;
-import de.ingrid.utils.IngridHitDetail;
+import de.ingrid.iplug.sns.utils.Topic;
 
 /**
  * A API to access the main SNS WebService functionality
@@ -66,6 +64,7 @@ public class SNSController {
             Topic[] topics = copyToTopicArray(associatedTopics, maxResults);
             result = topics;
         }
+
         return result;
     }
 
@@ -82,6 +81,7 @@ public class SNSController {
         if (associatedTopics != null) {
             return copyToTopicArray(associatedTopics, maxResults);
         }
+
         return null;
     }
 
@@ -97,6 +97,7 @@ public class SNSController {
         if (topics != null) {
             return toDetailedTopicArray(topics);
         }
+
         return new DetailedTopic[0];
     }
 
@@ -112,6 +113,7 @@ public class SNSController {
                 returnList.add(buildDetailedTopicFrom_topic(topics[i]));
             }
         }
+
         return (DetailedTopic[]) returnList.toArray(new DetailedTopic[returnList.size()]);
     }
 
@@ -125,6 +127,7 @@ public class SNSController {
         if (containsTypes(fAdministrativeTypes, topic.getInstanceOf()[0].getTopicRef().getHref())) {
             metaData.setAdministrativeID(topic.getId());
         }
+
         return metaData;
     }
 
@@ -199,6 +202,7 @@ public class SNSController {
                     }
                 }
             }
+
             return (_topic[]) resultList.toArray(new _topic[resultList.size()]);
         }
 
@@ -216,6 +220,7 @@ public class SNSController {
                 return topics[k];
             }
         }
+
         return null;
     }
 
@@ -228,16 +233,15 @@ public class SNSController {
      */
     private _topic getTopic(String queryTerm, String topicType, long offSet) throws Exception {
         // TODO why does this fail?
-        // _topicMapFragment mapFragment =
-        // this.fServiceClient.findTopics(queryTerm, topicType,
-        // SearchType.exact,
-        // FieldsType.allfields, 0);
+        // _topicMapFragment mapFragment = this.fServiceClient.findTopics(queryTerm, topicType, SearchType.exact,
+        // FieldsType.allfields, offSet);
         _topicMapFragment mapFragment = this.fServiceClient.findTopics(queryTerm, topicType, SearchType.exact, null,
                 offSet);
         _topic[] topics = mapFragment.getTopicMap().getTopic();
         if (topics.length == 1) {
             return topics[0];
         }
+
         return null;
     }
 
@@ -252,6 +256,7 @@ public class SNSController {
                 return true;
             }
         }
+
         return false;
     }
 
@@ -267,27 +272,38 @@ public class SNSController {
         for (int i = 0; i < count; i++) {
             ingridTopics[i] = buildTopicFrom_topic(topics[i]);
         }
+
         return ingridTopics;
     }
 
     /**
      * @param searchTerm
+     * @param eventType
      * @param atDate
      * @param start
      * @param length
      * @return
      * @throws Exception
      */
-    public Topic[] getEventFromTopic(String searchTerm, String atDate, int start, int length) throws Exception {
+    public Topic[] getEventFromTopic(String searchTerm, String eventType, String atDate, int start, int length)
+            throws Exception {
         Topic[] result = new Topic[0];
+        String[] eventPath = null;
+
+        if (null != eventType) {
+            eventPath = new String[] { "/event/" + eventType };
+        } else {
+            eventPath = new String[] { "/event" };
+        }
 
         _topicMapFragment topicMapFragment = this.fServiceClient.findEvents(searchTerm, true, SearchType.exact,
-                new String[] { "/event" }, FieldsType.allfields, start, atDate);
+                eventPath, FieldsType.allfields, start, atDate);
         _topic[] topic = topicMapFragment.getTopicMap().getTopic();
         if (topic != null) {
             Topic[] topics = copyToTopicArray(topic, length);
             result = topics;
         }
+
         return result;
     }
 
@@ -306,6 +322,7 @@ public class SNSController {
             Topic[] topics = copyToTopicArray(topic, length);
             result = topics;
         }
+
         return result;
     }
 
@@ -324,11 +341,13 @@ public class SNSController {
             Topic[] topics = copyToTopicArray(topic, length);
             result = topics;
         }
+
         return result;
     }
 
     /**
      * @param searchTerm
+     * @param eventType
      * @param fromDate
      * @param toDate
      * @param start
@@ -336,17 +355,25 @@ public class SNSController {
      * @return
      * @throws Exception
      */
-    public Topic[] getEventFromTopic(String searchTerm, String fromDate, String toDate, int start, int length)
-            throws Exception {
+    public Topic[] getEventFromTopic(String searchTerm, String eventType, String fromDate, String toDate, int start,
+            int length) throws Exception {
         Topic[] result = new Topic[0];
+        String[] eventPath = null;
+
+        if (null != eventType) {
+            eventPath = new String[] { "/event/" + eventType };
+        } else {
+            eventPath = new String[] { "/event" };
+        }
 
         _topicMapFragment topicMapFragment = this.fServiceClient.findEvents(searchTerm, true, SearchType.exact,
-                new String[] { "/event" }, FieldsType.allfields, start, fromDate, toDate);
+                eventPath, FieldsType.allfields, start, fromDate, toDate);
         _topic[] topic = topicMapFragment.getTopicMap().getTopic();
         if (topic != null) {
             Topic[] topics = copyToTopicArray(topic, length);
             result = topics;
         }
+
         return result;
     }
 

@@ -93,7 +93,7 @@ public class SnsPlugTest extends TestCase {
      */
     public void testANNIVERSARY() throws Exception {
         SnsPlug plug = new SnsPlug(fPlugDescription);
-        String q = "1976-08-31";
+        String q = "1978-07-30";
         IngridQuery query = QueryStringParser.parse(q);
         query.setDataType(IDataTypes.SNS);
         query.putInt(Topic.REQUEST_TYPE, Topic.ANNIVERSARY_FROM_TOPIC);
@@ -129,11 +129,12 @@ public class SnsPlugTest extends TestCase {
      */
     public void testEVENT_AT() throws Exception {
         SnsPlug plug = new SnsPlug(fPlugDescription);
-        String q = "hochzeit";
+        String q = "ohio";
         IngridQuery query = QueryStringParser.parse(q);
         query.setDataType(IDataTypes.SNS);
         query.putInt(Topic.REQUEST_TYPE, Topic.EVENT_FROM_TOPIC);
-        query.put("t0", "1999-09-09");
+        query.put("eventtype", "industrialAccident");
+        query.put("t0", "1976-08-31");
         IngridHits hits = plug.search(query, 0, 10);
         IngridHit[] hitsArray = hits.getHits();
         assertNotNull(hitsArray);
@@ -152,6 +153,7 @@ public class SnsPlugTest extends TestCase {
         IngridQuery query = QueryStringParser.parse(q);
         query.setDataType(IDataTypes.SNS);
         query.putInt(Topic.REQUEST_TYPE, Topic.EVENT_FROM_TOPIC);
+        query.put("eventtype", "disaster");
         query.put("t1", "1800-09-09");
         query.put("t2", "2005-09-09");
         IngridHits hits = plug.search(query, 0, 10);
@@ -172,6 +174,7 @@ public class SnsPlugTest extends TestCase {
         IngridQuery query = QueryStringParser.parse(q);
         query.setDataType(IDataTypes.SNS);
         query.putInt(Topic.REQUEST_TYPE, Topic.EVENT_FROM_TOPIC);
+        query.put("eventtype", "industrialAccident");
         query.put("t1", "1800-09-09");
         IngridHits hits = plug.search(query, 0, 10);
         IngridHit[] hitsArray = hits.getHits();
@@ -191,6 +194,7 @@ public class SnsPlugTest extends TestCase {
         IngridQuery query = QueryStringParser.parse(q);
         query.setDataType(IDataTypes.SNS);
         query.putInt(Topic.REQUEST_TYPE, Topic.EVENT_FROM_TOPIC);
+        query.put("eventtype", "industrialAccident");
         query.put("t2", "2006-01-01");
         IngridHits hits = plug.search(query, 0, 10);
         IngridHit[] hitsArray = hits.getHits();
@@ -210,6 +214,7 @@ public class SnsPlugTest extends TestCase {
         IngridQuery query = QueryStringParser.parse(q);
         query.setDataType(IDataTypes.SNS);
         query.putInt(Topic.REQUEST_TYPE, Topic.EVENT_FROM_TOPIC);
+        query.put("eventtype", "industrialAccident");
         IngridHits hits = plug.search(query, 0, 10);
         IngridHit[] hitsArray = hits.getHits();
         assertNotNull(hitsArray);
