@@ -98,7 +98,7 @@ public class SnsPlug implements IPlug {
                     break;
                 }
 
-                // FIXME: This is wrong if you want to get a range.
+                // FIXME: I think this is wrong if you want to get a range. But see FIXME above.
                 int max = Math.min(hits.length, length);
                 IngridHit[] finalHits = new IngridHit[max];
                 System.arraycopy(hits, start, finalHits, 0, max);
