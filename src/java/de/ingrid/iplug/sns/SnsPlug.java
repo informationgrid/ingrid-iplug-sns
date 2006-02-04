@@ -119,14 +119,14 @@ public class SnsPlug implements IPlug {
                 if (log.isDebugEnabled()) {
                     log.debug("hits: " + hits.length);
                 }
-                return new IngridHits(this.fPlugId, hits.length, finalHits);
+                return new IngridHits(this.fPlugId, hits.length, finalHits, false);
             } catch (Exception e) {
                 e.printStackTrace();
                 log.error(e.getMessage());
             }
         }
 
-        return new IngridHits(this.fPlugId, 0, new IngridHit[0]);
+        return new IngridHits(this.fPlugId, 0, new IngridHit[0], false);
     }
 
     private String getSearchTerm(IngridQuery query) {
