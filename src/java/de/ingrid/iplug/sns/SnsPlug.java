@@ -11,7 +11,6 @@ import org.apache.commons.logging.LogFactory;
 
 import de.ingrid.iplug.IPlug;
 import de.ingrid.iplug.PlugDescription;
-import de.ingrid.iplug.sns.utils.DetailedTopic;
 import de.ingrid.iplug.sns.utils.Topic;
 import de.ingrid.utils.IngridHit;
 import de.ingrid.utils.IngridHitDetail;
@@ -119,6 +118,13 @@ public class SnsPlug implements IPlug {
                 if (log.isDebugEnabled()) {
                     log.debug("hits: " + hits.length);
                 }
+                // lets set the plugId;
+                int count = finalHits.length;
+                for (int i = 0; i < count; i++) {
+                    IngridHit hit = finalHits[i];
+                    hit.setPlugId(this.fPlugId);
+                }
+                
                 return new IngridHits(this.fPlugId, hits.length, finalHits, false);
             } catch (Exception e) {
                 e.printStackTrace();
