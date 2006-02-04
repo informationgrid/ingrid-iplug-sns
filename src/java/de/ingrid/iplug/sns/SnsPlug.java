@@ -123,7 +123,7 @@ public class SnsPlug implements IPlug {
                 for (int i = 0; i < count; i++) {
                     IngridHit hit = finalHits[i];
                     hit.setPlugId(this.fPlugId);
-                    hit.setDataSourceId(i);
+                    hit.setDocumentId(i);
                 }
 
                 return new IngridHits(this.fPlugId, hits.length, finalHits,
@@ -168,7 +168,7 @@ public class SnsPlug implements IPlug {
             throws Exception {
         IngridHitDetail result = null;
         Topic topic = (Topic) hit;
-        return this.fSnsController.getTopicDetail(topic.getTopicID());
+        return this.fSnsController.getTopicDetail(hit, topic.getTopicID());
 
     }
 }

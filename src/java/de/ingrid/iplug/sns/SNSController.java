@@ -13,6 +13,7 @@ import com.slb.taxi.webservice.xtm.stubs.xtm._topic;
 
 import de.ingrid.iplug.sns.utils.DetailedTopic;
 import de.ingrid.iplug.sns.utils.Topic;
+import de.ingrid.utils.IngridHit;
 
 /**
  * A API to access the main SNS WebService functionality
@@ -111,7 +112,7 @@ public class SNSController {
         for (int i = 0; i < topics.length; i++) {
             System.out.println(topics[i].getInstanceOf()[0].getTopicRef().getHref());
             if (!topics[i].getInstanceOf()[0].getTopicRef().getHref().endsWith(SYNONYM_TYPE)) {
-                returnList.add(buildDetailedTopicFrom_topic(topics[i]));
+                returnList.add(buildDetailedTopicFrom_topic(null, topics[i]));
             }
         }
 
@@ -122,8 +123,8 @@ public class SNSController {
      * @param topic
      * @return a detailed topic from _topic
      */
-    private synchronized DetailedTopic buildDetailedTopicFrom_topic(_topic topic) {
-        DetailedTopic metaData = new DetailedTopic(topic.getId(), topic.getBaseName()[0].getBaseNameString().getValue());
+    private synchronized DetailedTopic buildDetailedTopicFrom_topic(IngridHit hit, _topic topic) {
+        DetailedTopic metaData = new DetailedTopic(topic.getId(), topic.getBaseName()[0].getBaseNameString().getValue(), hit);
         pushTimes(metaData, topic);
         if (containsTypes(fAdministrativeTypes, topic.getInstanceOf()[0].getTopicRef().getHref())) {
             metaData.setAdministrativeID(topic.getId());
@@ -166,7 +167,7 @@ public class SNSController {
      * @return a ingrid topic from a _topic
      */
     private synchronized Topic buildTopicFrom_topic(_topic topic) {
-        return new Topic(topic.getId(), topic.getBaseName()[0].getBaseNameString().getValue());
+        return new Topic(topic.getId(), topic.getBaseName()[0].getBaseNameString().getValue(), null);
     }
 
     /**
@@ -379,18 +380,18 @@ public class SNSController {
     }
 
     /**
+     * @param hit 
      * @param topicID
      * @return
      * @throws Exception
      */
-    public DetailedTopic getTopicDetail(String topicID) throws Exception {
+    public DetailedTopic getTopicDetail(IngridHit hit, String topicID) throws Exception {
         DetailedTopic result = null;
 
         _topicMapFragment mapFragment = this.fServiceClient.getPSI(topicID, 0);
         _topic[] topics = mapFragment.getTopicMap().getTopic();
         if (topics.length == 1) {
-            DetailedTopic topic = buildDetailedTopicFrom_topic(topics[0]);
-            result = topic;
+            result = buildDetailedTopicFrom_topic(hit, topics[0]);
         }
 
         return result;
