@@ -124,14 +124,17 @@ public class SnsPlug implements IPlug {
                     IngridHit hit = finalHits[i];
                     hit.setPlugId(this.fPlugId);
                 }
-                
-                return new IngridHits(this.fPlugId, hits.length, finalHits, false);
+
+                return new IngridHits(this.fPlugId, hits.length, finalHits,
+                        false);
             } catch (Exception e) {
                 e.printStackTrace();
                 log.error(e.getMessage());
             }
         }
-
+        if (log.isDebugEnabled()) {
+            log.debug("not correct or unsetted datatype");
+        }
         return new IngridHits(this.fPlugId, 0, new IngridHit[0], false);
     }
 
