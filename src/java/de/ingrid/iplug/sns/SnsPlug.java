@@ -118,11 +118,12 @@ public class SnsPlug implements IPlug {
                 if (log.isDebugEnabled()) {
                     log.debug("hits: " + hits.length);
                 }
-                // lets set the plugId;
+                // lets set the plugId and documentId;
                 int count = finalHits.length;
                 for (int i = 0; i < count; i++) {
                     IngridHit hit = finalHits[i];
                     hit.setPlugId(this.fPlugId);
+                    hit.setDataSourceId(i);
                 }
 
                 return new IngridHits(this.fPlugId, hits.length, finalHits,
