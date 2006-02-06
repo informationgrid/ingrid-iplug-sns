@@ -120,8 +120,9 @@ public class SNSController {
     }
 
     /**
+     * @param hit
      * @param topic
-     * @return a detailed topic from _topic
+     * @return A detailed topic from _topic.
      */
     private synchronized DetailedTopic buildDetailedTopicFrom_topic(IngridHit hit, _topic topic) {
         DetailedTopic metaData = new DetailedTopic(topic.getId(),
@@ -311,9 +312,11 @@ public class SNSController {
     }
 
     /**
+     * Returns all similar terms to a term.
+     * 
      * @param searchTerm
      * @param length
-     * @return
+     * @return Topics to similar terms.
      * @throws Exception
      */
     public Topic[] getSimilarTermsFromTopic(String searchTerm, int length) throws Exception {
@@ -321,9 +324,11 @@ public class SNSController {
     }
 
     /**
+     * Returns all similar terms to an array of terms.
+     * 
      * @param searchTerm
      * @param length
-     * @return
+     * @return Topics to similar terms.
      * @throws Exception
      */
     public Topic[] getSimilarTermsFromTopic(String[] searchTerm, int length) throws Exception {
@@ -340,9 +345,11 @@ public class SNSController {
     }
 
     /**
+     * Returns all anniversaries to a date.
+     * 
      * @param searchTerm
      * @param length
-     * @return
+     * @return Topics to an anniversary.
      * @throws Exception
      */
     public Topic[] getAnniversaryFromTopic(String searchTerm, int length) throws Exception {
@@ -359,13 +366,15 @@ public class SNSController {
     }
 
     /**
+     * Returns all events between two dates.
+     * 
      * @param searchTerm
      * @param eventType
      * @param fromDate
      * @param toDate
      * @param start
      * @param length
-     * @return
+     * @return Topics to an event.
      * @throws Exception
      */
     public Topic[] getEventFromTopic(String searchTerm, String eventType, String fromDate, String toDate, int start,
@@ -393,7 +402,7 @@ public class SNSController {
     /**
      * @param hit
      * @param topicID
-     * @return
+     * @return A detailed topic.
      * @throws Exception
      */
     public DetailedTopic getTopicDetail(IngridHit hit, String topicID) throws Exception {
