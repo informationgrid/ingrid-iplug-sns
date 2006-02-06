@@ -79,7 +79,7 @@ public class SNSClient {
     }
 
     /**
-     * Sends a findTopics request by using the underlaying webservice client.<br>
+     * Sends a findTopics request by using the underlying webservice client.<br>
      * All parameters will passed to the _findTopics request object.
      * 
      * @param queryTerm
