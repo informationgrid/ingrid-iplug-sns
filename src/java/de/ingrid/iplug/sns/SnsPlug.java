@@ -52,8 +52,7 @@ public class SnsPlug implements IPlug {
     }
 
     /**
-     * @see de.ingrid.iplug.IPlug#search(de.ingrid.utils.query.IngridQuery, int,
-     *      int)
+     * @see de.ingrid.iplug.IPlug#search(de.ingrid.utils.query.IngridQuery, int, int)
      */
     public IngridHits search(IngridQuery query, int start, int length) {
 
@@ -61,8 +60,7 @@ public class SnsPlug implements IPlug {
             log.debug("incomming query : " + query.toString());
         }
 
-        if (query.getDataType() != null
-                && query.getDataType().equals(IDataTypes.SNS)) {
+        if (query.getDataType() != null && query.getDataType().equals(IDataTypes.SNS)) {
             Topic[] hits = new Topic[0];
             int type = query.getInt(Topic.REQUEST_TYPE);
 
@@ -71,24 +69,19 @@ public class SnsPlug implements IPlug {
             try {
                 switch (type) {
                 case Topic.TOPIC_FROM_TERM:
-                    hits = this.fSnsController.getTopicsForTerm(
-                            getSearchTerm(query), start, length);
+                    hits = this.fSnsController.getTopicsForTerm(getSearchTerm(query), start, length);
                     break;
                 case Topic.TOPIC_FROM_TEXT:
-                    hits = this.fSnsController.getTopicsForText(
-                            getSearchTerm(query), this.fMaximalAnalyzedWord);
+                    hits = this.fSnsController.getTopicsForText(getSearchTerm(query), this.fMaximalAnalyzedWord);
                     break;
                 case Topic.TOPIC_FROM_TOPIC:
-                    hits = this.fSnsController.getTopicsForTopic(
-                            getSearchTerm(query), length);
+                    hits = this.fSnsController.getTopicsForTopic(getSearchTerm(query), length);
                     break;
                 case Topic.ANNIVERSARY_FROM_TOPIC:
-                    hits = this.fSnsController.getAnniversaryFromTopic(
-                            getSearchTerm(query), length);
+                    hits = this.fSnsController.getAnniversaryFromTopic(getSearchTerm(query), length);
                     break;
                 case Topic.SIMILARTERMS_FROM_TOPIC:
-                    hits = this.fSnsController.getSimilarTermsFromTopic(
-                            getSearchTerm(query), length);
+                    hits = this.fSnsController.getSimilarTermsFromTopic(getSearchTerm(query), length);
                     break;
                 case Topic.EVENT_FROM_TOPIC:
                     final String eventType = (String) query.get("eventtype");
@@ -96,13 +89,11 @@ public class SnsPlug implements IPlug {
                     final String fromDate = (String) query.get("t1");
                     final String toDate = (String) query.get("t2");
                     if (null != atDate) {
-                        hits = this.fSnsController.getEventFromTopic(
-                                getSearchTerm(query), eventType, atDate, start,
+                        hits = this.fSnsController.getEventFromTopic(getSearchTerm(query), eventType, atDate, start,
                                 length);
                     } else {
-                        hits = this.fSnsController.getEventFromTopic(
-                                getSearchTerm(query), eventType, fromDate,
-                                toDate, start, length);
+                        hits = this.fSnsController.getEventFromTopic(getSearchTerm(query), eventType, fromDate, toDate,
+                                start, length);
                     }
                     break;
                 default:
@@ -126,11 +117,9 @@ public class SnsPlug implements IPlug {
                     hit.setDocumentId(i);
                 }
 
-                return new IngridHits(this.fPlugId, hits.length, finalHits,
-                        false);
+                return new IngridHits(this.fPlugId, hits.length, finalHits, false);
             } catch (Exception e) {
-                e.printStackTrace();
-                log.error(e.getMessage());
+                log.error(e.getMessage(), e);
             }
         }
         if (log.isDebugEnabled()) {
@@ -142,14 +131,14 @@ public class SnsPlug implements IPlug {
     private String getSearchTerm(IngridQuery query) {
         TermQuery[] terms = query.getTerms();
         if (terms.length > 1) {
-            throw new IllegalArgumentException(
-                    "only one term per query is allowed");
+            throw new IllegalArgumentException("only one term per query is allowed");
         }
 
         String searchTerm = "";
         if (terms.length > 0) {
             searchTerm = terms[0].getTerm();
         }
+
         return searchTerm;
     }
 
@@ -158,17 +147,13 @@ public class SnsPlug implements IPlug {
         this.fUserName = (String) plugDescription.get("username");
         this.fPassWord = (String) plugDescription.get("password");
         this.fLanguage = (String) plugDescription.get("language");
-        this.fMaximalAnalyzedWord = plugDescription
-                .getInt("maxWordForAnalyzing");
-        this.fSnsController = new SNSController(new SNSClient(this.fUserName,
-                this.fPassWord, this.fLanguage));
+        this.fMaximalAnalyzedWord = plugDescription.getInt("maxWordForAnalyzing");
+        this.fSnsController = new SNSController(new SNSClient(this.fUserName, this.fPassWord, this.fLanguage));
     }
 
-    public IngridHitDetail getDetails(IngridHit hit, IngridQuery query)
-            throws Exception {
-        IngridHitDetail result = null;
+    public IngridHitDetail getDetails(IngridHit hit, IngridQuery query) throws Exception {
         Topic topic = (Topic) hit;
-        return this.fSnsController.getTopicDetail(hit, topic.getTopicID());
 
+        return this.fSnsController.getTopicDetail(hit, topic.getTopicID());
     }
 }

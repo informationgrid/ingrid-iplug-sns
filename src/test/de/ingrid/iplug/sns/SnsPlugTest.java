@@ -22,6 +22,7 @@ import de.ingrid.utils.queryparser.QueryStringParser;
  */
 public class SnsPlugTest extends TestCase {
     private static PlugDescription fPlugDescription;
+
     static {
         fPlugDescription = new PlugDescription();
         fPlugDescription.setPlugId("aPlugId");
@@ -160,7 +161,7 @@ public class SnsPlugTest extends TestCase {
         assertNotNull(hitsArray);
         assertEquals(0, hitsArray.length);
     }
-    
+
     /**
      * @throws Exception
      */
