@@ -124,7 +124,8 @@ public class SNSController {
      * @return a detailed topic from _topic
      */
     private synchronized DetailedTopic buildDetailedTopicFrom_topic(IngridHit hit, _topic topic) {
-        DetailedTopic metaData = new DetailedTopic(topic.getId(), topic.getBaseName()[0].getBaseNameString().getValue(), hit);
+        DetailedTopic metaData = new DetailedTopic(topic.getId(),
+                topic.getBaseName()[0].getBaseNameString().getValue(), hit);
         pushTimes(metaData, topic);
         if (containsTypes(fAdministrativeTypes, topic.getInstanceOf()[0].getTopicRef().getHref())) {
             metaData.setAdministrativeID(topic.getId());
@@ -316,9 +317,19 @@ public class SNSController {
      * @throws Exception
      */
     public Topic[] getSimilarTermsFromTopic(String searchTerm, int length) throws Exception {
+        return getSimilarTermsFromTopic(new String[] { searchTerm }, length);
+    }
+
+    /**
+     * @param searchTerm
+     * @param length
+     * @return
+     * @throws Exception
+     */
+    public Topic[] getSimilarTermsFromTopic(String[] searchTerm, int length) throws Exception {
         Topic[] result = new Topic[0];
 
-        _topicMapFragment topicMapFragment = this.fServiceClient.getSimilarTerms(true, new String[] { searchTerm });
+        _topicMapFragment topicMapFragment = this.fServiceClient.getSimilarTerms(true, searchTerm);
         _topic[] topic = topicMapFragment.getTopicMap().getTopic();
         if (topic != null) {
             Topic[] topics = copyToTopicArray(topic, length);
@@ -380,7 +391,7 @@ public class SNSController {
     }
 
     /**
-     * @param hit 
+     * @param hit
      * @param topicID
      * @return
      * @throws Exception
