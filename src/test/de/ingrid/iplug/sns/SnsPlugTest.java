@@ -12,6 +12,7 @@ import de.ingrid.iplug.sns.utils.DetailedTopic;
 import de.ingrid.iplug.sns.utils.Topic;
 import de.ingrid.utils.IngridHit;
 import de.ingrid.utils.IngridHits;
+import de.ingrid.utils.query.FieldQuery;
 import de.ingrid.utils.query.IngridQuery;
 import de.ingrid.utils.query.TermQuery;
 import de.ingrid.utils.queryparser.IDataTypes;
@@ -39,7 +40,7 @@ public class SnsPlugTest extends TestCase {
         SnsPlug plug = new SnsPlug(fPlugDescription);
         String q = "Wasser";
         IngridQuery query = QueryStringParser.parse(q);
-        query.setDataType(IDataTypes.SNS);
+        query.addField(new FieldQuery(true, false, "datatype", IDataTypes.SNS));
         query.putInt(Topic.REQUEST_TYPE, Topic.TOPIC_FROM_TERM);
         IngridHits hits = plug.search(query, 0, 10);
         IngridHit[] hitsArray = hits.getHits();
@@ -59,8 +60,8 @@ public class SnsPlugTest extends TestCase {
         String q = "\"Tschernobyl liegt in Halle gefunden\"";
         // IngridQuery query = QueryStringParser.parse(q);
         IngridQuery query = new IngridQuery();
-        query.addTerm(new TermQuery(IngridQuery.AND, q));
-        query.setDataType(IDataTypes.SNS);
+        query.addTerm(new TermQuery(true, false, q));
+        query.addField(new FieldQuery(true, false, "datatype", IDataTypes.SNS));
         query.putInt(Topic.REQUEST_TYPE, Topic.TOPIC_FROM_TEXT);
         IngridHits hits = plug.search(query, 0, 10);
         IngridHit[] hitsArray = hits.getHits();
@@ -78,7 +79,7 @@ public class SnsPlugTest extends TestCase {
         SnsPlug plug = new SnsPlug(fPlugDescription);
         String q = "uba_thes_500855";
         IngridQuery query = QueryStringParser.parse(q);
-        query.setDataType(IDataTypes.SNS);
+        query.addField(new FieldQuery(true, false, "datatype", IDataTypes.SNS));
         query.putInt(Topic.REQUEST_TYPE, Topic.TOPIC_FROM_TOPIC);
         IngridHits hits = plug.search(query, 0, 10);
         IngridHit[] hitsArray = hits.getHits();
@@ -96,7 +97,7 @@ public class SnsPlugTest extends TestCase {
         SnsPlug plug = new SnsPlug(fPlugDescription);
         String q = "1978-07-30";
         IngridQuery query = QueryStringParser.parse(q);
-        query.setDataType(IDataTypes.SNS);
+        query.addField(new FieldQuery(true, false, "datatype", IDataTypes.SNS));
         query.putInt(Topic.REQUEST_TYPE, Topic.ANNIVERSARY_FROM_TOPIC);
         IngridHits hits = plug.search(query, 0, 10);
         IngridHit[] hitsArray = hits.getHits();
@@ -114,7 +115,7 @@ public class SnsPlugTest extends TestCase {
         SnsPlug plug = new SnsPlug(fPlugDescription);
         String q = "blau";
         IngridQuery query = QueryStringParser.parse(q);
-        query.setDataType(IDataTypes.SNS);
+        query.addField(new FieldQuery(true, false, "datatype", IDataTypes.SNS));
         query.putInt(Topic.REQUEST_TYPE, Topic.SIMILARTERMS_FROM_TOPIC);
         IngridHits hits = plug.search(query, 0, 10);
         IngridHit[] hitsArray = hits.getHits();
@@ -132,7 +133,7 @@ public class SnsPlugTest extends TestCase {
         SnsPlug plug = new SnsPlug(fPlugDescription);
         String q = "Tschernobyl";
         IngridQuery query = QueryStringParser.parse(q);
-        query.setDataType(IDataTypes.SNS);
+        query.addField(new FieldQuery(true, false, "datatype", IDataTypes.SNS));
         query.putInt(Topic.REQUEST_TYPE, Topic.EVENT_FROM_TOPIC);
         query.put("eventtype", "industrialAccident");
         query.put("t0", "1999-03-08");
@@ -152,7 +153,7 @@ public class SnsPlugTest extends TestCase {
         SnsPlug plug = new SnsPlug(fPlugDescription);
         String q = "Tschernobyl";
         IngridQuery query = QueryStringParser.parse(q);
-        query.setDataType(IDataTypes.SNS);
+        query.addField(new FieldQuery(true, false, "datatype", IDataTypes.SNS));
         query.putInt(Topic.REQUEST_TYPE, Topic.EVENT_FROM_TOPIC);
         query.put("eventtype", "marineAccident");
         query.put("t0", "1999-03-08");
@@ -169,7 +170,7 @@ public class SnsPlugTest extends TestCase {
         SnsPlug plug = new SnsPlug(fPlugDescription);
         String q = "Tschernobyl";
         IngridQuery query = QueryStringParser.parse(q);
-        query.setDataType(IDataTypes.SNS);
+        query.addField(new FieldQuery(true, false, "datatype", IDataTypes.SNS));
         query.putInt(Topic.REQUEST_TYPE, Topic.EVENT_FROM_TOPIC);
         query.put("eventtype", "industrialAccident");
         query.put("t1", "1800-09-09");
@@ -190,7 +191,7 @@ public class SnsPlugTest extends TestCase {
         SnsPlug plug = new SnsPlug(fPlugDescription);
         String q = "Tschernobyl";
         IngridQuery query = QueryStringParser.parse(q);
-        query.setDataType(IDataTypes.SNS);
+        query.addField(new FieldQuery(true, false, "datatype", IDataTypes.SNS));
         query.putInt(Topic.REQUEST_TYPE, Topic.EVENT_FROM_TOPIC);
         query.put("eventtype", "industrialAccident");
         query.put("t1", "1800-09-09");
@@ -210,7 +211,7 @@ public class SnsPlugTest extends TestCase {
         SnsPlug plug = new SnsPlug(fPlugDescription);
         String q = "Tschernobyl";
         IngridQuery query = QueryStringParser.parse(q);
-        query.setDataType(IDataTypes.SNS);
+        query.addField(new FieldQuery(true, false, "datatype", IDataTypes.SNS));
         query.putInt(Topic.REQUEST_TYPE, Topic.EVENT_FROM_TOPIC);
         query.put("eventtype", "industrialAccident");
         query.put("t2", "2006-01-01");
@@ -230,7 +231,7 @@ public class SnsPlugTest extends TestCase {
         SnsPlug plug = new SnsPlug(fPlugDescription);
         String q = "tschernobyl";
         IngridQuery query = QueryStringParser.parse(q);
-        query.setDataType(IDataTypes.SNS);
+        query.addField(new FieldQuery(true, false, "datatype", IDataTypes.SNS));
         query.putInt(Topic.REQUEST_TYPE, Topic.EVENT_FROM_TOPIC);
         query.put("eventtype", "industrialAccident");
         IngridHits hits = plug.search(query, 0, 10);
