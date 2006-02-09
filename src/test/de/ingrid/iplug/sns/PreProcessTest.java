@@ -26,12 +26,12 @@ public class PreProcessTest extends TestCase {
      * 
      */
     public void testProcess() throws Exception {
-        IngridQuery query = new IngridQuery(IngridQuery.TERM, 1, "blabla");
-        query.addTerm(new TermQuery(1, "blau"));
-        query.addTerm(new TermQuery(1, "grün"));
-        query.addTerm(new TermQuery(1, "rot"));
-        query.addTerm(new TermQuery(1, "schwarz"));
-        query.addTerm(new TermQuery(1, "gelb"));
+        IngridQuery query = new IngridQuery(true, false,IngridQuery.TERM, "blabla");
+        query.addTerm(new TermQuery(true, false, "blau"));
+        query.addTerm(new TermQuery(true, false, "grün"));
+        query.addTerm(new TermQuery(true, false, "rot"));
+        query.addTerm(new TermQuery(true, false, "schwarz"));
+        query.addTerm(new TermQuery(true, false, "gelb"));
 
         this.fPreProcess.process(query);
 

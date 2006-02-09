@@ -15,6 +15,7 @@ import de.ingrid.iplug.sns.utils.Topic;
 import de.ingrid.utils.IngridHit;
 import de.ingrid.utils.IngridHitDetail;
 import de.ingrid.utils.IngridHits;
+import de.ingrid.utils.query.FieldQuery;
 import de.ingrid.utils.query.IngridQuery;
 import de.ingrid.utils.query.TermQuery;
 import de.ingrid.utils.queryparser.IDataTypes;
@@ -52,7 +53,8 @@ public class SnsPlug implements IPlug {
     }
 
     /**
-     * @see de.ingrid.iplug.IPlug#search(de.ingrid.utils.query.IngridQuery, int, int)
+     * @see de.ingrid.iplug.IPlug#search(de.ingrid.utils.query.IngridQuery, int,
+     *      int)
      */
     public IngridHits search(IngridQuery query, int start, int length) {
 
@@ -60,7 +62,7 @@ public class SnsPlug implements IPlug {
             log.debug("incomming query : " + query.toString());
         }
 
-        if (query.getDataType() != null && query.getDataType().equals(IDataTypes.SNS)) {
+        if (containsSNSDataType(query.getDataTypes())) {
             Topic[] hits = new Topic[0];
             int type = query.getInt(Topic.REQUEST_TYPE);
 
@@ -125,7 +127,18 @@ public class SnsPlug implements IPlug {
         if (log.isDebugEnabled()) {
             log.debug("not correct or unsetted datatype");
         }
-        return new IngridHits(this.fPlugId, 0, new IngridHit[0], false);
+        return new IngridHits(this.fPlugId, 0, new IngridHit[0], true);
+    }
+
+    private boolean containsSNSDataType(FieldQuery[] dataTypes) {
+        int count = dataTypes.length;
+        for (int i = 0; i < count; i++) {
+            FieldQuery query = dataTypes[i];
+            if (query.getFieldValue().equals(IDataTypes.SNS) && !query.isProhibited()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private String getSearchTerm(IngridQuery query) {
