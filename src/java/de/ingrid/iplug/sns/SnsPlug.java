@@ -164,7 +164,7 @@ public class SnsPlug implements IPlug {
         this.fSnsController = new SNSController(new SNSClient(this.fUserName, this.fPassWord, this.fLanguage));
     }
 
-    public IngridHitDetail getDetails(IngridHit hit, IngridQuery query) throws Exception {
+    public IngridHitDetail getDetail(IngridHit hit, IngridQuery query) throws Exception {
         Topic topic = (Topic) hit;
 
         return this.fSnsController.getTopicDetail(hit, topic.getTopicID());
