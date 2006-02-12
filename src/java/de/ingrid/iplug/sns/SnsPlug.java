@@ -9,12 +9,12 @@ package de.ingrid.iplug.sns;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import de.ingrid.iplug.IPlug;
-import de.ingrid.iplug.PlugDescription;
 import de.ingrid.iplug.sns.utils.Topic;
+import de.ingrid.utils.IPlug;
 import de.ingrid.utils.IngridHit;
 import de.ingrid.utils.IngridHitDetail;
 import de.ingrid.utils.IngridHits;
+import de.ingrid.utils.PlugDescription;
 import de.ingrid.utils.query.FieldQuery;
 import de.ingrid.utils.query.IngridQuery;
 import de.ingrid.utils.query.TermQuery;
@@ -53,7 +53,7 @@ public class SnsPlug implements IPlug {
     }
 
     /**
-     * @see de.ingrid.iplug.IPlug#search(de.ingrid.utils.query.IngridQuery, int,
+     * @see de.ingrid.utils.IPlug#search(de.ingrid.utils.query.IngridQuery, int,
      *      int)
      */
     public IngridHits search(IngridQuery query, int start, int length) {
@@ -164,9 +164,21 @@ public class SnsPlug implements IPlug {
         this.fSnsController = new SNSController(new SNSClient(this.fUserName, this.fPassWord, this.fLanguage));
     }
 
-    public IngridHitDetail getDetail(IngridHit hit, IngridQuery query) throws Exception {
-        Topic topic = (Topic) hit;
-
-        return this.fSnsController.getTopicDetail(hit, topic.getTopicID());
+    /* (non-Javadoc)
+     * @see de.ingrid.utils.IDetailer#getDetail(de.ingrid.utils.IngridHit, de.ingrid.utils.query.IngridQuery, java.lang.String[])
+     */
+    public IngridHitDetail getDetail(IngridHit hit, IngridQuery query, String[] fields) throws Exception {
+        return this.fSnsController.getTopicDetail(hit);
+    }
+    
+    /* (non-Javadoc)
+     * @see de.ingrid.utils.IDetailer#getDetails(de.ingrid.utils.IngridHit[], de.ingrid.utils.query.IngridQuery, java.lang.String[])
+     */
+    public IngridHitDetail[] getDetails(IngridHit[] hits, IngridQuery query, String[] requestedFields) throws Exception {
+        IngridHitDetail[] details = new IngridHitDetail[hits.length];
+        for (int i = 0; i < hits.length; i++) {
+            details[i] = getDetail(hits[i], query, requestedFields);
+        }
+        return details;
     }
 }

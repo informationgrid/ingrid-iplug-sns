@@ -405,7 +405,9 @@ public class SNSController {
      * @return A detailed topic.
      * @throws Exception
      */
-    public DetailedTopic getTopicDetail(IngridHit hit, String topicID) throws Exception {
+    public DetailedTopic getTopicDetail(IngridHit hit) throws Exception {
+        Topic topic = (Topic) hit;
+        String topicID =  topic.getTopicID();
         DetailedTopic result = null;
 
         _topicMapFragment mapFragment = this.fServiceClient.getPSI(topicID, 0);
