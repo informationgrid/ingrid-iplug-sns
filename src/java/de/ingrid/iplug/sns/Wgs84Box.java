@@ -11,13 +11,13 @@ public class Wgs84Box {
 
     private String fTopicName;
 
-    private String fX1;
+    private double fX1;
 
-    private String fX2;
+    private double fX2;
 
-    private String fY1;
+    private double fY1;
 
-    private String fY2;
+    private double fY2;
 
     /**
      * @param baseName
@@ -26,7 +26,7 @@ public class Wgs84Box {
      * @param y1
      * @param y2
      */
-    public Wgs84Box(String baseName, String x1, String x2, String y1, String y2) {
+    public Wgs84Box(String baseName, double x1, double x2, double y1, double y2) {
         this.fTopicName = baseName;
         this.fX1 = x1;
         this.fX2 = x2;
@@ -48,56 +48,56 @@ public class Wgs84Box {
     /**
      * @return
      */
-    public String getX1() {
+    public double getX1() {
         return this.fX1;
     }
 
     /**
      * @param x1
      */
-    public void setX1(String x1) {
+    public void setX1(double x1) {
         this.fX1 = x1;
     }
 
     /**
      * @return
      */
-    public String getX2() {
+    public double getX2() {
         return this.fX2;
     }
 
     /**
      * @param x2
      */
-    public void setX2(String x2) {
+    public void setX2(double x2) {
         this.fX2 = x2;
     }
 
     /**
      * @return
      */
-    public String getY1() {
+    public double getY1() {
         return this.fY1;
     }
 
     /**
      * @param y1
      */
-    public void setY1(String y1) {
+    public void setY1(double y1) {
         this.fY1 = y1;
     }
 
     /**
      * @return
      */
-    public String getY2() {
+    public double getY2() {
         return this.fY2;
     }
 
     /**
      * @param y2
      */
-    public void setY2(String y2) {
+    public void setY2(double y2) {
         this.fY2 = y2;
     }
 }

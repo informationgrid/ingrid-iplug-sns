@@ -4,7 +4,9 @@
 
 package de.ingrid.iplug.sns;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -92,20 +94,30 @@ public class SNSIndexingInterface {
                     if (data != null) {
                         final String topicRef = occ[k].getInstanceOf().getTopicRef().getHref();
                         if (topicRef.endsWith("temporalFromOcc")) {
-                            temporal.setFrom(data.getValue());
+                            final String date = data.getValue();
+                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd");
+                            Date javaDate = sdf.parse(date);
+                            temporal.setFrom(javaDate);
                         } else if (topicRef.endsWith("temporalAtOcc")) {
-                            temporal.setAt(data.getValue());
+                            new Date();
+                            final String date = data.getValue();
+                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd");
+                            Date javaDate = sdf.parse(date);
+                            temporal.setAt(javaDate);
                         } else if (topicRef.endsWith("temporalToOcc")) {
-                            temporal.setTo(data.getValue());
+                            final String date = data.getValue();
+                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd");
+                            Date javaDate = sdf.parse(date);
+                            temporal.setTo(javaDate);
                         } else if (topicRef.endsWith("wgs84BoxOcc")) {
                             final String coords = data.getValue();
 
                             Matcher m = this.fCoordPattern.matcher(coords);
                             if (m.matches() && m.groupCount() == 4) {
-                                final String x1 = m.group(1);
-                                final String x2 = m.group(2);
-                                final String y1 = m.group(3);
-                                final String y2 = m.group(4);
+                                final double x1 = new Double(m.group(1)).doubleValue();
+                                final double x2 = new Double(m.group(2)).doubleValue();
+                                final double y1 = new Double(m.group(3)).doubleValue();
+                                final double y2 = new Double(m.group(4)).doubleValue();
                                 this.fWgs84Box.add(new Wgs84Box(baseName, x1, x2, y1, y2));
                             }
                         }

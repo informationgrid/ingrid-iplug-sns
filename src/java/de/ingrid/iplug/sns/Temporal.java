@@ -4,57 +4,59 @@
 
 package de.ingrid.iplug.sns;
 
+import java.util.Date;
+
 /**
  * 
  */
 public class Temporal {
 
-    private String fFrom = null;
+    private Date fFrom = null;
 
-    private String fAt = null;
+    private Date fAt = null;
 
-    private String fTo = null;
+    private Date fTo = null;
 
     /**
      * @return
      */
-    public String getAt() {
+    public Date getAt() {
         return this.fAt;
     }
 
     /**
      * @return
      */
-    public String getFrom() {
+    public Date getFrom() {
         return this.fFrom;
     }
 
     /**
      * @return
      */
-    public String getTo() {
+    public Date getTo() {
         return this.fTo;
     }
 
     /**
-     * @param value
+     * @param javaDate
      */
-    public void setFrom(String value) {
-        this.fFrom = value;
+    public void setFrom(Date javaDate) {
+        this.fFrom = javaDate;
     }
 
     /**
-     * @param value
+     * @param javaDate
      */
-    public void setTo(String value) {
-        this.fTo = value;
+    public void setTo(Date javaDate) {
+        this.fTo = javaDate;
     }
 
     /**
-     * @param value
+     * @param javaDate
      */
-    public void setAt(String value) {
-        this.fAt = value;
+    public void setAt(Date javaDate) {
+        this.fAt = javaDate;
     }
 
     /**
