@@ -83,15 +83,20 @@ public class SNSIndexingInterface {
     private void getReferences() throws Exception {
         for (int i = 0; i < this.fTopics.length; i++) {
             _occurrence[] occ = this.fTopics[i].getOccurrence();
-            final String baseName = this.fTopics[i].getBaseName(0).getBaseNameString().getValue();
             if (null != occ) {
+                final String baseName = this.fTopics[i].getBaseName(0).getBaseNameString().getValue();
+                final Temporal temporal = new Temporal();
+
                 for (int k = 0; k < occ.length; k++) {
                     final _resourceData data = occ[k].getResourceData();
                     if (data != null) {
                         final String topicRef = occ[k].getInstanceOf().getTopicRef().getHref();
-                        if (topicRef.endsWith("temporalAtOcc") || topicRef.endsWith("temporalFromOcc")
-                                || topicRef.endsWith("temporalToOcc")) {
-                            this.fTemporal.add(data.getValue());
+                        if (topicRef.endsWith("temporalFromOcc")) {
+                            temporal.setFrom(data.getValue());
+                        } else if (topicRef.endsWith("temporalAtOcc")) {
+                            temporal.setAt(data.getValue());
+                        } else if (topicRef.endsWith("temporalToOcc")) {
+                            temporal.setTo(data.getValue());
                         } else if (topicRef.endsWith("wgs84BoxOcc")) {
                             final String coords = data.getValue();
 
@@ -106,6 +111,9 @@ public class SNSIndexingInterface {
                         }
                     }
                 }
+                if (!temporal.isEmpty()) {
+                    this.fTemporal.add(temporal);
+                }
             }
         }
     }
@@ -117,12 +125,12 @@ public class SNSIndexingInterface {
      * @throws Exception
      *             If we cannot connect to the sns server.
      */
-    public String[] getReferencesToTime() throws Exception {
+    public Temporal[] getReferencesToTime() throws Exception {
         if (this.fTemporal.isEmpty()) {
             getReferences();
         }
 
-        return (String[]) this.fTemporal.toArray(new String[this.fTemporal.size()]);
+        return (Temporal[]) this.fTemporal.toArray(new Temporal[this.fTemporal.size()]);
     }
 
     /**

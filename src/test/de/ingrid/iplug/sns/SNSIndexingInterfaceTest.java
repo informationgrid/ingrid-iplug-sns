@@ -36,7 +36,7 @@ public class SNSIndexingInterfaceTest extends TestCase {
     public void testGetReferencesToTime() throws Exception {
         this.fSnsInterface.getBuzzwords("Tschernobyl Ohio", 1000);
 
-        final String[] result = this.fSnsInterface.getReferencesToTime();
+        final Temporal[] result = this.fSnsInterface.getReferencesToTime();
         assertNotNull(result);
         assertEquals(3, result.length);
     }
