@@ -23,11 +23,11 @@ public class SNSIndexingInterfaceTest extends TestCase {
      * @throws Exception 
      */
     public void testGetReferencesToSpace() throws Exception {
-        this.fSnsInterface.getBuzzwords("Döllnitz", 1000);
+        this.fSnsInterface.getBuzzwords("Halle", 1000);
 
-        final String[] result = this.fSnsInterface.getReferencesToSpace();
+        final Wgs84Box[] result = this.fSnsInterface.getReferencesToSpace();
         assertNotNull(result);
-        assertEquals(11, result.length);
+        assertEquals(4, result.length);
     }
 
     /**

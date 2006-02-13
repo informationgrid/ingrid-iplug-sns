@@ -5,6 +5,8 @@
 package de.ingrid.iplug.sns;
 
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.slb.taxi.webservice.xtm.stubs._topicMapFragment;
 import com.slb.taxi.webservice.xtm.stubs.xtm._occurrence;
@@ -17,6 +19,8 @@ import com.slb.taxi.webservice.xtm.stubs.xtm._topic;
 public class SNSIndexingInterface {
 
     private SNSClient fSNSClient;
+
+    private final Pattern fCoordPattern = Pattern.compile("^(.*),(.*) (.*),(.*)$");
 
     private _topic[] fTopics = new _topic[0];
 
@@ -41,7 +45,8 @@ public class SNSIndexingInterface {
     }
 
     /**
-     * All buzzwords to the given document.
+     * All buzzwords to the given document. You must call this method first to get results from
+     * <code>getReferencesToTime</code> and <code>getReferencesToSpace</code>.
      * 
      * @param text
      *            The document to analyze.
@@ -77,21 +82,26 @@ public class SNSIndexingInterface {
 
     private void getReferences() throws Exception {
         for (int i = 0; i < this.fTopics.length; i++) {
-            final _topicMapFragment mapFragment = this.fSNSClient.getPSI(this.fTopics[i].getId(), 3);
-            _topic[] topics = mapFragment.getTopicMap().getTopic();
+            _occurrence[] occ = this.fTopics[i].getOccurrence();
+            final String baseName = this.fTopics[i].getBaseName(0).getBaseNameString().getValue();
+            if (null != occ) {
+                for (int k = 0; k < occ.length; k++) {
+                    final _resourceData data = occ[k].getResourceData();
+                    if (data != null) {
+                        final String topicRef = occ[k].getInstanceOf().getTopicRef().getHref();
+                        if (topicRef.endsWith("temporalAtOcc") || topicRef.endsWith("temporalFromOcc")
+                                || topicRef.endsWith("temporalToOcc")) {
+                            this.fTemporal.add(data.getValue());
+                        } else if (topicRef.endsWith("wgs84BoxOcc")) {
+                            final String coords = data.getValue();
 
-            for (int j = 0; j < topics.length; j++) {
-                _occurrence[] occ = topics[j].getOccurrence();
-                if (null != occ) {
-                    for (int k = 0; k < occ.length; k++) {
-                        final _resourceData data = occ[k].getResourceData();
-                        if (data != null) {
-                            final String topicRef = occ[k].getInstanceOf().getTopicRef().getHref();
-                            if (topicRef.endsWith("temporalAtOcc") || topicRef.endsWith("temporalFromOcc")
-                                    || topicRef.endsWith("temporalToOcc")) {
-                                this.fTemporal.add(data.getValue());
-                            } else if (topicRef.endsWith("wgs84BoxOcc")) {
-                                this.fWgs84Box.add(data.getValue());
+                            Matcher m = this.fCoordPattern.matcher(coords);
+                            if (m.matches() && m.groupCount() == 4) {
+                                final String x1 = m.group(1);
+                                final String x2 = m.group(2);
+                                final String y1 = m.group(3);
+                                final String y2 = m.group(4);
+                                this.fWgs84Box.add(new Wgs84Box(baseName, x1, x2, y1, y2));
                             }
                         }
                     }
@@ -101,7 +111,7 @@ public class SNSIndexingInterface {
     }
 
     /**
-     * All references to a time.
+     * All time references to a document that is analyzed by <code>getBuzzwords</code>.
      * 
      * @return Array of strings. It is empty if nothing is found.
      * @throws Exception
@@ -111,20 +121,22 @@ public class SNSIndexingInterface {
         if (this.fTemporal.isEmpty()) {
             getReferences();
         }
+
         return (String[]) this.fTemporal.toArray(new String[this.fTemporal.size()]);
     }
 
     /**
-     * All references to a coordinates.
+     * All coordinate references to a document that is analyzed by <code>getBuzzwords</code>.
      * 
      * @return Array of strings. It is empty if nothing is found.
      * @throws Exception
      *             If we cannot connect to the sns server.
      */
-    public String[] getReferencesToSpace() throws Exception {
+    public Wgs84Box[] getReferencesToSpace() throws Exception {
         if (this.fTemporal.isEmpty()) {
             getReferences();
         }
-        return (String[]) this.fWgs84Box.toArray(new String[this.fWgs84Box.size()]);
+
+        return (Wgs84Box[]) this.fWgs84Box.toArray(new Wgs84Box[this.fWgs84Box.size()]);
     }
 }
