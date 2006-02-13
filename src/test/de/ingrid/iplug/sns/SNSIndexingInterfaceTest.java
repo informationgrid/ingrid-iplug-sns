@@ -4,6 +4,10 @@
 
 package de.ingrid.iplug.sns;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import junit.framework.TestCase;
 
 /**
@@ -28,6 +32,12 @@ public class SNSIndexingInterfaceTest extends TestCase {
         final Wgs84Box[] result = this.fSnsInterface.getReferencesToSpace();
         assertNotNull(result);
         assertEquals(4, result.length);
+        
+        System.out.println(result[0].getTopicName());
+        System.out.println(result[0].getX1());
+        System.out.println(result[0].getX2());
+        System.out.println(result[0].getY1());
+        System.out.println(result[0].getY2());
     }
 
     /**
@@ -39,6 +49,7 @@ public class SNSIndexingInterfaceTest extends TestCase {
         final Temporal[] result = this.fSnsInterface.getReferencesToTime();
         assertNotNull(result);
         assertEquals(3, result.length);
+        System.out.println(result[0].getAt());
     }
 
     /**
