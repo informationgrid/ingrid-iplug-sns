@@ -75,7 +75,7 @@ public class SNSIndexingInterface {
     private String[] getBasenames(_topic[] topics) {
         ArrayList result = new ArrayList();
 
-        for (int i = 0; i < topics.length; i++) {
+        for (int i = 0; topics != null && i < topics.length; i++) {
             result.add(topics[i].getBaseName(0).getBaseNameString().getValue());
         }
 
@@ -83,7 +83,7 @@ public class SNSIndexingInterface {
     }
 
     private void getReferences() throws Exception {
-        for (int i = 0; i < this.fTopics.length; i++) {
+        for (int i = 0; this.fTopics != null && i < this.fTopics.length; i++) {
             _occurrence[] occ = this.fTopics[i].getOccurrence();
             if (null != occ) {
                 final String baseName = this.fTopics[i].getBaseName(0).getBaseNameString().getValue();
