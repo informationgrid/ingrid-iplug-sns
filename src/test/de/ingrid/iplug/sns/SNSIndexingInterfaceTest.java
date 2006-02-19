@@ -4,8 +4,6 @@
 
 package de.ingrid.iplug.sns;
 
-import java.util.Date;
-
 import junit.framework.TestCase;
 
 /**

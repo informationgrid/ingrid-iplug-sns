@@ -71,19 +71,19 @@ public class SnsPlug implements IPlug {
             try {
                 switch (type) {
                 case Topic.TOPIC_FROM_TERM:
-                    hits = this.fSnsController.getTopicsForTerm(getSearchTerm(query), start, length);
+                    hits = this.fSnsController.getTopicsForTerm(getSearchTerm(query), start, length, this.fPlugId);
                     break;
                 case Topic.TOPIC_FROM_TEXT:
-                    hits = this.fSnsController.getTopicsForText(getSearchTerm(query), this.fMaximalAnalyzedWord);
+                    hits = this.fSnsController.getTopicsForText(getSearchTerm(query), this.fMaximalAnalyzedWord, this.fPlugId);
                     break;
                 case Topic.TOPIC_FROM_TOPIC:
-                    hits = this.fSnsController.getTopicsForTopic(getSearchTerm(query), length);
+                    hits = this.fSnsController.getTopicsForTopic(getSearchTerm(query), length, this.fPlugId);
                     break;
                 case Topic.ANNIVERSARY_FROM_TOPIC:
-                    hits = this.fSnsController.getAnniversaryFromTopic(getSearchTerm(query), length);
+                    hits = this.fSnsController.getAnniversaryFromTopic(getSearchTerm(query), length, this.fPlugId);
                     break;
                 case Topic.SIMILARTERMS_FROM_TOPIC:
-                    hits = this.fSnsController.getSimilarTermsFromTopic(getSearchTerm(query), length);
+                    hits = this.fSnsController.getSimilarTermsFromTopic(getSearchTerm(query), length, this.fPlugId);
                     break;
                 case Topic.EVENT_FROM_TOPIC:
                     final String eventType = (String) query.get("eventtype");
@@ -92,10 +92,10 @@ public class SnsPlug implements IPlug {
                     final String toDate = (String) query.get("t2");
                     if (null != atDate) {
                         hits = this.fSnsController.getEventFromTopic(getSearchTerm(query), eventType, atDate, start,
-                                length);
+                                length, this.fPlugId);
                     } else {
                         hits = this.fSnsController.getEventFromTopic(getSearchTerm(query), eventType, fromDate, toDate,
-                                start, length);
+                                start, length, this.fPlugId);
                     }
                     break;
                 default:
@@ -110,13 +110,6 @@ public class SnsPlug implements IPlug {
                 System.arraycopy(hits, start, finalHits, 0, max);
                 if (log.isDebugEnabled()) {
                     log.debug("hits: " + hits.length);
-                }
-                // lets set the plugId and documentId;
-                int count = finalHits.length;
-                for (int i = 0; i < count; i++) {
-                    IngridHit hit = finalHits[i];
-                    hit.setPlugId(this.fPlugId);
-                    hit.setDocumentId(i);
                 }
 
                 return new IngridHits(this.fPlugId, hits.length, finalHits, false);

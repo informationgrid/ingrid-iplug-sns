@@ -52,7 +52,7 @@ public class SNSControllerTest extends TestCase {
      */
     public void testTopicsForTerm() throws Exception {
         SNSController controller = new SNSController(fClient);
-        Topic[] topicsForTerm = controller.getTopicsForTerm("Wasser", 0, 1000);
+        Topic[] topicsForTerm = controller.getTopicsForTerm("Wasser", 0, 1000, "aId");
         assertTrue(topicsForTerm.length > 0);
         for (int i = 0; i < topicsForTerm.length; i++) {
             Topic topic = topicsForTerm[i];
@@ -67,9 +67,9 @@ public class SNSControllerTest extends TestCase {
      */
     public void testGetAssociatedTopics() throws Exception {
         SNSController controller = new SNSController(fClient);
-        Topic[] topicsForTerm = controller.getTopicsForTopic("Wasser", 23);
+        Topic[] topicsForTerm = controller.getTopicsForTopic("Wasser", 23, "aId");
         assertNull(topicsForTerm);
-        topicsForTerm = controller.getTopicsForTopic(VALID_TOPIC_ID, 23);
+        topicsForTerm = controller.getTopicsForTopic(VALID_TOPIC_ID, 23,"aId");
         assertTrue(topicsForTerm.length > 0);
         for (int i = 0; i < topicsForTerm.length; i++) {
             Topic topic = topicsForTerm[i];
@@ -85,11 +85,11 @@ public class SNSControllerTest extends TestCase {
     public void testGetDocumentRelatedTopics() throws Exception {
         SNSController controller = new SNSController(fClient);
         String text = "Tschernobyl liegt in Halle gefunden";
-        DetailedTopic[] topics = controller.getTopicsForText(text, 100);
+        DetailedTopic[] topics = controller.getTopicsForText(text, 100, "aPlugId");
         assertNotNull(topics);
 
         text = "yyy xxx zzz";
-        topics = controller.getTopicsForText(text, 100);
+        topics = controller.getTopicsForText(text, 100, "aPlugId");
         assertNotNull(topics);
     }
 }
