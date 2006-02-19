@@ -15,7 +15,7 @@ public class SNSControllerPerformanceTest extends TestCase {
 
     private SNSControllerTest fSNSControllerTest;
 
-    private final int fMaxLoops = 100;
+    private final int fMaxLoops = 20;
 
     /**
      * @see junit.framework.TestCase#setUp()
