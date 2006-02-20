@@ -1,4 +1,4 @@
-<de.ingrid.iplug.PlugDescription>
+<de.ingrid.utils.PlugDescription>
     <int>19</int>
     <string>personPhone</string>
     <string>0345 5 222 702</string>
@@ -38,4 +38,4 @@
     <int>100</int>
     <string>language</string>
     <string>de</string>
-</de.ingrid.iplug.PlugDescription>
+</de.ingrid.utils.PlugDescription>
