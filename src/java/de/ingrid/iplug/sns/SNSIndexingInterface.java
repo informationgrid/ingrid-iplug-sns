@@ -67,7 +67,10 @@ public class SNSIndexingInterface {
         this.fTemporal.clear();
         this.fWgs84Box.clear();
 
-        result = getBasenames(this.fTopics);
+        // FIXME: The doc of the sns lib says it gaves everytime non null back.
+        if (null != this.fTopics) {
+            result = getBasenames(this.fTopics);
+        }
 
         return result;
     }
@@ -75,7 +78,7 @@ public class SNSIndexingInterface {
     private String[] getBasenames(_topic[] topics) {
         ArrayList result = new ArrayList();
 
-        for (int i = 0; topics != null && i < topics.length; i++) {
+        for (int i = 0; i < topics.length; i++) {
             result.add(topics[i].getBaseName(0).getBaseNameString().getValue());
         }
 
@@ -83,48 +86,51 @@ public class SNSIndexingInterface {
     }
 
     private void getReferences() throws Exception {
-        for (int i = 0; this.fTopics != null && i < this.fTopics.length; i++) {
-            _occurrence[] occ = this.fTopics[i].getOccurrence();
-            if (null != occ) {
-                final String baseName = this.fTopics[i].getBaseName(0).getBaseNameString().getValue();
-                final Temporal temporal = new Temporal();
+        // FIXME: The doc of the sns lib says it gaves everytime non null back.
+        if (this.fTopics != null) {
+            for (int i = 0; i < this.fTopics.length; i++) {
+                _occurrence[] occ = this.fTopics[i].getOccurrence();
+                if (null != occ) {
+                    final String baseName = this.fTopics[i].getBaseName(0).getBaseNameString().getValue();
+                    final Temporal temporal = new Temporal();
 
-                for (int k = 0; k < occ.length; k++) {
-                    final _resourceData data = occ[k].getResourceData();
-                    if (data != null) {
-                        final String topicRef = occ[k].getInstanceOf().getTopicRef().getHref();
-                        if (topicRef.endsWith("temporalFromOcc")) {
-                            final String date = data.getValue();
-                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd");
-                            Date javaDate = sdf.parse(date);
-                            temporal.setFrom(javaDate);
-                        } else if (topicRef.endsWith("temporalAtOcc")) {
-                            new Date();
-                            final String date = data.getValue();
-                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd");
-                            Date javaDate = sdf.parse(date);
-                            temporal.setAt(javaDate);
-                        } else if (topicRef.endsWith("temporalToOcc")) {
-                            final String date = data.getValue();
-                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd");
-                            Date javaDate = sdf.parse(date);
-                            temporal.setTo(javaDate);
-                        } else if (topicRef.endsWith("wgs84BoxOcc")) {
-                            final String coords = data.getValue();
+                    for (int k = 0; k < occ.length; k++) {
+                        final _resourceData data = occ[k].getResourceData();
+                        if (data != null) {
+                            final String topicRef = occ[k].getInstanceOf().getTopicRef().getHref();
+                            if (topicRef.endsWith("temporalFromOcc")) {
+                                final String date = data.getValue();
+                                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd");
+                                Date javaDate = sdf.parse(date);
+                                temporal.setFrom(javaDate);
+                            } else if (topicRef.endsWith("temporalAtOcc")) {
+                                new Date();
+                                final String date = data.getValue();
+                                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd");
+                                Date javaDate = sdf.parse(date);
+                                temporal.setAt(javaDate);
+                            } else if (topicRef.endsWith("temporalToOcc")) {
+                                final String date = data.getValue();
+                                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd");
+                                Date javaDate = sdf.parse(date);
+                                temporal.setTo(javaDate);
+                            } else if (topicRef.endsWith("wgs84BoxOcc")) {
+                                final String coords = data.getValue();
 
-                            Matcher m = this.fCoordPattern.matcher(coords);
-                            if (m.matches() && m.groupCount() == 4) {
-                                final double x1 = new Double(m.group(1)).doubleValue();
-                                final double x2 = new Double(m.group(2)).doubleValue();
-                                final double y1 = new Double(m.group(3)).doubleValue();
-                                final double y2 = new Double(m.group(4)).doubleValue();
-                                this.fWgs84Box.add(new Wgs84Box(baseName, x1, x2, y1, y2));
+                                Matcher m = this.fCoordPattern.matcher(coords);
+                                if (m.matches() && m.groupCount() == 4) {
+                                    final double x1 = new Double(m.group(1)).doubleValue();
+                                    final double x2 = new Double(m.group(2)).doubleValue();
+                                    final double y1 = new Double(m.group(3)).doubleValue();
+                                    final double y2 = new Double(m.group(4)).doubleValue();
+                                    this.fWgs84Box.add(new Wgs84Box(baseName, x1, x2, y1, y2));
+                                }
                             }
                         }
                     }
-                }
-                if (!temporal.isEmpty()) {
-                    this.fTemporal.add(temporal);
+                    if (!temporal.isEmpty()) {
+                        this.fTemporal.add(temporal);
+                    }
                 }
             }
         }
@@ -153,7 +159,7 @@ public class SNSIndexingInterface {
      *             If we cannot connect to the sns server.
      */
     public Wgs84Box[] getReferencesToSpace() throws Exception {
-        if (this.fTemporal.isEmpty()) {
+        if (this.fWgs84Box.isEmpty()) {
             getReferences();
         }
 
