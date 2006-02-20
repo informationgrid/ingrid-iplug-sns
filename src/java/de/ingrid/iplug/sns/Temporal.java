@@ -18,21 +18,27 @@ public class Temporal {
     private Date fTo = null;
 
     /**
-     * @return
+     * The date at which something occured.
+     * 
+     * @return A date.
      */
     public Date getAt() {
         return this.fAt;
     }
 
     /**
-     * @return
+     * The date from which something occured.
+     * 
+     * @return A date.
      */
     public Date getFrom() {
         return this.fFrom;
     }
 
     /**
-     * @return
+     * The date to which something occured.
+     * 
+     * @return A date.
      */
     public Date getTo() {
         return this.fTo;
@@ -60,7 +66,9 @@ public class Temporal {
     }
 
     /**
-     * @return
+     * Tests whether one of the dates are set.
+     * 
+     * @return True if no date is set otherwise false.
      */
     public boolean isEmpty() {
         return ((this.fAt == null) && (this.fFrom == null) && (this.fTo == null));
