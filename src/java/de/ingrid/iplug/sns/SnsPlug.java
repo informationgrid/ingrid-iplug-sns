@@ -53,8 +53,7 @@ public class SnsPlug implements IPlug {
     }
 
     /**
-     * @see de.ingrid.utils.IPlug#search(de.ingrid.utils.query.IngridQuery, int,
-     *      int)
+     * @see de.ingrid.utils.IPlug#search(de.ingrid.utils.query.IngridQuery, int, int)
      */
     public IngridHits search(IngridQuery query, int start, int length) {
 
@@ -74,7 +73,8 @@ public class SnsPlug implements IPlug {
                     hits = this.fSnsController.getTopicsForTerm(getSearchTerm(query), start, length, this.fPlugId);
                     break;
                 case Topic.TOPIC_FROM_TEXT:
-                    hits = this.fSnsController.getTopicsForText(getSearchTerm(query), this.fMaximalAnalyzedWord, this.fPlugId);
+                    hits = this.fSnsController.getTopicsForText(getSearchTerm(query), this.fMaximalAnalyzedWord,
+                            this.fPlugId);
                     break;
                 case Topic.TOPIC_FROM_TOPIC:
                     hits = this.fSnsController.getTopicsForTopic(getSearchTerm(query), length, this.fPlugId);
@@ -157,15 +157,21 @@ public class SnsPlug implements IPlug {
         this.fSnsController = new SNSController(new SNSClient(this.fUserName, this.fPassWord, this.fLanguage));
     }
 
-    /* (non-Javadoc)
-     * @see de.ingrid.utils.IDetailer#getDetail(de.ingrid.utils.IngridHit, de.ingrid.utils.query.IngridQuery, java.lang.String[])
+    /*
+     * (non-Javadoc)
+     * 
+     * @see de.ingrid.utils.IDetailer#getDetail(de.ingrid.utils.IngridHit, de.ingrid.utils.query.IngridQuery,
+     *      java.lang.String[])
      */
     public IngridHitDetail getDetail(IngridHit hit, IngridQuery query, String[] fields) throws Exception {
         return this.fSnsController.getTopicDetail(hit);
     }
-    
-    /* (non-Javadoc)
-     * @see de.ingrid.utils.IDetailer#getDetails(de.ingrid.utils.IngridHit[], de.ingrid.utils.query.IngridQuery, java.lang.String[])
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see de.ingrid.utils.IDetailer#getDetails(de.ingrid.utils.IngridHit[], de.ingrid.utils.query.IngridQuery,
+     *      java.lang.String[])
      */
     public IngridHitDetail[] getDetails(IngridHit[] hits, IngridQuery query, String[] requestedFields) throws Exception {
         IngridHitDetail[] details = new IngridHitDetail[hits.length];
