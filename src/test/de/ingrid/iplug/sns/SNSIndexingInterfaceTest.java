@@ -4,6 +4,8 @@
 
 package de.ingrid.iplug.sns;
 
+import java.text.ParseException;
+
 import junit.framework.TestCase;
 
 /**
@@ -75,5 +77,20 @@ public class SNSIndexingInterfaceTest extends TestCase {
         final Temporal[] result = this.fSnsInterface.getReferencesToTime();
         assertNotNull(result);
         assertEquals(0, result.length);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testGetReferencesWithOtherDateFormatYYYY() throws Exception {
+        this.fSnsInterface.getBuzzwords("wasser magdeburg", 1000);
+
+        try {
+            final Temporal[] result = this.fSnsInterface.getReferencesToTime();
+            assertNotNull(result);
+            assertEquals(1, result.length);
+        } catch (ParseException e) {
+            fail();
+        }
     }
 }

@@ -4,6 +4,7 @@
 
 package de.ingrid.iplug.sns;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -23,6 +24,12 @@ public class SNSIndexingInterface {
     private SNSClient fSNSClient;
 
     private final Pattern fCoordPattern = Pattern.compile("^(.*),(.*) (.*),(.*)$");
+
+    private final Pattern fDateYearPattern = Pattern.compile("^[0-9]{4,4}$");
+
+    private final Pattern fDateYearMonthPattern = Pattern.compile("^[0-9]{4,4}-[0-9]{2,2}$");
+
+    private final Pattern fDateYearMonthDayPattern = Pattern.compile("^[0-9]{4,4}-[0-9]{2,2}-[0-9]{2,2}$");
 
     private _topic[] fTopics = new _topic[0];
 
@@ -85,7 +92,7 @@ public class SNSIndexingInterface {
         return (String[]) result.toArray(new String[result.size()]);
     }
 
-    private void getReferences() throws Exception {
+    private void getReferences() throws Exception, ParseException {
         // FIXME: The doc of the sns lib says it gaves everytime non null back.
         if (this.fTopics != null) {
             for (int i = 0; i < this.fTopics.length; i++) {
@@ -100,19 +107,18 @@ public class SNSIndexingInterface {
                             final String topicRef = occ[k].getInstanceOf().getTopicRef().getHref();
                             if (topicRef.endsWith("temporalFromOcc")) {
                                 final String date = data.getValue();
-                                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd");
-                                Date javaDate = sdf.parse(date);
+
+                                Date javaDate = parseDate(date);
                                 temporal.setFrom(javaDate);
                             } else if (topicRef.endsWith("temporalAtOcc")) {
-                                new Date();
                                 final String date = data.getValue();
-                                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd");
-                                Date javaDate = sdf.parse(date);
+
+                                Date javaDate = parseDate(date);
                                 temporal.setAt(javaDate);
                             } else if (topicRef.endsWith("temporalToOcc")) {
                                 final String date = data.getValue();
-                                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd");
-                                Date javaDate = sdf.parse(date);
+
+                                Date javaDate = parseDate(date);
                                 temporal.setTo(javaDate);
                             } else if (topicRef.endsWith("wgs84BoxOcc")) {
                                 final String coords = data.getValue();
@@ -136,14 +142,40 @@ public class SNSIndexingInterface {
         }
     }
 
+    private Date parseDate(final String date) throws ParseException {
+        Date result = null;
+
+        Matcher m = this.fDateYearMonthDayPattern.matcher(date);
+        if (m.matches()) {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd");
+            result = sdf.parse(date);
+        } else {
+            m = this.fDateYearMonthPattern.matcher(date);
+            if (m.matches()) {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm");
+                result = sdf.parse(date);
+            } else {
+                m = this.fDateYearPattern.matcher(date);
+                if (m.matches()) {
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
+                    result = sdf.parse(date);
+                }
+            }
+        }
+
+        return result;
+    }
+
     /**
      * All time references to a document that is analyzed by <code>getBuzzwords</code>.
      * 
      * @return Array of strings. It is empty if nothing is found.
      * @throws Exception
      *             If we cannot connect to the sns server.
+     * @throws ParseException
+     *             If the date cannot be parsed.
      */
-    public Temporal[] getReferencesToTime() throws Exception {
+    public Temporal[] getReferencesToTime() throws Exception, ParseException {
         if (this.fTemporal.isEmpty()) {
             getReferences();
         }
