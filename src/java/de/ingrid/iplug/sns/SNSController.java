@@ -125,9 +125,7 @@ public class SNSController {
     }
 
     /**
-     * @param hit
      * @param topic
-     * @param plugId 
      * @param plugId 
      * @return A detailed topic from _topic.
      */
@@ -368,6 +366,7 @@ public class SNSController {
      * 
      * @param searchTerm
      * @param length
+     * @param plugId 
      * @return Topics to an anniversary.
      * @throws Exception
      */
@@ -421,7 +420,6 @@ public class SNSController {
 
     /**
      * @param hit
-     * @param topicID
      * @return A detailed topic.
      * @throws Exception
      */
