@@ -180,4 +180,9 @@ public class SnsPlug implements IPlug {
         }
         return details;
     }
+
+	public void close() throws Exception {
+		// nothing to do.
+		
+	}
 }
