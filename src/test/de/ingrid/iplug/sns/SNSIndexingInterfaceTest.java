@@ -36,6 +36,7 @@ public class SNSIndexingInterfaceTest extends TestCase {
         System.out.println(result[0].getX2());
         System.out.println(result[0].getY1());
         System.out.println(result[0].getY2());
+        System.out.println(result[0].getGemeindekennziffer());
     }
 
     /**

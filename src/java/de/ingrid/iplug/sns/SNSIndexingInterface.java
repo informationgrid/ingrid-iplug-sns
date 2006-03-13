@@ -31,6 +31,9 @@ public class SNSIndexingInterface {
 
     private final Pattern fDateYearMonthDayPattern = Pattern.compile("^[0-9]{4,4}-[0-9]{2,2}-[0-9]{2,2}$");
 
+    private final Pattern fGemeindekennzifferPattern = Pattern
+            .compile("^(GEMEINDE|STAAT|BUNDESLAND|KREIS)([0-9]{1,10})$");
+
     private _topic[] fTopics = new _topic[0];
 
     private ArrayList fTemporal = new ArrayList();
@@ -99,6 +102,7 @@ public class SNSIndexingInterface {
                 _occurrence[] occ = this.fTopics[i].getOccurrence();
                 if (null != occ) {
                     final String baseName = this.fTopics[i].getBaseName(0).getBaseNameString().getValue();
+                    final String topicId = this.fTopics[i].getId();
                     final Temporal temporal = new Temporal();
 
                     for (int k = 0; k < occ.length; k++) {
@@ -121,15 +125,21 @@ public class SNSIndexingInterface {
                                 Date javaDate = parseDate(date);
                                 temporal.setTo(javaDate);
                             } else if (topicRef.endsWith("wgs84BoxOcc")) {
+                                String gemeindekennziffer = null;
+                                Matcher m = this.fGemeindekennzifferPattern.matcher(topicId);
+                                if (m.matches() && m.groupCount() == 2) {
+                                    gemeindekennziffer = m.group(2);
+                                }
+
                                 final String coords = data.getValue();
 
-                                Matcher m = this.fCoordPattern.matcher(coords);
+                                m = this.fCoordPattern.matcher(coords);
                                 if (m.matches() && m.groupCount() == 4) {
                                     final double x1 = new Double(m.group(1)).doubleValue();
                                     final double x2 = new Double(m.group(2)).doubleValue();
                                     final double y1 = new Double(m.group(3)).doubleValue();
                                     final double y2 = new Double(m.group(4)).doubleValue();
-                                    this.fWgs84Box.add(new Wgs84Box(baseName, x1, x2, y1, y2));
+                                    this.fWgs84Box.add(new Wgs84Box(baseName, x1, x2, y1, y2, gemeindekennziffer));
                                 }
                             }
                         }

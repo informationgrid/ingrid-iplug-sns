@@ -19,6 +19,8 @@ public class Wgs84Box {
 
     private double fY2;
 
+    private String fGemeindekennziffer;
+
     /**
      * Sets the required values of the bounding box.
      * 
@@ -32,13 +34,18 @@ public class Wgs84Box {
      *            Longitude of the point right up.
      * @param y2
      *            Latitude of the point right up.
+     * @param gemeindekennziffer
+     *            The so called Gemeindekennziffer (community code of the German Bureau of Statistics).
+     * 
      */
-    public Wgs84Box(String baseName, double x1, double x2, double y1, double y2) {
+    public Wgs84Box(final String baseName, final double x1, final double x2, final double y1, final double y2,
+            final String gemeindekennziffer) {
         this.fTopicName = baseName;
         this.fX1 = x1;
         this.fX2 = x2;
         this.fY1 = y1;
         this.fY2 = y2;
+        this.fGemeindekennziffer = gemeindekennziffer;
     }
 
     /**
@@ -123,5 +130,24 @@ public class Wgs84Box {
      */
     public void setY2(double y2) {
         this.fY2 = y2;
+    }
+
+    /**
+     * Returns the so called Gemeindekennziffer. It is the community code of the German Bureau of Statistics.
+     * 
+     * @return A string representing the Gemeindekennziffer.
+     */
+    public String getGemeindekennziffer() {
+        return this.fGemeindekennziffer;
+    }
+
+    /**
+     * Sets the so called Gemeindekennziffer. It is the community code of the German Bureau of Statistics.
+     * 
+     * @param gemeindekennziffer
+     *            The so called Gemeindekennziffer.
+     */
+    public void setGemeindekennziffer(String gemeindekennziffer) {
+        this.fGemeindekennziffer = gemeindekennziffer;
     }
 }
