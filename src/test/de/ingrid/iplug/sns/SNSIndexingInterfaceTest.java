@@ -31,12 +31,14 @@ public class SNSIndexingInterfaceTest extends TestCase {
         assertNotNull(result);
         assertEquals(4, result.length);
 
-        System.out.println(result[0].getTopicName());
-        System.out.println(result[0].getX1());
-        System.out.println(result[0].getX2());
-        System.out.println(result[0].getY1());
-        System.out.println(result[0].getY2());
-        System.out.println(result[0].getGemeindekennziffer());
+        for (int i = 0; i < result.length; i++) {
+            System.out.println(result[i].getTopicName());
+            System.out.println(result[i].getX1());
+            System.out.println(result[i].getX2());
+            System.out.println(result[i].getY1());
+            System.out.println(result[i].getY2());
+            System.out.println(result[i].getGemeindekennziffer());    
+        }
     }
 
     /**
