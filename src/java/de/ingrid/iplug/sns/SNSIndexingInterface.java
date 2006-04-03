@@ -157,12 +157,12 @@ public class SNSIndexingInterface {
 
         Matcher m = this.fDateYearMonthDayPattern.matcher(date);
         if (m.matches()) {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd");
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             result = sdf.parse(date);
         } else {
             m = this.fDateYearMonthPattern.matcher(date);
             if (m.matches()) {
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm");
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
                 result = sdf.parse(date);
             } else {
                 m = this.fDateYearPattern.matcher(date);
