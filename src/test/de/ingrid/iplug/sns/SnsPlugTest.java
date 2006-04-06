@@ -101,6 +101,7 @@ public class SnsPlugTest extends TestCase {
         query.putInt(Topic.REQUEST_TYPE, Topic.ANNIVERSARY_FROM_TOPIC);
         IngridHits hits = plug.search(query, 0, 10);
         IngridHit[] hitsArray = hits.getHits();
+        plug.getDetails(hitsArray, query, new String[0]);
         assertNotNull(hitsArray);
         for (int i = 0; i < hitsArray.length; i++) {
             Topic hit = (Topic) hitsArray[i];
