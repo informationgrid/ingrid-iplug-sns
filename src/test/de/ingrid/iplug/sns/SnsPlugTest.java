@@ -10,6 +10,7 @@ import junit.framework.TestCase;
 import de.ingrid.iplug.sns.utils.DetailedTopic;
 import de.ingrid.iplug.sns.utils.Topic;
 import de.ingrid.utils.IngridHit;
+import de.ingrid.utils.IngridHitDetail;
 import de.ingrid.utils.IngridHits;
 import de.ingrid.utils.PlugDescription;
 import de.ingrid.utils.query.FieldQuery;
@@ -32,6 +33,8 @@ public class SnsPlugTest extends TestCase {
         fPlugDescription.put("language", "de");
         fPlugDescription.putInt("maxWordForAnalyzing", 100);
     }
+
+    private String[] fields;
 
     /**
      * @throws Exception
@@ -95,18 +98,20 @@ public class SnsPlugTest extends TestCase {
      */
     public void testANNIVERSARY() throws Exception {
         SnsPlug plug = new SnsPlug(fPlugDescription);
-        String q = "1978-07-30";
+        String q = "2006-04-06";
         IngridQuery query = QueryStringParser.parse(q);
         query.addField(new FieldQuery(true, false, "datatype", IDataTypes.SNS));
         query.putInt(Topic.REQUEST_TYPE, Topic.ANNIVERSARY_FROM_TOPIC);
         IngridHits hits = plug.search(query, 0, 10);
         IngridHit[] hitsArray = hits.getHits();
-        plug.getDetails(hitsArray, query, new String[0]);
         assertNotNull(hitsArray);
         for (int i = 0; i < hitsArray.length; i++) {
             Topic hit = (Topic) hitsArray[i];
             System.out.println(hit.getTopicName() + ":" + hit.getTopicID());
+            IngridHitDetail detail = plug.getDetail(hit, query, fields);
+            assertNotNull(detail);
         }
+        
     }
 
     /**

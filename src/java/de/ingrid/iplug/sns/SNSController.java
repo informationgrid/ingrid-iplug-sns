@@ -430,7 +430,8 @@ public class SNSController {
 
         _topicMapFragment mapFragment = this.fServiceClient.getPSI(topicID, 0);
         _topic[] topics = mapFragment.getTopicMap().getTopic();
-        if (topics.length == 1) {
+        
+        if (topics.length > 1) { // FIXME how can it happen that we can find many documents to one topicId??
             result = buildDetailedTopicFrom_topic(topics[0], hit.getPlugId());
         }
 
