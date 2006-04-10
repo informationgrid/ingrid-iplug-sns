@@ -205,6 +205,7 @@ public class SNSClient {
         findEvents.setUser(this.fUserName);
         findEvents.setPassword(this.fPassword);
         findEvents.setQueryTerm(query);
+        
         if (ignoreCase) {
             findEvents.setIgnoreCase("true");
         } else {
