@@ -3,6 +3,8 @@ package de.ingrid.iplug.sns;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.DailyRollingFileAppender;
+
 
 import com.slb.taxi.webservice.xtm.stubs.FieldsType;
 import com.slb.taxi.webservice.xtm.stubs.SearchType;
@@ -43,6 +45,9 @@ public class SNSController {
 
     private static final String[] fAdministrativeTypes = new String[] { "communityType", "districtType", "quarterType",
             "stateType", "nationType" };
+
+
+    
 
     /**
      * @param client
@@ -135,6 +140,10 @@ public class SNSController {
 	  	String summary = title+" " +  topic.getInstanceOf()[0].getTopicRef().getHref();
 		DetailedTopic metaData = new DetailedTopic(plugId, topicId.hashCode(), topicId, title, summary);
         pushTimes(metaData, topic);
+        pushOccurensie(DetailedTopic.DESCRIPTION_OCC, topic, metaData);
+        pushOccurensie(DetailedTopic.SAMPLE_OCC, topic, metaData);
+        pushOccurensie(DetailedTopic.ASSICIATED_OCC, topic, metaData);
+        
         if (containsTypes(fAdministrativeTypes, topic.getInstanceOf()[0].getTopicRef().getHref())) {
             metaData.setAdministrativeID(topic.getId());
         }
@@ -148,7 +157,7 @@ public class SNSController {
      * @param metaData
      * @param topic
      */
-    private synchronized void pushTimes(DetailedTopic metaData, _topic topic) {
+    private  void pushTimes(DetailedTopic metaData, _topic topic) {
         _occurrence[] occurrences = topic.getOccurrence();
         String type = null;
         if (occurrences != null) {
@@ -171,6 +180,24 @@ public class SNSController {
         }
     }
 
+    
+    private synchronized void pushOccurensie(String occType, _topic topic, DetailedTopic  detailedTopic) {
+        _occurrence[] occurrences = topic.getOccurrence();
+        String type = null;
+        if (occurrences != null) {
+            for (int i = 0; i < occurrences.length; i++) {
+                if (occurrences[i].getInstanceOf() != null) {
+                    type = occurrences[i].getInstanceOf().getTopicRef().getHref();
+                    if (type.endsWith(occType) && occurrences[i].getResourceData()!=null) {
+                        
+                        detailedTopic.put(occType, occurrences[i].getResourceData().getValue());
+                    }
+                }
+            }
+        }
+    }
+
+    
     /**
      * @param topic
      * @param plugId 
