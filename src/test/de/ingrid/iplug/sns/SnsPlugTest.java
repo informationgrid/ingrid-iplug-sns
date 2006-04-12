@@ -110,6 +110,9 @@ public class SnsPlugTest extends TestCase {
             System.out.println(hit.getTopicName() + ":" + hit.getTopicID());
             IngridHitDetail detail = plug.getDetail(hit, query, fields);
             assertNotNull(detail);
+            assertNotNull( detail.get(DetailedTopic.DESCRIPTION_OCC));
+//            assertNotNull(detail.get(DetailedTopic.SAMPLE_OCC));
+            assertNotNull(detail.get(DetailedTopic.ASSICIATED_OCC));
         }
         
     }
