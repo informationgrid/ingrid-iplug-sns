@@ -152,6 +152,7 @@ public class SnsPlugTest extends TestCase {
         for (int i = 0; i < hitsArray.length; i++) {
             Topic hit = (Topic) hitsArray[i];
             System.out.println(hit.getTopicName() + ":" + hit.getTopicID());
+            plug.getDetail(hit, query, fields);
         }
     }
 
@@ -178,7 +179,7 @@ public class SnsPlugTest extends TestCase {
     public void testEVENT_BETWEEN() throws Exception {
         SnsPlug plug = new SnsPlug(fPlugDescription);
         String q = "Tschernobyl";
-        IngridQuery query = QueryStringParser.parse(q);
+        IngridQuery query = QueryStringParser.parse(q); 
         query.addField(new FieldQuery(true, false, "datatype", IDataTypes.SNS));
         query.putInt(Topic.REQUEST_TYPE, Topic.EVENT_FROM_TOPIC);
         query.put("eventtype", "industrialAccident");

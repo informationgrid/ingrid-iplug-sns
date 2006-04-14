@@ -10,6 +10,7 @@ import com.slb.taxi.webservice.xtm.stubs.FieldsType;
 import com.slb.taxi.webservice.xtm.stubs.SearchType;
 import com.slb.taxi.webservice.xtm.stubs._topicMapFragment;
 import com.slb.taxi.webservice.xtm.stubs.xtm._association;
+import com.slb.taxi.webservice.xtm.stubs.xtm._instanceOf;
 import com.slb.taxi.webservice.xtm.stubs.xtm._member;
 import com.slb.taxi.webservice.xtm.stubs.xtm._occurrence;
 import com.slb.taxi.webservice.xtm.stubs.xtm._topic;
@@ -137,8 +138,14 @@ public class SNSController {
     private synchronized DetailedTopic buildDetailedTopicFrom_topic( _topic topic, String plugId) {
 		String topicId = topic.getId();
 		String title = topic.getBaseName()[0].getBaseNameString().getValue();
+        
 	  	String summary = title+" " +  topic.getInstanceOf()[0].getTopicRef().getHref();
 		DetailedTopic metaData = new DetailedTopic(plugId, topicId.hashCode(), topicId, title, summary);
+        _instanceOf[] instanceOfs = topic.getInstanceOf();
+        for (int i = 0; i < instanceOfs.length; i++) {
+             String href = instanceOfs[i].getTopicRef().getHref();
+         metaData.addToList(DetailedTopic.INSTANCE_OF, href);   
+        }
         pushTimes(metaData, topic);
         pushOccurensie(DetailedTopic.DESCRIPTION_OCC, topic, metaData);
         pushOccurensie(DetailedTopic.SAMPLE_OCC, topic, metaData);
@@ -189,7 +196,6 @@ public class SNSController {
                 if (occurrences[i].getInstanceOf() != null) {
                     type = occurrences[i].getInstanceOf().getTopicRef().getHref();
                     if (type.endsWith(occType) && occurrences[i].getResourceData()!=null) {
-                        
                         detailedTopic.put(occType, occurrences[i].getResourceData().getValue());
                     }
                 }
