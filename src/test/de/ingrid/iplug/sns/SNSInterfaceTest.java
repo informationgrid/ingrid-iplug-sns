@@ -114,7 +114,7 @@ public class SNSInterfaceTest extends TestCase {
         IngridQuery query = QueryStringParser.parse(term);
         query.addField(new FieldQuery(true, false, "datatype", IDataTypes.SNS));
         query.putInt(Topic.REQUEST_TYPE, Topic.EVENT_FROM_TOPIC);
-        query.put("eventtype", eventType);
+        query.put("eventtype",new String[]{ eventType});
 
         
         IngridHits hits = fPlug.search(query, 0, 10);
@@ -139,7 +139,7 @@ public class SNSInterfaceTest extends TestCase {
         IngridQuery query = QueryStringParser.parse(term);
         query.addField(new FieldQuery(true, false, "datatype", IDataTypes.SNS));
         query.putInt(Topic.REQUEST_TYPE, Topic.EVENT_FROM_TOPIC);
-        query.put("eventtype", eventType);
+        query.put("eventtype", new String[] {eventType});
 
         IngridHits hits = fPlug.search(query, 0, 10);
         IngridHit[] hitsArray = hits.getHits();

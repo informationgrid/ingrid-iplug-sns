@@ -86,7 +86,7 @@ public class SnsPlug implements IPlug {
                     hits = this.fSnsController.getSimilarTermsFromTopic(getSearchTerm(query), length, this.fPlugId);
                     break;
                 case Topic.EVENT_FROM_TOPIC:
-                    final String eventType = (String) query.get("eventtype");
+                    final String[] eventType = (String[]) query.get("eventtype");
                     final String atDate = (String) query.get("t0");
                     final String fromDate = (String) query.get("t1");
                     final String toDate = (String) query.get("t2");

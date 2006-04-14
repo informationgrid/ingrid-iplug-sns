@@ -3,7 +3,6 @@ package de.ingrid.iplug.sns;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.DailyRollingFileAppender;
 
 
 import com.slb.taxi.webservice.xtm.stubs.FieldsType;
@@ -329,7 +328,7 @@ public class SNSController {
 
     /**
      * @param searchTerm
-     * @param eventType
+     * @param eventTypes
      * @param atDate
      * @param start
      * @param length
@@ -337,13 +336,17 @@ public class SNSController {
      * @return A topic array of events.
      * @throws Exception
      */
-    public Topic[] getEventFromTopic(String searchTerm, String eventType, String atDate, int start, int length, String plugId)
+    public Topic[] getEventFromTopic(String searchTerm, String[] eventTypes, String atDate, int start, int length, String plugId)
             throws Exception {
         Topic[] result = new Topic[0];
         String[] eventPath = null;
 
-        if (null != eventType) {
-            eventPath = new String[] { "/event/" + eventType + "/" };
+        if (null != eventTypes) {
+//            eventPath = new String[] { "/event/" + eventType + "/" };
+            eventPath = new String[eventTypes.length] ;
+            for (int i = 0; i < eventPath.length; i++) {
+               eventPath[i] = "/event/" + eventTypes[i] + "/" ;
+            }
         } else {
             eventPath = new String[] { "/event/" };
         }
@@ -429,13 +432,16 @@ public class SNSController {
      * @return Topics to an event.
      * @throws Exception
      */
-    public Topic[] getEventFromTopic(String searchTerm, String eventType, String fromDate, String toDate, int start,
+    public Topic[] getEventFromTopic(String searchTerm, String[] eventTypes, String fromDate, String toDate, int start,
             int length, String plugId) throws Exception {
         Topic[] result = new Topic[0];
         String[] eventPath = null;
 
-        if (null != eventType) {
-            eventPath = new String[] { "/event/" + eventType + "/" };
+        if (null != eventTypes) {
+            eventPath = new String[eventTypes.length] ;
+            for (int i = 0; i < eventPath.length; i++) {
+               eventPath[i] = "/event/" + eventTypes[i] + "/" ;
+            }
         } else {
             eventPath = new String[] { "/event/" };
         }
