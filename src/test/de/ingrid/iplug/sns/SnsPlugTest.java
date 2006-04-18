@@ -108,13 +108,13 @@ public class SnsPlugTest extends TestCase {
         for (int i = 0; i < hitsArray.length; i++) {
             Topic hit = (Topic) hitsArray[i];
             System.out.println(hit.getTopicName() + ":" + hit.getTopicID());
-            IngridHitDetail detail = plug.getDetail(hit, query, fields);
+            IngridHitDetail detail = plug.getDetail(hit, query, this.fields);
             assertNotNull(detail);
-            assertNotNull( detail.get(DetailedTopic.DESCRIPTION_OCC));
-//            assertNotNull(detail.get(DetailedTopic.SAMPLE_OCC));
+            assertNotNull(detail.get(DetailedTopic.DESCRIPTION_OCC));
+            // assertNotNull(detail.get(DetailedTopic.SAMPLE_OCC));
             assertNotNull(detail.get(DetailedTopic.ASSICIATED_OCC));
         }
-        
+
     }
 
     /**
@@ -140,11 +140,11 @@ public class SnsPlugTest extends TestCase {
      */
     public void testEVENT_AT() throws Exception {
         SnsPlug plug = new SnsPlug(fPlugDescription);
-        String q = "Tschernobyl";
+        String q = "";
         IngridQuery query = QueryStringParser.parse(q);
         query.addField(new FieldQuery(true, false, "datatype", IDataTypes.SNS));
         query.putInt(Topic.REQUEST_TYPE, Topic.EVENT_FROM_TOPIC);
-        query.put("eventtype", new String[]{ "industrialAccident"});
+        query.put("eventtype", new String[] { "industrialAccident" });
         query.put("t0", "1999-03-08");
         IngridHits hits = plug.search(query, 0, 10);
         IngridHit[] hitsArray = hits.getHits();
@@ -152,10 +152,30 @@ public class SnsPlugTest extends TestCase {
         for (int i = 0; i < hitsArray.length; i++) {
             Topic hit = (Topic) hitsArray[i];
             System.out.println(hit.getTopicName() + ":" + hit.getTopicID());
-            plug.getDetail(hit, query, fields);
+            plug.getDetail(hit, query, this.fields);
         }
     }
-
+    /**
+    * @throws Exception
+    */
+   public void testEVENT_WITHOUT_TERM() throws Exception {
+       SnsPlug plug = new SnsPlug(fPlugDescription);
+       String q = "";
+       IngridQuery query = QueryStringParser.parse(q);
+       query.addField(new FieldQuery(true, false, "datatype", IDataTypes.SNS));
+       query.putInt(Topic.REQUEST_TYPE, Topic.EVENT_FROM_TOPIC);
+       query.put("eventtype", new String[] { "industrialAccident" });
+       query.put("t0", "1999-03-08");
+       IngridHits hits = plug.search(query, 0, 10);
+       IngridHit[] hitsArray = hits.getHits();
+       assertNotNull(hitsArray);
+       for (int i = 0; i < hitsArray.length; i++) {
+           Topic hit = (Topic) hitsArray[i];
+           System.out.println(hit.getTopicName() + ":" + hit.getTopicID());
+           plug.getDetail(hit, query, this.fields);
+       }
+   }
+    
     /**
      * @throws Exception
      */
@@ -165,7 +185,7 @@ public class SnsPlugTest extends TestCase {
         IngridQuery query = QueryStringParser.parse(q);
         query.addField(new FieldQuery(true, false, "datatype", IDataTypes.SNS));
         query.putInt(Topic.REQUEST_TYPE, Topic.EVENT_FROM_TOPIC);
-        query.put("eventtype", new String[]{"marineAccident"});
+        query.put("eventtype", new String[] { "marineAccident" });
         query.put("t0", "1999-03-08");
         IngridHits hits = plug.search(query, 0, 10);
         IngridHit[] hitsArray = hits.getHits();
@@ -179,10 +199,10 @@ public class SnsPlugTest extends TestCase {
     public void testEVENT_BETWEEN() throws Exception {
         SnsPlug plug = new SnsPlug(fPlugDescription);
         String q = "Tschernobyl";
-        IngridQuery query = QueryStringParser.parse(q); 
+        IngridQuery query = QueryStringParser.parse(q);
         query.addField(new FieldQuery(true, false, "datatype", IDataTypes.SNS));
         query.putInt(Topic.REQUEST_TYPE, Topic.EVENT_FROM_TOPIC);
-        query.put("eventtype", new String[]{"industrialAccident"});
+        query.put("eventtype", new String[] { "industrialAccident" });
         query.put("t1", "1800-09-09");
         query.put("t2", "2005-09-09");
         IngridHits hits = plug.search(query, 0, 10);
@@ -203,7 +223,7 @@ public class SnsPlugTest extends TestCase {
         IngridQuery query = QueryStringParser.parse(q);
         query.addField(new FieldQuery(true, false, "datatype", IDataTypes.SNS));
         query.putInt(Topic.REQUEST_TYPE, Topic.EVENT_FROM_TOPIC);
-        query.put("eventtype", new String[]{"industrialAccident"});
+        query.put("eventtype", new String[] { "industrialAccident" });
         query.put("t1", "1800-09-09");
         IngridHits hits = plug.search(query, 0, 10);
         IngridHit[] hitsArray = hits.getHits();
@@ -223,7 +243,7 @@ public class SnsPlugTest extends TestCase {
         IngridQuery query = QueryStringParser.parse(q);
         query.addField(new FieldQuery(true, false, "datatype", IDataTypes.SNS));
         query.putInt(Topic.REQUEST_TYPE, Topic.EVENT_FROM_TOPIC);
-        query.put("eventtype", new String[]{"industrialAccident"});
+        query.put("eventtype", new String[] { "industrialAccident" });
         query.put("t2", "2006-01-01");
         IngridHits hits = plug.search(query, 0, 10);
         IngridHit[] hitsArray = hits.getHits();
@@ -243,7 +263,28 @@ public class SnsPlugTest extends TestCase {
         IngridQuery query = QueryStringParser.parse(q);
         query.addField(new FieldQuery(true, false, "datatype", IDataTypes.SNS));
         query.putInt(Topic.REQUEST_TYPE, Topic.EVENT_FROM_TOPIC);
-        query.put("eventtype", new String[]{"industrialAccident"});
+        query.put("eventtype", new String[] { "industrialAccident" });
+        IngridHits hits = plug.search(query, 0, 10);
+        IngridHit[] hitsArray = hits.getHits();
+        assertNotNull(hitsArray);
+        for (int i = 0; i < hitsArray.length; i++) {
+            Topic hit = (Topic) hitsArray[i];
+            System.out.println(hit.getTopicName() + ":" + hit.getTopicID());
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testSIMILARLOCATIONS_FROM_TOPIC() throws Exception {
+        final String q = "blau";
+        
+        SnsPlug plug = new SnsPlug(fPlugDescription);
+        IngridQuery query = new IngridQuery();
+        query.addField(new FieldQuery(true, false, "datatype", IDataTypes.SNS));
+        query.putInt(Topic.REQUEST_TYPE, Topic.SIMILARLOCATIONS_FROM_TOPIC);
+        query.addTerm(new TermQuery(true, false, q));
+
         IngridHits hits = plug.search(query, 0, 10);
         IngridHit[] hitsArray = hits.getHits();
         assertNotNull(hitsArray);
