@@ -123,20 +123,17 @@ public class SNSClient {
      * 
      * @param topicID
      * @param distance
+     * @param filter 
      * @return The response object.
      * @throws Exception
      */
-    public synchronized _topicMapFragment getPSI(String topicID, int distance) throws Exception {
+    public synchronized _topicMapFragment getPSI(String topicID, int distance, String filter) throws Exception {
         if (topicID == null) {
             throw new IllegalArgumentException("TopicID can not be  null");
         }
         if (distance < 0 || distance > 3) {
             throw new IllegalArgumentException("Distance must have a value between 0 and 3");
         }
-//        System.out.println("!!!!!!+SNSClient.getPSI()"+ topicID);
-//        if(topicID.equalsIgnoreCase("wasser")){
-//            System.out.println("wwwwwww");
-//        }
 
         _getPSI psiRequest = new _getPSI();
         psiRequest.setUser(this.fUserName);
@@ -144,6 +141,9 @@ public class SNSClient {
         // The distance-Parameter isn't used. Source: Interface-Spec. version 0.6.
         psiRequest.setDistance(BigInteger.valueOf(distance));
         psiRequest.setId(topicID);
+        if (null != filter) {
+            //psiRequest.setFilter();
+        }
 
         return this.fXtmSoapPortType.getPSIOp(psiRequest);
     }
