@@ -308,17 +308,19 @@ public class SNSController {
      * @param maxResults
      * @param topics
      * @param plugId
-     * @return an array of Topic with the given lenght
+     * @return An array of Topic with the given length.
      * @throws Exception
      */
     private Topic[] copyToTopicArray(_topic[] topics, int maxResults, String plugId) throws Exception {
         int count = Math.min(maxResults, topics.length);
-        Topic[] ingridTopics = new Topic[count];
+        ArrayList ingridTopics = new ArrayList();
         for (int i = 0; i < count; i++) {
-            ingridTopics[i] = buildTopicFrom_topic(topics[i], plugId);
+            if (!topics[i].getId().equals("_Interface0")) {
+                ingridTopics.add(buildTopicFrom_topic(topics[i], plugId));
+            }
         }
 
-        return ingridTopics;
+        return (Topic[]) ingridTopics.toArray(new Topic[ingridTopics.size()]);
     }
 
     /**
@@ -471,11 +473,13 @@ public class SNSController {
         DetailedTopic result = null;
 
         _topicMapFragment mapFragment = this.fServiceClient.getPSI(topicID, 0, null);
-        _topic[] topics = mapFragment.getTopicMap().getTopic();
+        if (null != mapFragment) {
+            _topic[] topics = mapFragment.getTopicMap().getTopic();
 
-        if (topics.length > 0) {
-            // FIXME how can it happen that we can find many documents to one topicId??
-            result = buildDetailedTopicFrom_topic(topics[0], hit.getPlugId());
+            if (topics.length > 0) {
+                // FIXME how can it happen that we can find many documents to one topicId??
+                result = buildDetailedTopicFrom_topic(topics[0], hit.getPlugId());
+            }
         }
 
         return result;

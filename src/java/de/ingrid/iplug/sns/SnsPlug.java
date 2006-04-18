@@ -58,7 +58,6 @@ public class SnsPlug implements IPlug {
      * @see de.ingrid.utils.IPlug#search(de.ingrid.utils.query.IngridQuery, int, int)
      */
     public IngridHits search(IngridQuery query, int start, int length) {
-
         if (log.isDebugEnabled()) {
             log.debug("incomming query : " + query.toString());
         }
