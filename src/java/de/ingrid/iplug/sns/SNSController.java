@@ -3,8 +3,6 @@ package de.ingrid.iplug.sns;
 import java.util.ArrayList;
 import java.util.List;
 
-
-
 import com.slb.taxi.webservice.xtm.stubs.FieldsType;
 import com.slb.taxi.webservice.xtm.stubs.SearchType;
 import com.slb.taxi.webservice.xtm.stubs._topicMapFragment;
@@ -46,9 +44,6 @@ public class SNSController {
     private static final String[] fAdministrativeTypes = new String[] { "communityType", "districtType", "quarterType",
             "stateType", "nationType" };
 
-
-    
-
     /**
      * @param client
      */
@@ -60,11 +55,12 @@ public class SNSController {
      * @param queryTerm
      * @param start
      * @param maxResults
-     * @param plugId 
+     * @param plugId
      * @return an array of assiciated topics or null in case the term itself is not found as topic
      * @throws Exception
      */
-    public synchronized Topic[] getTopicsForTerm(String queryTerm, int start, int maxResults, String plugId) throws Exception {
+    public synchronized Topic[] getTopicsForTerm(String queryTerm, int start, int maxResults, String plugId)
+            throws Exception {
         Topic[] result = new Topic[0];
 
         _topic topic = getTopic(queryTerm, THESAURUS_DESCRIPTOR, start);
@@ -80,7 +76,7 @@ public class SNSController {
     /**
      * @param topicId
      * @param maxResults
-     * @param plugId 
+     * @param plugId
      * @return an array of associated topics for a type identified by id
      * @throws Exception
      */
@@ -98,11 +94,12 @@ public class SNSController {
     /**
      * @param documentText
      * @param maxToAnalyzeWords
-     * @param plugId 
+     * @param plugId
      * @return array of detailed topics for the given text
      * @throws Exception
      */
-    public synchronized DetailedTopic[] getTopicsForText(String documentText, int maxToAnalyzeWords, String plugId) throws Exception {
+    public synchronized DetailedTopic[] getTopicsForText(String documentText, int maxToAnalyzeWords, String plugId)
+            throws Exception {
         final _topicMapFragment mapFragment = this.fServiceClient.autoClassify(documentText, maxToAnalyzeWords);
         final _topic[] topics = mapFragment.getTopicMap().getTopic();
         if (topics != null) {
@@ -114,15 +111,15 @@ public class SNSController {
 
     /**
      * @param topics
-     * @param plugId 
+     * @param plugId
      * @return an array of detailed topics, we ignoring all topics of typ synonymType
      */
     private synchronized DetailedTopic[] toDetailedTopicArray(_topic[] topics, String plugId) {
         final List returnList = new ArrayList();
         for (int i = 0; i < topics.length; i++) {
-//            System.out.println(topics[i].getInstanceOf()[0].getTopicRef().getHref());
+            // System.out.println(topics[i].getInstanceOf()[0].getTopicRef().getHref());
             if (!topics[i].getInstanceOf()[0].getTopicRef().getHref().endsWith(SYNONYM_TYPE)) {
-                returnList.add(buildDetailedTopicFrom_topic( topics[i], plugId));
+                returnList.add(buildDetailedTopicFrom_topic(topics[i], plugId));
             }
         }
 
@@ -131,25 +128,25 @@ public class SNSController {
 
     /**
      * @param topic
-     * @param plugId 
+     * @param plugId
      * @return A detailed topic from _topic.
      */
-    private synchronized DetailedTopic buildDetailedTopicFrom_topic( _topic topic, String plugId) {
-		String topicId = topic.getId();
-		String title = topic.getBaseName()[0].getBaseNameString().getValue();
-        
-	  	String summary = title+" " +  topic.getInstanceOf()[0].getTopicRef().getHref();
-		DetailedTopic metaData = new DetailedTopic(plugId, topicId.hashCode(), topicId, title, summary);
+    private synchronized DetailedTopic buildDetailedTopicFrom_topic(_topic topic, String plugId) {
+        String topicId = topic.getId();
+        String title = topic.getBaseName()[0].getBaseNameString().getValue();
+
+        String summary = title + " " + topic.getInstanceOf()[0].getTopicRef().getHref();
+        DetailedTopic metaData = new DetailedTopic(plugId, topicId.hashCode(), topicId, title, summary);
         _instanceOf[] instanceOfs = topic.getInstanceOf();
         for (int i = 0; i < instanceOfs.length; i++) {
-             String href = instanceOfs[i].getTopicRef().getHref();
-         metaData.addToList(DetailedTopic.INSTANCE_OF, href);   
+            String href = instanceOfs[i].getTopicRef().getHref();
+            metaData.addToList(DetailedTopic.INSTANCE_OF, href);
         }
         pushTimes(metaData, topic);
         pushOccurensie(DetailedTopic.DESCRIPTION_OCC, topic, metaData);
         pushOccurensie(DetailedTopic.SAMPLE_OCC, topic, metaData);
         pushOccurensie(DetailedTopic.ASSICIATED_OCC, topic, metaData);
-        
+
         if (containsTypes(fAdministrativeTypes, topic.getInstanceOf()[0].getTopicRef().getHref())) {
             metaData.setAdministrativeID(topic.getId());
         }
@@ -163,7 +160,7 @@ public class SNSController {
      * @param metaData
      * @param topic
      */
-    private  void pushTimes(DetailedTopic metaData, _topic topic) {
+    private void pushTimes(DetailedTopic metaData, _topic topic) {
         _occurrence[] occurrences = topic.getOccurrence();
         String type = null;
         if (occurrences != null) {
@@ -186,15 +183,14 @@ public class SNSController {
         }
     }
 
-    
-    private synchronized void pushOccurensie(String occType, _topic topic, DetailedTopic  detailedTopic) {
+    private synchronized void pushOccurensie(String occType, _topic topic, DetailedTopic detailedTopic) {
         _occurrence[] occurrences = topic.getOccurrence();
         String type = null;
         if (occurrences != null) {
             for (int i = 0; i < occurrences.length; i++) {
                 if (occurrences[i].getInstanceOf() != null) {
                     type = occurrences[i].getInstanceOf().getTopicRef().getHref();
-                    if (type.endsWith(occType) && occurrences[i].getResourceData()!=null) {
+                    if (type.endsWith(occType) && occurrences[i].getResourceData() != null) {
                         detailedTopic.put(occType, occurrences[i].getResourceData().getValue());
                     }
                 }
@@ -202,19 +198,18 @@ public class SNSController {
         }
     }
 
-    
     /**
      * @param topic
-     * @param plugId 
+     * @param plugId
      * @return a ingrid topic from a _topic
      */
     private synchronized Topic buildTopicFrom_topic(_topic topic, String plugId) {
-//        return new Topic(null, topic.getId(), topic.getBaseName()[0].getBaseNameString().getValue());
-    	
-    	String title =  topic.getBaseName()[0].getBaseNameString().getValue();
-    	String summary = title+" " +  topic.getInstanceOf()[0].getTopicRef().getHref();
-    	String topicId =  topic.getId();
-    	return new Topic (plugId, topicId.hashCode(), topicId, title, summary);
+        // return new Topic(null, topic.getId(), topic.getBaseName()[0].getBaseNameString().getValue());
+
+        String title = topic.getBaseName()[0].getBaseNameString().getValue();
+        String summary = title + " " + topic.getInstanceOf()[0].getTopicRef().getHref();
+        String topicId = topic.getId();
+        return new Topic(plugId, topicId.hashCode(), topicId, title, summary);
     }
 
     /**
@@ -226,7 +221,7 @@ public class SNSController {
     private synchronized _topic[] getAssociatedTopics(_topic baseTopic, String[] typePattern) throws Exception {
         ArrayList resultList = new ArrayList();
 
-        _topicMapFragment mapFragment = this.fServiceClient.getPSI(baseTopic.getId(), 1);
+        _topicMapFragment mapFragment = this.fServiceClient.getPSI(baseTopic.getId(), 1, null);
         _topic[] topics = mapFragment.getTopicMap().getTopic();
         _association[] associations = mapFragment.getTopicMap().getAssociation();
         // iterate through associations to find the correct association types
@@ -312,7 +307,7 @@ public class SNSController {
     /**
      * @param maxResults
      * @param topics
-     * @param plugId 
+     * @param plugId
      * @return an array of Topic with the given lenght
      * @throws Exception
      */
@@ -332,27 +327,31 @@ public class SNSController {
      * @param atDate
      * @param start
      * @param length
-     * @param plugId 
+     * @param plugId
      * @return A topic array of events.
      * @throws Exception
      */
-    public Topic[] getEventFromTopic(String searchTerm, String[] eventTypes, String atDate, int start, int length, String plugId)
-            throws Exception {
+    public Topic[] getEventFromTopic(String searchTerm, String[] eventTypes, String atDate, int start, int length,
+            String plugId) throws Exception {
         Topic[] result = new Topic[0];
         String[] eventPath = null;
 
         if (null != eventTypes) {
-//            eventPath = new String[] { "/event/" + eventType + "/" };
-            eventPath = new String[eventTypes.length] ;
+            // eventPath = new String[] { "/event/" + eventType + "/" };
+            eventPath = new String[eventTypes.length];
             for (int i = 0; i < eventPath.length; i++) {
-               eventPath[i] = "/event/" + eventTypes[i] + "/" ;
+                eventPath[i] = "/event/" + eventTypes[i] + "/";
             }
         } else {
             eventPath = new String[] { "/event/" };
         }
 
-        _topicMapFragment topicMapFragment = this.fServiceClient.findEvents(searchTerm, true, SearchType.exact,
-                eventPath, FieldsType.captors, start, atDate);
+        SearchType searchType = SearchType.exact;
+        if ((null == searchTerm) || (searchTerm.trim().equals(""))) {
+            searchType = SearchType.contains;
+        }
+        _topicMapFragment topicMapFragment = this.fServiceClient.findEvents(searchTerm, true, searchType, eventPath,
+                FieldsType.captors, start, atDate);
         _topic[] topic = topicMapFragment.getTopicMap().getTopic();
         if (topic != null) {
             Topic[] topics = copyToTopicArray(topic, length, plugId);
@@ -367,7 +366,7 @@ public class SNSController {
      * 
      * @param searchTerm
      * @param length
-     * @param plugId 
+     * @param plugId
      * @return Topics to similar terms.
      * @throws Exception
      */
@@ -380,7 +379,7 @@ public class SNSController {
      * 
      * @param searchTerm
      * @param length
-     * @param plugId 
+     * @param plugId
      * @return Topics to similar terms.
      * @throws Exception
      */
@@ -402,7 +401,7 @@ public class SNSController {
      * 
      * @param searchTerm
      * @param length
-     * @param plugId 
+     * @param plugId
      * @return Topics to an anniversary.
      * @throws Exception
      */
@@ -423,12 +422,12 @@ public class SNSController {
      * Returns all events between two dates.
      * 
      * @param searchTerm
-     * @param eventType
+     * @param eventTypes
      * @param fromDate
      * @param toDate
      * @param start
      * @param length
-     * @param plugId 
+     * @param plugId
      * @return Topics to an event.
      * @throws Exception
      */
@@ -438,16 +437,20 @@ public class SNSController {
         String[] eventPath = null;
 
         if (null != eventTypes) {
-            eventPath = new String[eventTypes.length] ;
+            eventPath = new String[eventTypes.length];
             for (int i = 0; i < eventPath.length; i++) {
-               eventPath[i] = "/event/" + eventTypes[i] + "/" ;
+                eventPath[i] = "/event/" + eventTypes[i] + "/";
             }
         } else {
             eventPath = new String[] { "/event/" };
         }
 
-        _topicMapFragment topicMapFragment = this.fServiceClient.findEvents(searchTerm, true, SearchType.exact,
-                eventPath, FieldsType.captors, start, fromDate, toDate);
+        SearchType searchType = SearchType.exact;
+        if ((null == searchTerm) || (searchTerm.trim().equals(""))) {
+            searchType = SearchType.contains;
+        }
+        _topicMapFragment topicMapFragment = this.fServiceClient.findEvents(searchTerm, true, searchType, eventPath,
+                FieldsType.captors, start, fromDate, toDate);
         _topic[] topic = topicMapFragment.getTopicMap().getTopic();
         if (topic != null) {
             Topic[] topics = copyToTopicArray(topic, length, plugId);
@@ -464,16 +467,28 @@ public class SNSController {
      */
     public DetailedTopic getTopicDetail(IngridHit hit) throws Exception {
         Topic topic = (Topic) hit;
-        String topicID =  topic.getTopicID();
+        String topicID = topic.getTopicID();
         DetailedTopic result = null;
 
-        _topicMapFragment mapFragment = this.fServiceClient.getPSI(topicID, 0);
+        _topicMapFragment mapFragment = this.fServiceClient.getPSI(topicID, 0, null);
         _topic[] topics = mapFragment.getTopicMap().getTopic();
-        
-        if (topics.length > 0) { // FIXME how can it happen that we can find many documents to one topicId??
+
+        if (topics.length > 0) {
+            // FIXME how can it happen that we can find many documents to one topicId??
             result = buildDetailedTopicFrom_topic(topics[0], hit.getPlugId());
         }
-//
+
         return result;
+    }
+
+    /**
+     * @param searchTerm
+     * @param length
+     * @param string
+     * @return
+     */
+    public Topic[] getSimilarLocationsFromTopic(String searchTerm, int length, String string) {
+        // FIXME: see bug INGRID-838
+        return null;
     }
 }

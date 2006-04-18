@@ -38,6 +38,8 @@ public class SnsPlug implements IPlug {
 
     private String fLanguage;
 
+    private static final long serialVersionUID = SnsPlug.class.getName().hashCode();
+
     /**
      */
     public SnsPlug() {
@@ -77,13 +79,20 @@ public class SnsPlug implements IPlug {
                             this.fPlugId);
                     break;
                 case Topic.TOPIC_FROM_TOPIC:
-                    hits = this.fSnsController.getTopicsForTopic(getSearchTerm(query), length, this.fPlugId);
+                    Topic[] hitsTemp = this.fSnsController
+                            .getTopicsForTopic(getSearchTerm(query), length, this.fPlugId);
+                    if (null != hitsTemp) {
+                        hits = hitsTemp;
+                    }
                     break;
                 case Topic.ANNIVERSARY_FROM_TOPIC:
                     hits = this.fSnsController.getAnniversaryFromTopic(getSearchTerm(query), length, this.fPlugId);
                     break;
                 case Topic.SIMILARTERMS_FROM_TOPIC:
                     hits = this.fSnsController.getSimilarTermsFromTopic(getSearchTerm(query), length, this.fPlugId);
+                    break;
+                case Topic.SIMILARLOCATIONS_FROM_TOPIC:
+                    hits = this.fSnsController.getSimilarLocationsFromTopic(getSearchTerm(query), length, this.fPlugId);
                     break;
                 case Topic.EVENT_FROM_TOPIC:
                     final String[] eventType = (String[]) query.get("eventtype");
@@ -181,8 +190,7 @@ public class SnsPlug implements IPlug {
         return details;
     }
 
-	public void close() throws Exception {
-		// nothing to do.
-		
-	}
+    public void close() throws Exception {
+        // nothing to do.
+    }
 }
