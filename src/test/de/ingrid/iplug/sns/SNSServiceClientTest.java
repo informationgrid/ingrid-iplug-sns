@@ -65,27 +65,27 @@ public class SNSServiceClientTest extends TestCase {
         String topicID = null;
         int distance = -1;
         try {
-            adapter.getPSI(topicID, distance);
+            adapter.getPSI(topicID, distance, null);
             fail("Should throw an exception");
         } catch (Exception e) {
             assertTrue(e instanceof IllegalArgumentException);
         }
         topicID = "uba_thes_3450";
         try {
-            adapter.getPSI(topicID, distance);
+            adapter.getPSI(topicID, distance, null);
             fail("Should throw an exception");
         } catch (Exception e) {
             assertTrue(e instanceof IllegalArgumentException);
         }
         distance = 4;
         try {
-            adapter.getPSI(topicID, distance);
+            adapter.getPSI(topicID, distance, null);
             fail("Should throw an exception");
         } catch (Exception e) {
             assertTrue(e instanceof IllegalArgumentException);
         }
         distance = 2;
-        assertNotNull(adapter.getPSI(topicID, distance));
+        assertNotNull(adapter.getPSI(topicID, distance, null));
     }
 
     /**
