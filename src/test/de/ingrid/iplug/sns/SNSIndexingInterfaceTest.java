@@ -29,7 +29,7 @@ public class SNSIndexingInterfaceTest extends TestCase {
 
         final Wgs84Box[] result = this.fSnsInterface.getReferencesToSpace();
         assertNotNull(result);
-        assertEquals(4, result.length);
+        assertEquals(5, result.length);
 
         for (int i = 0; i < result.length; i++) {
             System.out.println(result[i].getTopicName());
@@ -49,7 +49,7 @@ public class SNSIndexingInterfaceTest extends TestCase {
 
         final Wgs84Box[] result = this.fSnsInterface.getReferencesToSpace();
         assertNotNull(result);
-        assertEquals(1, result.length);
+        assertEquals(2, result.length);
 
         for (int i = 0; i < result.length; i++) {
             System.out.println(result[i].getTopicName());
@@ -69,7 +69,7 @@ public class SNSIndexingInterfaceTest extends TestCase {
 
         final Temporal[] result = this.fSnsInterface.getReferencesToTime();
         assertNotNull(result);
-        assertEquals(3, result.length);
+        assertEquals(5, result.length);
         System.out.println(result[0].getAt());
     }
 
@@ -79,7 +79,7 @@ public class SNSIndexingInterfaceTest extends TestCase {
     public void testGetBuzzword() throws Exception {
         final String[] result = this.fSnsInterface.getBuzzwords("Tschernobyl Ohio", 1000);
         assertNotNull(result);
-        assertEquals(4, result.length);
+        assertEquals(5, result.length);
     }
 
     /**

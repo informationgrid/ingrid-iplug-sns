@@ -175,7 +175,7 @@ public class SnsPlugTest extends TestCase {
            plug.getDetail(hit, query, this.fields);
        }
    }
-    
+
     /**
      * @throws Exception
      */
