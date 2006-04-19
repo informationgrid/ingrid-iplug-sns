@@ -4,7 +4,6 @@
 
 package de.ingrid.iplug.sns;
 
-import java.net.URL;
 import java.text.ParseException;
 
 import junit.framework.TestCase;
