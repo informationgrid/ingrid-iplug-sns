@@ -15,6 +15,6 @@
 	<classpathentry kind="src" path="/ingrid-utils"/>
 	<classpathentry kind="src" path="/ingrid-iplug"/>
 	<classpathentry kind="var" path="MAVEN_REPO/commons-logging/jars/commons-logging-1.0.3.jar"/>
-	<classpathentry kind="lib" path="lib/xtmStubs-2.1.0.jar"/>
+	<classpathentry kind="lib" path="/home/ms/workspace/ingrid-iplug-sns/lib/xtmStubs.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
