@@ -6,8 +6,6 @@
 
 package de.ingrid.iplug.sns;
 
-import java.net.URL;
-
 import junit.framework.TestCase;
 
 import com.slb.taxi.webservice.xtm.stubs.FieldsType;
@@ -25,8 +23,7 @@ public class SNSServiceClientTest extends TestCase {
 
     static {
         try {
-            adapter = new SNSClient("ms", "portalu2006", "de", new URL(
-                    "http://uba-web.imk.fhg.de/service-xtm-2.0/xtm/soap"));
+            adapter = new SNSClient("ms", "m3d1asyl3", "de");
         } catch (Exception e) {
             fail(e.getMessage());
         }

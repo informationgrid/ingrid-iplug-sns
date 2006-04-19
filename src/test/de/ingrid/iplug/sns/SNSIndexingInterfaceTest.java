@@ -18,7 +18,7 @@ public class SNSIndexingInterfaceTest extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
 
-        this.fSnsInterface = new SNSIndexingInterface("ms", "portalu2006", "de");
+        this.fSnsInterface = new SNSIndexingInterface("ms", "m3d1asyl3", "de");
     }
 
     /**

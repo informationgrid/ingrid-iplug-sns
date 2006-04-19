@@ -6,8 +6,6 @@
 
 package de.ingrid.iplug.sns;
 
-import java.net.URL;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -130,9 +128,10 @@ public class SnsPlug implements IPlug {
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
             }
-        }
-        if (log.isDebugEnabled()) {
-            log.debug("not correct or unsetted datatype");
+        } else {
+            if (log.isErrorEnabled()) {
+                log.error("not correct or unsetted datatype");
+            }
         }
         return new IngridHits(this.fPlugId, 0, new IngridHit[0], true);
     }
@@ -168,8 +167,7 @@ public class SnsPlug implements IPlug {
         this.fPassWord = (String) plugDescription.get("password");
         this.fLanguage = (String) plugDescription.get("language");
         this.fMaximalAnalyzedWord = plugDescription.getInt("maxWordForAnalyzing");
-        this.fSnsController = new SNSController(new SNSClient(this.fUserName, this.fPassWord, this.fLanguage, new URL(
-                "http://uba-web.imk.fhg.de/service-xtm-2.0/xtm/soap")));
+        this.fSnsController = new SNSController(new SNSClient(this.fUserName, this.fPassWord, this.fLanguage));
     }
 
     /*

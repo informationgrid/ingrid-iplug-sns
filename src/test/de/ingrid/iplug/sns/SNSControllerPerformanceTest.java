@@ -6,8 +6,6 @@
 
 package de.ingrid.iplug.sns;
 
-import java.net.URL;
-
 import junit.framework.TestCase;
 
 /**
@@ -26,8 +24,7 @@ public class SNSControllerPerformanceTest extends TestCase {
         super.setUp();
 
         this.fSNSControllerTest = new SNSControllerTest();
-        this.fSNSControllerTest.setSNSClient(new SNSClient("ms", "portalu2006", "de", new URL(
-                "http://uba-web.imk.fhg.de/service-xtm-2.0/xtm/soap")));
+        this.fSNSControllerTest.setSNSClient(new SNSClient("ms", "m3d1asyl3", "de"));
     }
 
     /**

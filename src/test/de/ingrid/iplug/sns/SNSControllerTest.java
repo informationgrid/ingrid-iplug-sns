@@ -6,11 +6,9 @@
 
 package de.ingrid.iplug.sns;
 
-import java.net.URL;
-
-import de.ingrid.iplug.sns.utils.Topic;
-import de.ingrid.iplug.sns.utils.DetailedTopic;
 import junit.framework.TestCase;
+import de.ingrid.iplug.sns.utils.DetailedTopic;
+import de.ingrid.iplug.sns.utils.Topic;
 
 /**
  * SNSControllerTest
@@ -44,8 +42,7 @@ public class SNSControllerTest extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
 
-        fClient = new SNSClient("ms", "portalu2006", "de",
-                new URL("http://uba-web.imk.fhg.de/service-xtm-2.0/xtm/soap"));
+        fClient = new SNSClient("ms", "m3d1asyl3", "de");
 
         this.fToStdout = true;
     }
