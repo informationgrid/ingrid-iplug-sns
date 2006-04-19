@@ -4,6 +4,7 @@
 
 package de.ingrid.iplug.sns;
 
+import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -53,7 +54,8 @@ public class SNSIndexingInterface {
      *             If we cannot connect to the sns server.
      */
     public SNSIndexingInterface(final String login, final String password, final String language) throws Exception {
-        this.fSNSClient = new SNSClient(login, password, language);
+        this.fSNSClient = new SNSClient(login, password, language, new URL(
+                "http://uba-web.imk.fhg.de/service-xtm-2.0/xtm/soap"));
     }
 
     /**
