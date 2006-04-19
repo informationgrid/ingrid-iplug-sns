@@ -29,7 +29,7 @@ public class SnsPlugTest extends TestCase {
         fPlugDescription = new PlugDescription();
         fPlugDescription.setPlugId("aPlugId");
         fPlugDescription.put("username", "ms");
-        fPlugDescription.put("password", "portalu2006");
+        fPlugDescription.put("password", "m3d1asyl3");
         fPlugDescription.put("language", "de");
         fPlugDescription.putInt("maxWordForAnalyzing", 100);
     }
@@ -140,7 +140,7 @@ public class SnsPlugTest extends TestCase {
      */
     public void testEVENT_AT() throws Exception {
         SnsPlug plug = new SnsPlug(fPlugDescription);
-        String q = "";
+        String q = "tschernobyl";
         IngridQuery query = QueryStringParser.parse(q);
         query.addField(new FieldQuery(true, false, "datatype", IDataTypes.SNS));
         query.putInt(Topic.REQUEST_TYPE, Topic.EVENT_FROM_TOPIC);

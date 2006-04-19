@@ -26,7 +26,7 @@ public class ServiceAdapterTest extends TestCase {
      */
     public void testCommunicationWithSNS() throws Exception {
         SNSControllerTest controller = new SNSControllerTest();
-        controller.setSNSClient(new SNSClient("ms", "portalu2006", "de"));
+        controller.setSNSClient(new SNSClient("ms", "m3d1asyl3", "de"));
         
         controller.testGetAssociatedTopics();
         controller.testGetDocumentRelatedTopics();

@@ -276,14 +276,13 @@ public class SNSController {
      * @throws Exception
      */
     private _topic getTopic(String queryTerm, String topicType, long offSet) throws Exception {
-        // TODO why does this fail?
-        // _topicMapFragment mapFragment = this.fServiceClient.findTopics(queryTerm, topicType, SearchType.exact,
-        // FieldsType.allfields, offSet);
-        _topicMapFragment mapFragment = this.fServiceClient.findTopics(queryTerm, topicType, SearchType.exact, null,
-                offSet);
-        _topic[] topics = mapFragment.getTopicMap().getTopic();
-        if (topics.length == 1) {
-            return topics[0];
+        _topicMapFragment mapFragment = this.fServiceClient.findTopics(queryTerm, topicType, SearchType.exact,
+                FieldsType.captors, offSet);
+        if (null != mapFragment) {
+            _topic[] topics = mapFragment.getTopicMap().getTopic();
+            if (topics.length == 1) {
+                return topics[0];
+            }
         }
 
         return null;
@@ -476,9 +475,10 @@ public class SNSController {
         if (null != mapFragment) {
             _topic[] topics = mapFragment.getTopicMap().getTopic();
 
-            if (topics.length > 0) {
-                // FIXME how can it happen that we can find many documents to one topicId??
-                result = buildDetailedTopicFrom_topic(topics[0], hit.getPlugId());
+            for (int i = 0; i < topics.length; i++) {
+                if (topics[i].getId().equals(topicID)) {
+                    result = buildDetailedTopicFrom_topic(topics[0], hit.getPlugId());
+                }
             }
         }
 

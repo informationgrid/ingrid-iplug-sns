@@ -12,9 +12,9 @@
 	<classpathentry kind="var" path="MAVEN_REPO/axis/jars/axis-1.1.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/axis/jars/axis-jaxrpc-1.2.1.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/axis/jars/axis-saaj-1.2.1.jar"/>
-	<classpathentry sourcepath="lib/xtmStubs.jar" kind="lib" path="lib/xtmStubs.jar"/>
 	<classpathentry kind="src" path="/ingrid-utils"/>
 	<classpathentry kind="src" path="/ingrid-iplug"/>
 	<classpathentry kind="var" path="MAVEN_REPO/commons-logging/jars/commons-logging-1.0.3.jar"/>
+	<classpathentry kind="lib" path="lib/xtmStubs-2.1.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

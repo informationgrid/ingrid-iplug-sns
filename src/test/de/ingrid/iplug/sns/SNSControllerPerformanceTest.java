@@ -24,7 +24,7 @@ public class SNSControllerPerformanceTest extends TestCase {
         super.setUp();
 
         this.fSNSControllerTest = new SNSControllerTest();
-        this.fSNSControllerTest.setSNSClient(new SNSClient("ms", "portalu2006", "de"));
+        this.fSNSControllerTest.setSNSClient(new SNSClient("ms", "m3d1asyl3", "de"));
     }
 
     /**

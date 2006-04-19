@@ -24,7 +24,7 @@ public class SNSInterfaceTest extends TestCase {
         fPlugDescription = new PlugDescription();
         fPlugDescription.setPlugId("aPlugId");
         fPlugDescription.put("username", "ms");
-        fPlugDescription.put("password", "portalu2006");
+        fPlugDescription.put("password", "m3d1asyl3");
         fPlugDescription.put("language", "de");
         fPlugDescription.putInt("maxWordForAnalyzing", 100);
     }

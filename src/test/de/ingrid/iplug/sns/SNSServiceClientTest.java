@@ -23,7 +23,7 @@ public class SNSServiceClientTest extends TestCase {
 
     static {
         try {
-            adapter = new SNSClient("ms", "portalu2006", "de");
+            adapter = new SNSClient("ms", "m3d1asyl3", "de");
         } catch (Exception e) {
             fail(e.getMessage());
         }

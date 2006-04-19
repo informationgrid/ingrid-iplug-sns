@@ -42,7 +42,7 @@ public class SNSControllerTest extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
 
-        fClient = new SNSClient("ms", "portalu2006", "de");
+        fClient = new SNSClient("ms", "m3d1asyl3", "de");
 
         this.fToStdout = true;
     }
