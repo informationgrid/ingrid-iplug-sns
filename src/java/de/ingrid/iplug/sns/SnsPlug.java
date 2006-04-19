@@ -69,6 +69,7 @@ public class SnsPlug implements IPlug {
             // FIXME: By TOPIC FROM TOPIC i get the range by the other i must
             // select my range. Is this correct?
             try {
+                Topic[] hitsTemp = null;
                 switch (type) {
                 case Topic.TOPIC_FROM_TERM:
                     hits = this.fSnsController.getTopicsForTerm(getSearchTerm(query), start, length, this.fPlugId);
@@ -78,8 +79,7 @@ public class SnsPlug implements IPlug {
                             this.fPlugId);
                     break;
                 case Topic.TOPIC_FROM_TOPIC:
-                    Topic[] hitsTemp = this.fSnsController
-                            .getTopicsForTopic(getSearchTerm(query), length, this.fPlugId);
+                    hitsTemp = this.fSnsController.getTopicsForTopic(getSearchTerm(query), length, this.fPlugId);
                     if (null != hitsTemp) {
                         hits = hitsTemp;
                     }
@@ -88,10 +88,14 @@ public class SnsPlug implements IPlug {
                     hits = this.fSnsController.getAnniversaryFromTopic(getSearchTerm(query), length, this.fPlugId);
                     break;
                 case Topic.SIMILARTERMS_FROM_TOPIC:
-                    hits = this.fSnsController.getSimilarTermsFromTopic(getSearchTerm(query), length, this.fPlugId);
+                    hitsTemp = this.fSnsController.getSimilarTermsFromTopic(getSearchTerm(query), length, this.fPlugId);
+                    if (null != hitsTemp) {
+                        hits = hitsTemp;
+                    }
                     break;
                 case Topic.SIMILARLOCATIONS_FROM_TOPIC:
-                    hits = this.fSnsController.getSimilarLocationsFromTopic(getSearchTerm(query), length, this.fPlugId);
+                    hits = this.fSnsController.getTopicSimilarLocationsFromTopic(getSearchTerm(query), length,
+                            this.fPlugId);
                     break;
                 case Topic.EVENT_FROM_TOPIC:
                     final String[] eventType = (String[]) query.get("eventtype");

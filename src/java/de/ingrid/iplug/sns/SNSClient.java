@@ -142,7 +142,7 @@ public class SNSClient {
         psiRequest.setDistance(BigInteger.valueOf(distance));
         psiRequest.setId(topicID);
         if (null != filter) {
-            //psiRequest.setFilter();
+            psiRequest.setFilter(filter);
         }
 
         return this.fXtmSoapPortType.getPSIOp(psiRequest);

@@ -16,6 +16,9 @@ import de.ingrid.utils.query.IngridQuery;
 import de.ingrid.utils.queryparser.IDataTypes;
 import de.ingrid.utils.queryparser.QueryStringParser;
 
+/**
+ * 
+ */
 public class SNSInterfaceTest extends TestCase {
 
     private static PlugDescription fPlugDescription;
@@ -30,8 +33,6 @@ public class SNSInterfaceTest extends TestCase {
     }
     private SnsPlug fPlug;
     
-    private String[] fields;
-    
     static int HITS_PER_PAGE = 10;
 
     static int CURRENT_PAGE = 1;
@@ -41,6 +42,9 @@ public class SNSInterfaceTest extends TestCase {
         this.fPlug = new SnsPlug(fPlugDescription);
     }
 
+    /**
+     * @throws Exception
+     */
     public void testGetAnniversaries() throws Exception {
         System.out.println("########## testGetAnniversaries()");
         Calendar cal = Calendar.getInstance();
@@ -59,7 +63,7 @@ public class SNSInterfaceTest extends TestCase {
 
         
 
-        IngridHits hits = fPlug.search(query, 0, 10);
+        IngridHits hits = this.fPlug.search(query, 0, 10);
         IngridHit[] hitsArray = hits.getHits();
         assertNotNull(hitsArray);
         if (hitsArray.length == 0) {
@@ -71,7 +75,7 @@ public class SNSInterfaceTest extends TestCase {
             }
         }
         System.out.println("--- try to fetch details:");
-        IngridHitDetail[] details = fPlug.getDetails(hitsArray, query, new String[0]);
+        IngridHitDetail[] details = this.fPlug.getDetails(hitsArray, query, new String[0]);
         assertNotNull(details);
         if (details.length > 0) {
             for (int i = 0; i < details.length; i++) {
@@ -85,6 +89,9 @@ public class SNSInterfaceTest extends TestCase {
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public void testEVENTS_FROM_TERM() throws Exception {
         System.out.println("########## testEVENTS_FROM_TERM()");
         String term = "Tschernobyl";
@@ -93,7 +100,7 @@ public class SNSInterfaceTest extends TestCase {
         query.addField(new FieldQuery(true, false, "datatype", IDataTypes.SNS));
         query.putInt(Topic.REQUEST_TYPE, Topic.EVENT_FROM_TOPIC);
 
-        IngridHits hits = fPlug.search(query, 0,10);
+        IngridHits hits = this.fPlug.search(query, 0,10);
         IngridHit[] hitsArray = hits.getHits();
         assertNotNull(hitsArray);
         if (hitsArray.length == 0) {
@@ -106,6 +113,9 @@ public class SNSInterfaceTest extends TestCase {
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public void testEVENTS_FROM_TYPE() throws Exception {
         System.out.println("########## testEVENTS_FROM_TYPE()");
         String term = "";
@@ -117,7 +127,7 @@ public class SNSInterfaceTest extends TestCase {
         query.put("eventtype",new String[]{ eventType});
 
         
-        IngridHits hits = fPlug.search(query, 0, 10);
+        IngridHits hits = this.fPlug.search(query, 0, 10);
         IngridHit[] hitsArray = hits.getHits();
         assertNotNull(hitsArray);
         if (hitsArray.length == 0) {
@@ -130,6 +140,9 @@ public class SNSInterfaceTest extends TestCase {
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public void testEVENTS_FROM_TYPE_AND_TERM() throws Exception {
         System.out.println("########## testEVENTS_FROM_TYPE_AND_TERM()");
         String term = "Tschernobyl";
@@ -141,7 +154,7 @@ public class SNSInterfaceTest extends TestCase {
         query.putInt(Topic.REQUEST_TYPE, Topic.EVENT_FROM_TOPIC);
         query.put("eventtype", new String[] {eventType});
 
-        IngridHits hits = fPlug.search(query, 0, 10);
+        IngridHits hits = this.fPlug.search(query, 0, 10);
         IngridHit[] hitsArray = hits.getHits();
         assertNotNull(hitsArray);
         if (hitsArray.length == 0) {
@@ -154,6 +167,9 @@ public class SNSInterfaceTest extends TestCase {
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public void testEVENT_DETAILS() throws Exception {
         System.out.println("########## testEVENT_DETAILS()");
         String term = "Tschernobyl";
@@ -166,7 +182,7 @@ public class SNSInterfaceTest extends TestCase {
 //        query.put("eventtype", eventType);
 
       
-        IngridHits hits = fPlug.search(query, 0, 10);
+        IngridHits hits = this.fPlug.search(query, 0, 10);
         IngridHit[] hitsArray = hits.getHits();
         assertNotNull(hitsArray);
         if (hitsArray.length == 0) {
@@ -176,7 +192,7 @@ public class SNSInterfaceTest extends TestCase {
             System.out.println(hit.getTopicName() + ":" + hit.getTopicID());
 
         }
-        IngridHitDetail[] details = fPlug.getDetails(hitsArray, query, new String[0]);
+        IngridHitDetail[] details = this.fPlug.getDetails(hitsArray, query, new String[0]);
         assertNotNull(details);
         if (details.length > 0) {
             for (int i = 0; i < details.length; i++) {

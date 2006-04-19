@@ -277,7 +277,7 @@ public class SnsPlugTest extends TestCase {
      * @throws Exception
      */
     public void testSIMILARLOCATIONS_FROM_TOPIC() throws Exception {
-        final String q = "blau";
+        final String q = "GEMEINDE0325502016";
         
         SnsPlug plug = new SnsPlug(fPlugDescription);
         IngridQuery query = new IngridQuery();

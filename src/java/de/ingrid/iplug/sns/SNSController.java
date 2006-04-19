@@ -204,8 +204,6 @@ public class SNSController {
      * @return a ingrid topic from a _topic
      */
     private synchronized Topic buildTopicFrom_topic(_topic topic, String plugId) {
-        // return new Topic(null, topic.getId(), topic.getBaseName()[0].getBaseNameString().getValue());
-
         String title = topic.getBaseName()[0].getBaseNameString().getValue();
         String summary = title + " " + topic.getInstanceOf()[0].getTopicRef().getHref();
         String topicId = topic.getId();
@@ -311,11 +309,14 @@ public class SNSController {
      * @throws Exception
      */
     private Topic[] copyToTopicArray(_topic[] topics, int maxResults, String plugId) throws Exception {
-        int count = Math.min(maxResults, topics.length);
         ArrayList ingridTopics = new ArrayList();
-        for (int i = 0; i < count; i++) {
-            if (!topics[i].getId().equals("_Interface0")) {
-                ingridTopics.add(buildTopicFrom_topic(topics[i], plugId));
+
+        if (null != topics) {
+            int count = Math.min(maxResults, topics.length);
+            for (int i = 0; i < count; i++) {
+                if (!topics[i].getId().equals("_Interface0")) {
+                    ingridTopics.add(buildTopicFrom_topic(topics[i], plugId));
+                }
             }
         }
 
@@ -467,11 +468,21 @@ public class SNSController {
      * @throws Exception
      */
     public DetailedTopic getTopicDetail(IngridHit hit) throws Exception {
+        return getTopicDetail(hit, null);
+    }
+
+    /**
+     * @param hit
+     * @param filter
+     * @return A detailed topic to a filter.
+     * @throws Exception
+     */
+    public DetailedTopic getTopicDetail(IngridHit hit, String filter) throws Exception {
         Topic topic = (Topic) hit;
         String topicID = topic.getTopicID();
         DetailedTopic result = null;
 
-        _topicMapFragment mapFragment = this.fServiceClient.getPSI(topicID, 0, null);
+        _topicMapFragment mapFragment = this.fServiceClient.getPSI(topicID, 0, filter);
         if (null != mapFragment) {
             _topic[] topics = mapFragment.getTopicMap().getTopic();
 
@@ -486,13 +497,21 @@ public class SNSController {
     }
 
     /**
-     * @param searchTerm
+     * @param topicId
      * @param length
-     * @param string
-     * @return
+     * @param plugId
+     * @return A topic array from similar location topics.
+     * @throws Exception
      */
-    public Topic[] getSimilarLocationsFromTopic(String searchTerm, int length, String string) {
-        // FIXME: see bug INGRID-838
-        return null;
+    public Topic[] getTopicSimilarLocationsFromTopic(String topicId, int length, String plugId) throws Exception {
+        Topic[] result = null;
+
+        _topicMapFragment mapFragment = this.fServiceClient.getPSI(topicId, 0, "/location");
+        if (null != mapFragment) {
+            _topic[] topics = mapFragment.getTopicMap().getTopic();
+            result = copyToTopicArray(topics, length, plugId);
+        }
+
+        return result;
     }
 }
