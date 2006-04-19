@@ -293,4 +293,29 @@ public class SnsPlugTest extends TestCase {
             System.out.println(hit.getTopicName() + ":" + hit.getTopicID());
         }
     }
+    
+    /**
+     * @throws Exception
+     */
+    public void testDateInFuture() throws Exception {
+        final String q = "";
+        
+        SnsPlug plug = new SnsPlug(fPlugDescription);
+        IngridQuery query = QueryStringParser.parse(q);
+        query.putInt(Topic.REQUEST_TYPE, Topic.EVENT_FROM_TOPIC);
+        String[] eventTypes = new String[] {"industrialAccident"};
+        query.put("eventtype", eventTypes);
+        query.put("t2", "3000-01-01");
+        query.addField(new FieldQuery(true, false, "datatype", IDataTypes.SNS));
+
+        IngridHits hits = plug.search(query, 0, 10);
+        System.out.println(hits.length());
+        IngridHit[] hitsArray = hits.getHits();
+        assertNotNull(hitsArray);
+        for (int i = 0; i < hitsArray.length; i++) {
+            Topic hit = (Topic) hitsArray[i];
+            System.out.println(hit.getTopicName() + ":" + hit.getTopicID());
+        }
+    }
+    
 }
