@@ -175,8 +175,7 @@ public class SNSClient {
         classifyRequest.setDocument(document);
         classifyRequest.setAnalyzeMaxWords("" + analyzeMaxWords);
         if (null != filter) {
-            // TODO: enable this if implemented in the xtmStub jar
-            //classifyRequest.setFilter(filter);
+            classifyRequest.setFilter(filter);
         }
 
         return this.fXtmSoapPortType.autoClassifyOp(classifyRequest);
