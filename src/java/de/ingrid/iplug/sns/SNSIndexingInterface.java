@@ -71,7 +71,7 @@ public class SNSIndexingInterface {
     public String[] getBuzzwords(final String text, final int maxToAnalyzeWords) throws Exception {
         String[] result = new String[0];
 
-        final _topicMapFragment mapFragment = this.fSNSClient.autoClassify(text, maxToAnalyzeWords);
+        final _topicMapFragment mapFragment = this.fSNSClient.autoClassify(text, maxToAnalyzeWords, null);
         this.fTopics = mapFragment.getTopicMap().getTopic();
 
         this.fTemporal.clear();

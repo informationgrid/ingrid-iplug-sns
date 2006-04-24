@@ -94,13 +94,14 @@ public class SNSController {
     /**
      * @param documentText
      * @param maxToAnalyzeWords
+     * @param filter
      * @param plugId
      * @return array of detailed topics for the given text
      * @throws Exception
      */
-    public synchronized DetailedTopic[] getTopicsForText(String documentText, int maxToAnalyzeWords, String plugId)
-            throws Exception {
-        final _topicMapFragment mapFragment = this.fServiceClient.autoClassify(documentText, maxToAnalyzeWords);
+    public synchronized DetailedTopic[] getTopicsForText(String documentText, int maxToAnalyzeWords, String filter,
+            String plugId) throws Exception {
+        final _topicMapFragment mapFragment = this.fServiceClient.autoClassify(documentText, maxToAnalyzeWords, filter);
         final _topic[] topics = mapFragment.getTopicMap().getTopic();
         if (topics != null) {
             return toDetailedTopicArray(topics, plugId);
@@ -513,5 +514,16 @@ public class SNSController {
         }
 
         return result;
+    }
+
+    /**
+     * @param searchTerm
+     * @param i
+     * @param plugId
+     * @return Array of detailed topics for the given text.
+     * @throws Exception
+     */
+    public synchronized DetailedTopic[] getTopicsForText(String searchTerm, int i, String plugId) throws Exception {
+        return getTopicsForText(searchTerm, i, null, plugId);
     }
 }

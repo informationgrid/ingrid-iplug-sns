@@ -156,10 +156,11 @@ public class SNSClient {
      *            The text to analyze.
      * @param analyzeMaxWords
      *            The number of words to analyze.
+     * @param filter 
      * @return A topic map fragment.
      * @throws Exception
      */
-    public synchronized _topicMapFragment autoClassify(String document, int analyzeMaxWords) throws Exception {
+    public synchronized _topicMapFragment autoClassify(String document, int analyzeMaxWords, String filter) throws Exception {
         if (document == null) {
             throw new IllegalArgumentException("document can not be null");
         }
@@ -173,6 +174,10 @@ public class SNSClient {
         classifyRequest.setLang(this.fLanguage);
         classifyRequest.setDocument(document);
         classifyRequest.setAnalyzeMaxWords("" + analyzeMaxWords);
+        if (null != filter) {
+            // TODO: enable this if implemented in the xtmStub jar
+            //classifyRequest.setFilter(filter);
+        }
 
         return this.fXtmSoapPortType.autoClassifyOp(classifyRequest);
     }

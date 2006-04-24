@@ -37,10 +37,10 @@ public class SNSIndexingInterfaceTest extends TestCase {
             System.out.println(result[i].getX2());
             System.out.println(result[i].getY1());
             System.out.println(result[i].getY2());
-            System.out.println(result[i].getGemeindekennziffer());    
+            System.out.println(result[i].getGemeindekennziffer());
         }
     }
-    
+
     /**
      * @throws Exception
      */
@@ -57,7 +57,7 @@ public class SNSIndexingInterfaceTest extends TestCase {
             System.out.println(result[i].getX2());
             System.out.println(result[i].getY1());
             System.out.println(result[i].getY2());
-            System.out.println(result[i].getGemeindekennziffer());    
+            System.out.println(result[i].getGemeindekennziffer());
         }
     }
 
@@ -79,7 +79,7 @@ public class SNSIndexingInterfaceTest extends TestCase {
     public void testGetBuzzword() throws Exception {
         final String[] result = this.fSnsInterface.getBuzzwords("Tschernobyl Ohio", 1000);
         assertNotNull(result);
-        assertEquals(5, result.length);
+        assertEquals(6, result.length);
     }
 
     /**
@@ -100,20 +100,5 @@ public class SNSIndexingInterfaceTest extends TestCase {
         final Temporal[] result = this.fSnsInterface.getReferencesToTime();
         assertNotNull(result);
         assertEquals(0, result.length);
-    }
-
-    /**
-     * @throws Exception
-     */
-    public void testGetReferencesWithOtherDateFormatYYYY() throws Exception {
-        this.fSnsInterface.getBuzzwords("wasser magdeburg", 1000);
-
-        try {
-            final Temporal[] result = this.fSnsInterface.getReferencesToTime();
-            assertNotNull(result);
-            assertEquals(1, result.length);
-        } catch (ParseException e) {
-            fail();
-        }
     }
 }

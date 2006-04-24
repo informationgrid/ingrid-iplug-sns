@@ -63,7 +63,6 @@ public class SnsPlug implements IPlug {
         }
 
         if (containsSNSDataType(query.getDataTypes())) {
-            Topic[] hits = new Topic[0];
             int type = query.getInt(Topic.REQUEST_TYPE);
 
             // FIXME: By TOPIC FROM TOPIC i get the range by the other i must
@@ -72,29 +71,24 @@ public class SnsPlug implements IPlug {
                 Topic[] hitsTemp = null;
                 switch (type) {
                 case Topic.TOPIC_FROM_TERM:
-                    hits = this.fSnsController.getTopicsForTerm(getSearchTerm(query), start, length, this.fPlugId);
+                    hitsTemp = this.fSnsController.getTopicsForTerm(getSearchTerm(query), start, length, this.fPlugId);
                     break;
                 case Topic.TOPIC_FROM_TEXT:
-                    hits = this.fSnsController.getTopicsForText(getSearchTerm(query), this.fMaximalAnalyzedWord,
-                            this.fPlugId);
+                    final String filter = (String) query.get("filter");
+                    hitsTemp = this.fSnsController.getTopicsForText(getSearchTerm(query), this.fMaximalAnalyzedWord,
+                            filter, this.fPlugId);
                     break;
                 case Topic.TOPIC_FROM_TOPIC:
                     hitsTemp = this.fSnsController.getTopicsForTopic(getSearchTerm(query), length, this.fPlugId);
-                    if (null != hitsTemp) {
-                        hits = hitsTemp;
-                    }
                     break;
                 case Topic.ANNIVERSARY_FROM_TOPIC:
-                    hits = this.fSnsController.getAnniversaryFromTopic(getSearchTerm(query), length, this.fPlugId);
+                    hitsTemp = this.fSnsController.getAnniversaryFromTopic(getSearchTerm(query), length, this.fPlugId);
                     break;
                 case Topic.SIMILARTERMS_FROM_TOPIC:
                     hitsTemp = this.fSnsController.getSimilarTermsFromTopic(getSearchTerm(query), length, this.fPlugId);
-                    if (null != hitsTemp) {
-                        hits = hitsTemp;
-                    }
                     break;
                 case Topic.SIMILARLOCATIONS_FROM_TOPIC:
-                    hits = this.fSnsController.getTopicSimilarLocationsFromTopic(getSearchTerm(query), length,
+                    hitsTemp = this.fSnsController.getTopicSimilarLocationsFromTopic(getSearchTerm(query), length,
                             this.fPlugId);
                     break;
                 case Topic.EVENT_FROM_TOPIC:
@@ -103,16 +97,20 @@ public class SnsPlug implements IPlug {
                     final String fromDate = (String) query.get("t1");
                     final String toDate = (String) query.get("t2");
                     if (null != atDate) {
-                        hits = this.fSnsController.getEventFromTopic(getSearchTerm(query), eventType, atDate, start,
-                                length, this.fPlugId);
-                    } else {
-                        hits = this.fSnsController.getEventFromTopic(getSearchTerm(query), eventType, fromDate, toDate,
+                        hitsTemp = this.fSnsController.getEventFromTopic(getSearchTerm(query), eventType, atDate,
                                 start, length, this.fPlugId);
+                    } else {
+                        hitsTemp = this.fSnsController.getEventFromTopic(getSearchTerm(query), eventType, fromDate,
+                                toDate, start, length, this.fPlugId);
                     }
                     break;
                 default:
                     log.error("Unknown topic request type.");
                     break;
+                }
+                Topic[] hits = new Topic[0];
+                if (null != hitsTemp) {
+                    hits = hitsTemp;
                 }
 
                 // FIXME: I think this is wrong if you want to get a range. But
