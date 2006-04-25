@@ -4,8 +4,6 @@
 
 package de.ingrid.iplug.sns;
 
-import java.text.ParseException;
-
 import junit.framework.TestCase;
 
 /**
@@ -77,9 +75,26 @@ public class SNSIndexingInterfaceTest extends TestCase {
      * @throws Exception
      */
     public void testGetBuzzword() throws Exception {
-        final String[] result = this.fSnsInterface.getBuzzwords("Tschernobyl Ohio", 1000);
+        String[] result = null;
+        final String words = "In diesem Jahr können sich kleine und mittlere Unternehmen bis zum 15. "
+                + "August 2006 bewerben. Eine aus Vertretern von Wissenschaft, Wirtschaft und mittelständischen "
+                + "Anwenderunternehmen besetzte Jury wird bis zu drei Bewerber aus den Kategorien E-Business, Breitband und "
+                + "Mobilität auswählen und mit Preisen in Höhe von je 25.000 Euro auszeichnen. Die Preisverleihung findet im "
+                + "Rahmen des 2. Deutschen ITK-Mittelstandstages im November 2006 statt Für die Verwendung der "
+                + "Ein-Ausgabe-Klassen muss das Package java.io importiert werden Wir haben bereits gelernt, wie die Ein- und "
+                + "Ausgabe in Graphischen User-Interfaces programmiert wird. Nun wollen wir uns auch damit beschäftigen, wie wir "
+                + "Daten von Dateien einlesen und in Dateien speichern können. Wir haben bereits gelernt, wie die Ein- und "
+                + "Ausgabe in Graphischen User-Interfaces programmiert wird.";
+        final long start = System.currentTimeMillis();
+        try {
+            result = this.fSnsInterface.getBuzzwords(words, 1000);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail();
+        }
+        final long end = System.currentTimeMillis();
+        System.out.println("Time for getting all buzzwords: " + ((end - start) / 1000) + " s");
         assertNotNull(result);
-        assertEquals(6, result.length);
     }
 
     /**
