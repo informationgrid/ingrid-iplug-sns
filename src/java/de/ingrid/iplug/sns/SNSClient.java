@@ -10,6 +10,7 @@ import java.net.URL;
 import java.rmi.RemoteException;
 
 import com.slb.taxi.webservice.xtm.stubs.FieldsType;
+import com.slb.taxi.webservice.xtm.stubs.HttpSoapBindingStub;
 import com.slb.taxi.webservice.xtm.stubs.SearchType;
 import com.slb.taxi.webservice.xtm.stubs.XTMESoapPortType;
 import com.slb.taxi.webservice.xtm.stubs.XTMserviceLocator;
@@ -39,6 +40,8 @@ public class SNSClient {
     private String fLanguage = null;
 
     private XTMESoapPortType fXtmSoapPortType = null;
+
+    private HttpSoapBindingStub fSoapBinding = null;
 
     /**
      * Constructs an instance by using the given parameters.
@@ -73,8 +76,10 @@ public class SNSClient {
         this.fLanguage = language;
         if (url == null) {
             this.fXtmSoapPortType = new XTMserviceLocator().getXTMSoapPort();
+            this.fSoapBinding = (HttpSoapBindingStub) this.fXtmSoapPortType;
         } else {
             this.fXtmSoapPortType = new XTMserviceLocator().getXTMSoapPort(url);
+            this.fSoapBinding = (HttpSoapBindingStub) this.fXtmSoapPortType;
         }
     }
 
@@ -123,7 +128,7 @@ public class SNSClient {
      * 
      * @param topicID
      * @param distance
-     * @param filter 
+     * @param filter
      * @return The response object.
      * @throws Exception
      */
@@ -156,11 +161,12 @@ public class SNSClient {
      *            The text to analyze.
      * @param analyzeMaxWords
      *            The number of words to analyze.
-     * @param filter 
+     * @param filter
      * @return A topic map fragment.
      * @throws Exception
      */
-    public synchronized _topicMapFragment autoClassify(String document, int analyzeMaxWords, String filter) throws Exception {
+    public synchronized _topicMapFragment autoClassify(String document, int analyzeMaxWords, String filter)
+            throws Exception {
         if (document == null) {
             throw new IllegalArgumentException("document can not be null");
         }
@@ -213,7 +219,7 @@ public class SNSClient {
         findEvents.setUser(this.fUserName);
         findEvents.setPassword(this.fPassword);
         findEvents.setQueryTerm(query);
-        
+
         if (ignoreCase) {
             findEvents.setIgnoreCase("true");
         } else {
@@ -308,5 +314,15 @@ public class SNSClient {
         getSimilarTerms.setTerm(terms);
 
         return this.fXtmSoapPortType.getSimilarTermsOp(getSimilarTerms);
+    }
+
+    /**
+     * Set timeout in milliseconds for the SN-Service connection.
+     * 
+     * @param timeout
+     *            Timeout in milliseconds.
+     */
+    public void setTimeout(final int timeout) {
+        this.fSoapBinding.setTimeout(timeout);
     }
 }

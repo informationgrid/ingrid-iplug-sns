@@ -57,6 +57,16 @@ public class SNSIndexingInterface {
     }
 
     /**
+     * Allows to set the timeout for the sn-service connection.
+     * 
+     * @param timeout
+     *            The timeout in milliseconds.
+     */
+    public void setTimeout(final int timeout) {
+        this.fSNSClient.setTimeout(timeout);
+    }
+
+    /**
      * All buzzwords to the given document. You must call this method first to get results from
      * <code>getReferencesToTime</code> and <code>getReferencesToSpace</code>.
      * 

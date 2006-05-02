@@ -65,8 +65,6 @@ public class SnsPlug implements IPlug {
         if (containsSNSDataType(query.getDataTypes())) {
             int type = query.getInt(Topic.REQUEST_TYPE);
 
-            // FIXME: By TOPIC FROM TOPIC i get the range by the other i must
-            // select my range. Is this correct?
             try {
                 Topic[] hitsTemp = null;
                 switch (type) {
@@ -113,8 +111,6 @@ public class SnsPlug implements IPlug {
                     hits = hitsTemp;
                 }
 
-                // FIXME: I think this is wrong if you want to get a range. But
-                // see FIXME above.
                 int max = Math.min(hits.length, length);
                 IngridHit[] finalHits = new IngridHit[max];
                 System.arraycopy(hits, start, finalHits, 0, max);
@@ -165,7 +161,9 @@ public class SnsPlug implements IPlug {
         this.fPassWord = (String) plugDescription.get("password");
         this.fLanguage = (String) plugDescription.get("language");
         this.fMaximalAnalyzedWord = plugDescription.getInt("maxWordForAnalyzing");
-        this.fSnsController = new SNSController(new SNSClient(this.fUserName, this.fPassWord, this.fLanguage));
+        SNSClient snsClient = new SNSClient(this.fUserName, this.fPassWord, this.fLanguage);
+        snsClient.setTimeout(180000);
+        this.fSnsController = new SNSController(snsClient);
     }
 
     /*
