@@ -24,6 +24,7 @@ public class SNSServiceClientTest extends TestCase {
     static {
         try {
             adapter = new SNSClient("ms", "m3d1asyl3", "de");
+            adapter.setTimeout(180000);
         } catch (Exception e) {
             fail(e.getMessage());
         }

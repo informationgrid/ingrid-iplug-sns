@@ -43,6 +43,7 @@ public class SNSControllerTest extends TestCase {
         super.setUp();
 
         fClient = new SNSClient("ms", "m3d1asyl3", "de");
+        fClient.setTimeout(180000);
 
         this.fToStdout = true;
     }

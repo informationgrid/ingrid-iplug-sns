@@ -24,7 +24,10 @@ public class SNSControllerPerformanceTest extends TestCase {
         super.setUp();
 
         this.fSNSControllerTest = new SNSControllerTest();
-        this.fSNSControllerTest.setSNSClient(new SNSClient("ms", "m3d1asyl3", "de"));
+        SNSClient snsClient = new SNSClient("ms", "m3d1asyl3", "de");
+        snsClient.setTimeout(180000);
+        this.fSNSControllerTest.setSNSClient(snsClient);
+        
     }
 
     /**

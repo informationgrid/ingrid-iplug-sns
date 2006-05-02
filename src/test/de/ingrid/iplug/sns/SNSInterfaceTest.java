@@ -25,7 +25,7 @@ public class SNSInterfaceTest extends TestCase {
 
     static {
         fPlugDescription = new PlugDescription();
-        fPlugDescription.setPlugId("aPlugId");
+        fPlugDescription.setProxyServiceURL("aPlugId");
         fPlugDescription.put("username", "ms");
         fPlugDescription.put("password", "m3d1asyl3");
         fPlugDescription.put("language", "de");
@@ -125,6 +125,8 @@ public class SNSInterfaceTest extends TestCase {
         query.addField(new FieldQuery(true, false, "datatype", IDataTypes.SNS));
         query.putInt(Topic.REQUEST_TYPE, Topic.EVENT_FROM_TOPIC);
         query.put("eventtype",new String[]{ eventType});
+        // Set a date in the future to get all events?
+        query.put("t2", "6001-01-01");
 
         
         IngridHits hits = this.fPlug.search(query, 0, 10);

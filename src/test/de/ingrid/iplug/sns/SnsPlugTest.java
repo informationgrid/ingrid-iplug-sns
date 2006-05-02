@@ -27,7 +27,7 @@ public class SnsPlugTest extends TestCase {
 
     static {
         fPlugDescription = new PlugDescription();
-        fPlugDescription.setPlugId("aPlugId");
+        fPlugDescription.setProxyServiceURL("aPlugId");
         fPlugDescription.put("username", "ms");
         fPlugDescription.put("password", "m3d1asyl3");
         fPlugDescription.put("language", "de");
@@ -61,7 +61,6 @@ public class SnsPlugTest extends TestCase {
     public void testTOPIC_FROM_TEXT() throws Exception {
         SnsPlug plug = new SnsPlug(fPlugDescription);
         String q = "\"Tschernobyl liegt in Halle gefunden\"";
-        // IngridQuery query = QueryStringParser.parse(q);
         IngridQuery query = new IngridQuery();
         query.addTerm(new TermQuery(true, false, q));
         query.addField(new FieldQuery(true, false, "datatype", IDataTypes.SNS));
@@ -75,6 +74,26 @@ public class SnsPlugTest extends TestCase {
         }
     }
 
+    /**
+     * @throws Exception
+     */
+    public void testTOPIC_FROM_TEXT_WITH_FILTER() throws Exception {
+        SnsPlug plug = new SnsPlug(fPlugDescription);
+        String q = "Frankfurt";
+        IngridQuery query = new IngridQuery();
+        query.addTerm(new TermQuery(true, false, q));
+        query.addField(new FieldQuery(true, false, "datatype", IDataTypes.SNS));
+        query.putInt(Topic.REQUEST_TYPE, Topic.TOPIC_FROM_TEXT);
+        query.put("filter", "/location");
+        IngridHits hits = plug.search(query, 0, 10);
+        IngridHit[] hitsArray = hits.getHits();
+        assertNotNull(hitsArray);
+        for (int i = 0; i < hitsArray.length; i++) {
+            DetailedTopic hit = (DetailedTopic) hitsArray[i];
+            System.out.println(hit.getTopicName() + ":" + hit.getAdministrativeID() + ":" + hit.getTopicID());
+        }
+    }
+    
     /**
      * @throws Exception
      */

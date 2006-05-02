@@ -17,6 +17,7 @@ public class SNSIndexingInterfaceTest extends TestCase {
         super.setUp();
 
         this.fSnsInterface = new SNSIndexingInterface("ms", "m3d1asyl3", "de");
+        this.fSnsInterface.setTimeout(180000);
     }
 
     /**
