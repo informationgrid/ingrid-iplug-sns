@@ -13,6 +13,7 @@ import de.ingrid.utils.IngridHits;
 import de.ingrid.utils.PlugDescription;
 import de.ingrid.utils.query.FieldQuery;
 import de.ingrid.utils.query.IngridQuery;
+import de.ingrid.utils.query.TermQuery;
 import de.ingrid.utils.queryparser.IDataTypes;
 import de.ingrid.utils.queryparser.QueryStringParser;
 
@@ -94,9 +95,9 @@ public class SNSInterfaceTest extends TestCase {
      */
     public void testEVENTS_FROM_TERM() throws Exception {
         System.out.println("########## testEVENTS_FROM_TERM()");
-        String term = "Tschernobyl";
-        System.out.println("TERM = " + term);
-        IngridQuery query = QueryStringParser.parse(term);
+        String term = "Reaktorunglück Tschernobyl";
+        IngridQuery query = new IngridQuery();
+        query.addTerm(new TermQuery(true, false, term));
         query.addField(new FieldQuery(true, false, "datatype", IDataTypes.SNS));
         query.putInt(Topic.REQUEST_TYPE, Topic.EVENT_FROM_TOPIC);
 
