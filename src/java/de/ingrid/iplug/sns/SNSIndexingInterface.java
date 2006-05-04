@@ -78,9 +78,10 @@ public class SNSIndexingInterface {
      * @throws Exception
      *             If we cannot connect to the sns server.
      */
-    public String[] getBuzzwords(final String text, final int maxToAnalyzeWords) throws Exception {
+    public String[] getBuzzwords(final String text, final int maxToAnalyzeWords, String caseSensitive) throws Exception {
         String[] result = new String[0];
 
+        this.fSNSClient.setCaseSensitive(caseSensitive);
         final _topicMapFragment mapFragment = this.fSNSClient.autoClassify(text, maxToAnalyzeWords, null);
         this.fTopics = mapFragment.getTopicMap().getTopic();
 

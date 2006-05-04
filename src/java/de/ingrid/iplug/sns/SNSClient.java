@@ -41,6 +41,8 @@ public class SNSClient {
 
     private XTMESoapPortType fXtmSoapPortType = null;
 
+    private String fCaseSensitive = "true";
+
     private HttpSoapBindingStub fSoapBinding = null;
 
     /**
@@ -180,6 +182,7 @@ public class SNSClient {
         classifyRequest.setLang(this.fLanguage);
         classifyRequest.setDocument(document);
         classifyRequest.setAnalyzeMaxWords("" + analyzeMaxWords);
+        classifyRequest.setIgnoreCase(this.fCaseSensitive);
         if (null != filter) {
             classifyRequest.setFilter(filter);
         }
@@ -314,6 +317,11 @@ public class SNSClient {
         getSimilarTerms.setTerm(terms);
 
         return this.fXtmSoapPortType.getSimilarTermsOp(getSimilarTerms);
+    }
+    
+    
+    public void setCaseSensitive(String caseSensitive) {
+        this.fCaseSensitive = caseSensitive;
     }
 
     /**
