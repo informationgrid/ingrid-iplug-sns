@@ -24,7 +24,7 @@ public class SNSIndexingInterfaceTest extends TestCase {
      * @throws Exception
      */
     public void testGetReferencesToSpace() throws Exception {
-        this.fSnsInterface.getBuzzwords("Halle", 1000);
+        this.fSnsInterface.getBuzzwords("Halle", 1000, "false");
 
         final Wgs84Box[] result = this.fSnsInterface.getReferencesToSpace();
         assertNotNull(result);
@@ -44,7 +44,7 @@ public class SNSIndexingInterfaceTest extends TestCase {
      * @throws Exception
      */
     public void testGetReferencesToSpaceBundesland() throws Exception {
-        this.fSnsInterface.getBuzzwords("Sachsen", 1000);
+        this.fSnsInterface.getBuzzwords("Sachsen", 1000, "false");
 
         final Wgs84Box[] result = this.fSnsInterface.getReferencesToSpace();
         assertNotNull(result);
@@ -64,7 +64,7 @@ public class SNSIndexingInterfaceTest extends TestCase {
      * @throws Exception
      */
     public void testGetReferencesToTime() throws Exception {
-        this.fSnsInterface.getBuzzwords("Tschernobyl Ohio", 1000);
+        this.fSnsInterface.getBuzzwords("Tschernobyl Ohio", 1000, "false");
 
         final Temporal[] result = this.fSnsInterface.getReferencesToTime();
         assertNotNull(result);
@@ -88,7 +88,7 @@ public class SNSIndexingInterfaceTest extends TestCase {
                 + "Ausgabe in Graphischen User-Interfaces programmiert wird.";
         final long start = System.currentTimeMillis();
         try {
-            result = this.fSnsInterface.getBuzzwords(words, 1000);
+            result = this.fSnsInterface.getBuzzwords(words, 1000, "false");
         } catch (Exception e) {
             e.printStackTrace();
             fail();
@@ -102,7 +102,7 @@ public class SNSIndexingInterfaceTest extends TestCase {
      * @throws Exception
      */
     public void testGetBuzzwordNotExistent() throws Exception {
-        final String[] result = this.fSnsInterface.getBuzzwords("blabla", 1000);
+        final String[] result = this.fSnsInterface.getBuzzwords("blabla", 1000, "false");
         assertNotNull(result);
         assertEquals(0, result.length);
     }
@@ -111,7 +111,7 @@ public class SNSIndexingInterfaceTest extends TestCase {
      * @throws Exception
      */
     public void testGetReferencesNotExistent() throws Exception {
-        this.fSnsInterface.getBuzzwords("blabla", 1000);
+        this.fSnsInterface.getBuzzwords("blabla", 1000, "false");
 
         final Temporal[] result = this.fSnsInterface.getReferencesToTime();
         assertNotNull(result);
