@@ -45,6 +45,7 @@ public class SNSClient {
 
     private HttpSoapBindingStub fSoapBinding = null;
 
+    
     /**
      * Constructs an instance by using the given parameters.
      * 
