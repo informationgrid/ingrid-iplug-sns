@@ -6,6 +6,8 @@
 
 package de.ingrid.iplug.sns;
 
+import java.net.URL;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -161,7 +163,7 @@ public class SnsPlug implements IPlug {
         this.fPassWord = (String) plugDescription.get("password");
         this.fLanguage = (String) plugDescription.get("language");
         this.fMaximalAnalyzedWord = plugDescription.getInt("maxWordForAnalyzing");
-        SNSClient snsClient = new SNSClient(this.fUserName, this.fPassWord, this.fLanguage);
+        SNSClient snsClient = new SNSClient(this.fUserName, this.fPassWord, this.fLanguage, new URL("www.semantic-network.de/service/xtm/soap"));
         snsClient.setTimeout(180000);
         this.fSnsController = new SNSController(snsClient);
     }
