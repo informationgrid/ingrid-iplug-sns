@@ -137,7 +137,7 @@ public class SNSClient {
      */
     public synchronized _topicMapFragment getPSI(String topicID, int distance, String filter) throws Exception {
         if (topicID == null) {
-            throw new IllegalArgumentException("TopicID can not be  null");
+            throw new IllegalArgumentException("TopicID can not be null");
         }
         if (distance < 0 || distance > 3) {
             throw new IllegalArgumentException("Distance must have a value between 0 and 3");
@@ -333,5 +333,12 @@ public class SNSClient {
      */
     public void setTimeout(final int timeout) {
         this.fSoapBinding.setTimeout(timeout);
+    }
+
+    /**
+     * @return The language for this client.
+     */
+    public String getLanguage() {
+        return this.fLanguage;
     }
 }
