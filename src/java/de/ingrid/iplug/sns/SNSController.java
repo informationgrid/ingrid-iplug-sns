@@ -105,7 +105,8 @@ public class SNSController {
      */
     public synchronized DetailedTopic[] getTopicsForText(String documentText, int maxToAnalyzeWords, String filter,
             String plugId) throws Exception {
-        final _topicMapFragment mapFragment = this.fServiceClient.autoClassify(documentText, maxToAnalyzeWords, filter);
+        final _topicMapFragment mapFragment = this.fServiceClient.autoClassify(documentText, maxToAnalyzeWords, filter,
+                true);
         final _topic[] topics = mapFragment.getTopicMap().getTopic();
         if (topics != null) {
             return toDetailedTopicArray(topics, plugId);

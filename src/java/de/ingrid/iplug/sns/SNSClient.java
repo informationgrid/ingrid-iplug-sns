@@ -41,11 +41,8 @@ public class SNSClient {
 
     private XTMESoapPortType fXtmSoapPortType = null;
 
-    private String fCaseSensitive = "true";
-
     private HttpSoapBindingStub fSoapBinding = null;
 
-    
     /**
      * Constructs an instance by using the given parameters.
      * 
@@ -165,11 +162,13 @@ public class SNSClient {
      * @param analyzeMaxWords
      *            The number of words to analyze.
      * @param filter
+     * @param ignoreCase
+     *            Set to true ignore case of the document.
      * @return A topic map fragment.
      * @throws Exception
      */
-    public synchronized _topicMapFragment autoClassify(String document, int analyzeMaxWords, String filter)
-            throws Exception {
+    public synchronized _topicMapFragment autoClassify(String document, int analyzeMaxWords, String filter,
+            boolean ignoreCase) throws Exception {
         if (document == null) {
             throw new IllegalArgumentException("document can not be null");
         }
@@ -183,7 +182,11 @@ public class SNSClient {
         classifyRequest.setLang(this.fLanguage);
         classifyRequest.setDocument(document);
         classifyRequest.setAnalyzeMaxWords("" + analyzeMaxWords);
-        classifyRequest.setIgnoreCase(this.fCaseSensitive);
+        if (ignoreCase) {
+            classifyRequest.setIgnoreCase("true");
+        } else {
+            classifyRequest.setIgnoreCase("false");
+        }
         if (null != filter) {
             classifyRequest.setFilter(filter);
         }
@@ -318,11 +321,6 @@ public class SNSClient {
         getSimilarTerms.setTerm(terms);
 
         return this.fXtmSoapPortType.getSimilarTermsOp(getSimilarTerms);
-    }
-    
-    
-    public void setCaseSensitive(String caseSensitive) {
-        this.fCaseSensitive = caseSensitive;
     }
 
     /**
