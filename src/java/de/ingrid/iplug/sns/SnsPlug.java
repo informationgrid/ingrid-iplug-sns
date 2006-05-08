@@ -163,7 +163,7 @@ public class SnsPlug implements IPlug {
         this.fPassWord = (String) plugDescription.get("password");
         this.fLanguage = (String) plugDescription.get("language");
         this.fMaximalAnalyzedWord = plugDescription.getInt("maxWordForAnalyzing");
-        SNSClient snsClient = new SNSClient(this.fUserName, this.fPassWord, this.fLanguage, new URL("www.semantic-network.de/service/xtm/soap"));
+        SNSClient snsClient = new SNSClient(this.fUserName, this.fPassWord, this.fLanguage, new URL("http://www.semantic-network.de/service/xtm/soap"));
         snsClient.setTimeout(180000);
         this.fSnsController = new SNSController(snsClient);
     }
