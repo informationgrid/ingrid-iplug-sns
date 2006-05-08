@@ -7,6 +7,7 @@ import com.slb.taxi.webservice.xtm.stubs.FieldsType;
 import com.slb.taxi.webservice.xtm.stubs.SearchType;
 import com.slb.taxi.webservice.xtm.stubs._topicMapFragment;
 import com.slb.taxi.webservice.xtm.stubs.xtm._association;
+import com.slb.taxi.webservice.xtm.stubs.xtm._baseName;
 import com.slb.taxi.webservice.xtm.stubs.xtm._instanceOf;
 import com.slb.taxi.webservice.xtm.stubs.xtm._member;
 import com.slb.taxi.webservice.xtm.stubs.xtm._occurrence;
@@ -39,6 +40,8 @@ public class SNSController {
 
     private SNSClient fServiceClient = null;
 
+    private String fLanguage;
+
     private static final String[] fTypeFilters = new String[] { "narrowerTermAssoc", "widerTermAssoc", "synonymAssoc" };
 
     private static final String[] fAdministrativeTypes = new String[] { "communityType", "districtType", "quarterType",
@@ -49,6 +52,7 @@ public class SNSController {
      */
     public SNSController(SNSClient client) {
         this.fServiceClient = client;
+        this.fLanguage = client.getLanguage();
     }
 
     /**
@@ -134,7 +138,15 @@ public class SNSController {
      */
     private synchronized DetailedTopic buildDetailedTopicFrom_topic(_topic topic, String plugId) {
         String topicId = topic.getId();
-        String title = topic.getBaseName()[0].getBaseNameString().getValue();
+        _baseName[] bn = topic.getBaseName();
+        String title = "";
+        for (int i = 0; i < bn.length; i++) {
+            final String href = bn[i].getScope().getTopicRef()[0].getHref();
+            if (href.endsWith("#" + this.fLanguage)) {
+                title = topic.getBaseName()[i].getBaseNameString().getValue();
+                break;
+            }
+        }
 
         String summary = title + " " + topic.getInstanceOf()[0].getTopicRef().getHref();
         DetailedTopic metaData = new DetailedTopic(plugId, topicId.hashCode(), topicId, title, summary);
@@ -169,15 +181,16 @@ public class SNSController {
                 if (occurrences[i].getInstanceOf() != null) {
                     type = occurrences[i].getInstanceOf().getTopicRef().getHref();
                     if (type.endsWith(TEMPORAL_AT_OCCURRENCE)) {
-                        metaData.setFrom(occurrences[i].getResourceData().getValue());
-                        metaData.setTo(metaData.getFrom());
+                        final String at = occurrences[i].getResourceData().getValue();
+                        metaData.setFrom(at);
+                        metaData.setTo(at);
                         break;
                     }
                     if (type.endsWith(TEMPORAL_FROM_OCCURRENCE)) {
                         metaData.setFrom(occurrences[i].getResourceData().getValue());
                     }
                     if (type.endsWith(TEMPORAL_TO_OCCURRENCE)) {
-                        metaData.setTo(metaData.getFrom());
+                        metaData.setTo(occurrences[i].getResourceData().getValue());
                     }
                 }
             }
@@ -190,8 +203,14 @@ public class SNSController {
         if (occurrences != null) {
             for (int i = 0; i < occurrences.length; i++) {
                 if (occurrences[i].getInstanceOf() != null) {
+                    // Only compare the scope to the language if the element has one set.
+                    String scope = "#" + this.fLanguage;
+                    if (occurrences[i].getScope() != null) {
+                        scope = occurrences[i].getScope().getTopicRef(0).getHref();
+                    }
                     type = occurrences[i].getInstanceOf().getTopicRef().getHref();
-                    if (type.endsWith(occType) && occurrences[i].getResourceData() != null) {
+                    if (type.endsWith(occType) && occurrences[i].getResourceData() != null
+                            && scope.endsWith("#" + this.fLanguage)) {
                         detailedTopic.put(occType, occurrences[i].getResourceData().getValue());
                     }
                 }
