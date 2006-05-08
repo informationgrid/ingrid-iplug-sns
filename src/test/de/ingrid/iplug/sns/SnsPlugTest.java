@@ -254,6 +254,33 @@ public class SnsPlugTest extends TestCase {
     }
 
     /**
+     * Tests that the result is in german.
+     * @throws Exception
+     */
+    public void testEVENT_FROM_BUNDESWALDGESETZ() throws Exception {
+        SnsPlug plug = new SnsPlug(fPlugDescription);
+        String q = "Bundeswaldgesetz";
+        IngridQuery query = QueryStringParser.parse(q);
+        query.addField(new FieldQuery(true, false, "datatype", IDataTypes.SNS));
+        query.putInt(Topic.REQUEST_TYPE, Topic.EVENT_FROM_TOPIC);
+        query.put("t2", "3000-09-09");
+        IngridHits hits = plug.search(query, 0, 10);
+        IngridHit[] hitsArray = hits.getHits();
+        assertNotNull(hitsArray);
+        for (int i = 0; i < hitsArray.length; i++) {
+            Topic hit = (Topic) hitsArray[i];
+            System.out.println(hit.getTopicName() + ":" + hit.getTopicID());
+            
+            IngridHitDetail ihd = plug.getDetail(hit, query, null);
+            System.out.println(ihd.get(DetailedTopic.DESCRIPTION_OCC));
+            System.out.println(ihd.get(DetailedTopic.TO));
+            System.out.println(ihd.get(DetailedTopic.FROM));
+            System.out.println(ihd.get(DetailedTopic.ASSICIATED_OCC));
+            System.out.println(ihd.get(DetailedTopic.SAMPLE_OCC));
+        }
+    }
+    
+    /**
      * @throws Exception
      */
     public void testEVENT_TO() throws Exception {
