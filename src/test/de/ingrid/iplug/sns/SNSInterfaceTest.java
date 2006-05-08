@@ -126,7 +126,7 @@ public class SNSInterfaceTest extends TestCase {
         query.addField(new FieldQuery(true, false, "datatype", IDataTypes.SNS));
         query.putInt(Topic.REQUEST_TYPE, Topic.EVENT_FROM_TOPIC);
         query.put("eventtype",new String[]{ eventType});
-        // Set a date in the future to get all events?
+        // Set a date in the future to get all events.
         query.put("t2", "6001-01-01");
 
         
