@@ -42,7 +42,7 @@ public class SNSController {
 
     private String fLanguage;
 
-    private static final String[] fTypeFilters = new String[] { "narrowerTermAssoc", "widerTermAssoc", "synonymAssoc" };
+    private static final String[] fTypeFilters = new String[] { "narrowerTermAssoc", "widerTermAssoc", "synonymAssoc", "relatedTermsAssoc" };
 
     private static final String[] fAdministrativeTypes = new String[] { "communityType", "districtType", "quarterType",
             "stateType", "nationType" };
