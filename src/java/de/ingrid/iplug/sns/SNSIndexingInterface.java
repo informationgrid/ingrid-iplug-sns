@@ -16,6 +16,8 @@ import com.slb.taxi.webservice.xtm.stubs.xtm._occurrence;
 import com.slb.taxi.webservice.xtm.stubs.xtm._resourceData;
 import com.slb.taxi.webservice.xtm.stubs.xtm._topic;
 
+import de.ingrid.utils.tool.SNSUtil;
+
 /**
  * An interface to the SN Service. It is mainly used to get some data for indexing.
  */
@@ -136,14 +138,9 @@ public class SNSIndexingInterface {
                                 Date javaDate = parseDate(date);
                                 temporal.setTo(javaDate);
                             } else if (topicRef.endsWith("wgs84BoxOcc")) {
-                                String gemeindekennziffer = null;
+                                String gemeindekennziffer = SNSUtil.transformSpacialReference(topicId);
                                 Matcher m = this.fGemeindekennzifferPattern.matcher(topicId);
-                                if (m.matches() && m.groupCount() == 2) {
-                                    gemeindekennziffer = m.group(2);
-                                }
-
                                 final String coords = data.getValue();
-
                                 m = this.fCoordPattern.matcher(coords);
                                 if (m.matches() && m.groupCount() == 4) {
                                     final double x1 = new Double(m.group(1)).doubleValue();
