@@ -1,6 +1,7 @@
 package de.ingrid.iplug.sns;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import com.slb.taxi.webservice.xtm.stubs.FieldsType;
@@ -42,7 +43,8 @@ public class SNSController {
 
     private String fLanguage;
 
-    private static final String[] fTypeFilters = new String[] { "narrowerTermAssoc", "widerTermAssoc", "synonymAssoc", "relatedTermsAssoc" };
+    private static final String[] fTypeFilters = new String[] { "narrowerTermAssoc", "widerTermAssoc", "synonymAssoc",
+            "relatedTermsAssoc" };
 
     private static final String[] fAdministrativeTypes = new String[] { "communityType", "districtType", "quarterType",
             "stateType", "nationType" };
@@ -65,12 +67,14 @@ public class SNSController {
      */
     public synchronized Topic[] getTopicsForTerm(String queryTerm, int start, int maxResults, String plugId)
             throws Exception {
+        HashMap associationTypes = new HashMap();
         Topic[] result = new Topic[0];
 
+        //FIXME: Hier wirklich /thesa/descriptor und nicht nur /thesa?
         _topic topic = getTopic(queryTerm, THESAURUS_DESCRIPTOR, start);
         if (topic != null) {
-            _topic[] associatedTopics = getAssociatedTopics(topic, fTypeFilters);
-            Topic[] topics = copyToTopicArray(associatedTopics, maxResults, plugId);
+            _topic[] associatedTopics = getAssociatedTopics(topic, fTypeFilters, associationTypes);
+            Topic[] topics = copyToTopicArray(associatedTopics, associationTypes, maxResults, plugId);
             result = topics;
         }
 
@@ -85,11 +89,12 @@ public class SNSController {
      * @throws Exception
      */
     public synchronized Topic[] getTopicsForTopic(String topicId, int maxResults, String plugId) throws Exception {
+        HashMap associationTypes = new HashMap();
         _topic topic = new _topic();
         topic.setId(topicId);
-        _topic[] associatedTopics = getAssociatedTopics(topic, fTypeFilters);
+        _topic[] associatedTopics = getAssociatedTopics(topic, fTypeFilters, associationTypes);
         if (associatedTopics != null) {
-            return copyToTopicArray(associatedTopics, maxResults, plugId);
+            return copyToTopicArray(associatedTopics, associationTypes, maxResults, plugId);
         }
 
         return null;
@@ -222,22 +227,25 @@ public class SNSController {
     /**
      * @param topic
      * @param plugId
+     * @param associationType 
      * @return a ingrid topic from a _topic
      */
-    private synchronized Topic buildTopicFrom_topic(_topic topic, String plugId) {
+    private synchronized Topic buildTopicFrom_topic(_topic topic, String plugId, String associationType) {
         String title = topic.getBaseName()[0].getBaseNameString().getValue();
         String summary = title + " " + topic.getInstanceOf()[0].getTopicRef().getHref();
         String topicId = topic.getId();
-        return new Topic(plugId, topicId.hashCode(), topicId, title, summary);
+        return new Topic(plugId, topicId.hashCode(), topicId, title, summary, associationType);
     }
 
     /**
      * @param baseTopic
      * @param typePattern
+     * @param associationTypes 
      * @return _topic array of associated topics filter by the given patterns
      * @throws Exception
      */
-    private synchronized _topic[] getAssociatedTopics(_topic baseTopic, String[] typePattern) throws Exception {
+    private synchronized _topic[] getAssociatedTopics(_topic baseTopic, String[] typePattern, HashMap associationTypes)
+            throws Exception {
         ArrayList resultList = new ArrayList();
 
         _topicMapFragment mapFragment = this.fServiceClient.getPSI(baseTopic.getId(), 1, null);
@@ -248,8 +256,8 @@ public class SNSController {
             for (int i = 0; i < associations.length; i++) {
                 _association association = associations[i];
                 // association type
-                String href = association.getInstanceOf().getTopicRef().getHref();
-                if (containsTypes(typePattern, href)) {
+                String assocType = association.getInstanceOf().getTopicRef().getHref();
+                if (containsTypes(typePattern, assocType)) {
                     // association mebers are the basetopic and it association
                     _member[] members = association.getMember();
                     for (int j = 0; j < members.length; j++) {
@@ -259,6 +267,9 @@ public class SNSController {
                         if (!topicId.equals(baseTopic.getId())) {
                             _topic topicById = getTopicById(topics, topicId);
                             if (topicById != null) {
+                                if (null != associationTypes) {
+                                    associationTypes.put(topicById.getId(), assocType);
+                                }
                                 resultList.add(topicById);
                             }
                         }
@@ -299,7 +310,7 @@ public class SNSController {
                 FieldsType.captors, offSet);
         if (null != mapFragment) {
             _topic[] topics = mapFragment.getTopicMap().getTopic();
-            if (topics.length == 1) {
+            if ((null != topics) && (topics.length == 1)) {
                 return topics[0];
             }
         }
@@ -325,18 +336,25 @@ public class SNSController {
     /**
      * @param maxResults
      * @param topics
+     * @param associationTypes
      * @param plugId
      * @return An array of Topic with the given length.
      * @throws Exception
      */
-    private Topic[] copyToTopicArray(_topic[] topics, int maxResults, String plugId) throws Exception {
+    private Topic[] copyToTopicArray(_topic[] topics, HashMap associationTypes, int maxResults, String plugId)
+            throws Exception {
         ArrayList ingridTopics = new ArrayList();
 
         if (null != topics) {
             int count = Math.min(maxResults, topics.length);
             for (int i = 0; i < count; i++) {
-                if (!topics[i].getId().equals("_Interface0")) {
-                    ingridTopics.add(buildTopicFrom_topic(topics[i], plugId));
+                String topicId = topics[i].getId(); 
+                if (!topicId.equals("_Interface0")) {
+                    String associationType = "";
+                    if ((null != associationTypes) && (associationTypes.containsKey(topicId))) {
+                        associationType = (String) associationTypes.get(topicId);
+                    }
+                    ingridTopics.add(buildTopicFrom_topic(topics[i], plugId, associationType));
                 }
             }
         }
@@ -360,7 +378,6 @@ public class SNSController {
         String[] eventPath = null;
 
         if (null != eventTypes) {
-            // eventPath = new String[] { "/event/" + eventType + "/" };
             eventPath = new String[eventTypes.length];
             for (int i = 0; i < eventPath.length; i++) {
                 eventPath[i] = "/event/" + eventTypes[i] + "/";
@@ -377,7 +394,7 @@ public class SNSController {
                 FieldsType.captors, start, atDate);
         _topic[] topic = topicMapFragment.getTopicMap().getTopic();
         if (topic != null) {
-            Topic[] topics = copyToTopicArray(topic, length, plugId);
+            Topic[] topics = copyToTopicArray(topic, null, length, plugId);
             result = topics;
         }
 
@@ -411,8 +428,9 @@ public class SNSController {
 
         _topicMapFragment topicMapFragment = this.fServiceClient.getSimilarTerms(true, searchTerm);
         _topic[] topic = topicMapFragment.getTopicMap().getTopic();
+
         if (topic != null) {
-            Topic[] topics = copyToTopicArray(topic, length, plugId);
+            Topic[] topics = copyToTopicArray(topic, null, length, plugId);
             result = topics;
         }
 
@@ -434,7 +452,7 @@ public class SNSController {
         _topicMapFragment topicMapFragment = this.fServiceClient.anniversary(searchTerm);
         _topic[] topic = topicMapFragment.getTopicMap().getTopic();
         if (topic != null) {
-            Topic[] topics = copyToTopicArray(topic, length, plugId);
+            Topic[] topics = copyToTopicArray(topic, null, length, plugId);
             result = topics;
         }
 
@@ -476,7 +494,7 @@ public class SNSController {
                 FieldsType.captors, start, fromDate, toDate);
         _topic[] topic = topicMapFragment.getTopicMap().getTopic();
         if (topic != null) {
-            Topic[] topics = copyToTopicArray(topic, length, plugId);
+            Topic[] topics = copyToTopicArray(topic, null, length, plugId);
             result = topics;
         }
 
@@ -530,7 +548,7 @@ public class SNSController {
         _topicMapFragment mapFragment = this.fServiceClient.getPSI(topicId, 0, "/location");
         if (null != mapFragment) {
             _topic[] topics = mapFragment.getTopicMap().getTopic();
-            result = copyToTopicArray(topics, length, plugId);
+            result = copyToTopicArray(topics, null, length, plugId);
         }
 
         return result;
