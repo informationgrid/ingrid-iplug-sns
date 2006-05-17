@@ -70,7 +70,6 @@ public class SNSController {
         HashMap associationTypes = new HashMap();
         Topic[] result = new Topic[0];
 
-        //FIXME: Hier wirklich /thesa/descriptor und nicht nur /thesa?
         _topic topic = getTopic(queryTerm, THESAURUS_DESCRIPTOR, start);
         if (topic != null) {
             _topic[] associatedTopics = getAssociatedTopics(topic, fTypeFilters, associationTypes);
