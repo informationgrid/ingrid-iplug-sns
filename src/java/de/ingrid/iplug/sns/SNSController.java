@@ -43,7 +43,7 @@ public class SNSController {
 
     private String fLanguage;
 
-    private static final String[] fTypeFilters = new String[] { "narrowerTermAssoc", "widerTermAssoc", "synonymAssoc",
+    private static final String[] fTypeFilters = new String[] { "narrowerTermAssoc", "synonymAssoc",
             "relatedTermsAssoc" };
 
     private static final String[] fAdministrativeTypes = new String[] { "communityType", "districtType", "quarterType",
@@ -226,7 +226,7 @@ public class SNSController {
     /**
      * @param topic
      * @param plugId
-     * @param associationType 
+     * @param associationType
      * @return a ingrid topic from a _topic
      */
     private synchronized Topic buildTopicFrom_topic(_topic topic, String plugId, String associationType) {
@@ -239,7 +239,7 @@ public class SNSController {
     /**
      * @param baseTopic
      * @param typePattern
-     * @param associationTypes 
+     * @param associationTypes
      * @return _topic array of associated topics filter by the given patterns
      * @throws Exception
      */
@@ -247,27 +247,28 @@ public class SNSController {
             throws Exception {
         ArrayList resultList = new ArrayList();
 
-        _topicMapFragment mapFragment = this.fServiceClient.getPSI(baseTopic.getId(), 1, null);
-        _topic[] topics = mapFragment.getTopicMap().getTopic();
-        _association[] associations = mapFragment.getTopicMap().getAssociation();
+        final _topicMapFragment mapFragment = this.fServiceClient.getPSI(baseTopic.getId(), 1, null);
+        final _topic[] topics = mapFragment.getTopicMap().getTopic();
+        final _association[] associations = mapFragment.getTopicMap().getAssociation();
         // iterate through associations to find the correct association types
         if (associations != null) {
             for (int i = 0; i < associations.length; i++) {
-                _association association = associations[i];
+                final _association association = associations[i];
                 // association type
-                String assocType = association.getInstanceOf().getTopicRef().getHref();
+                final String assocType = association.getInstanceOf().getTopicRef().getHref();
                 if (containsTypes(typePattern, assocType)) {
                     // association mebers are the basetopic and it association
-                    _member[] members = association.getMember();
+                    final _member[] members = association.getMember();
                     for (int j = 0; j < members.length; j++) {
-                        _member member = members[j];
+                        final _member member = members[j];
                         // here is only the topic id available
-                        String topicId = member.getTopicRef()[0].getHref();
+                        final String topicId = member.getTopicRef()[0].getHref();
+                        final String assocMember = member.getRoleSpec().getTopicRef().getHref();
                         if (!topicId.equals(baseTopic.getId())) {
-                            _topic topicById = getTopicById(topics, topicId);
+                            final _topic topicById = getTopicById(topics, topicId);
                             if (topicById != null) {
                                 if (null != associationTypes) {
-                                    associationTypes.put(topicById.getId(), assocType);
+                                    associationTypes.put(topicById.getId(), assocMember);
                                 }
                                 resultList.add(topicById);
                             }
@@ -347,7 +348,7 @@ public class SNSController {
         if (null != topics) {
             int count = Math.min(maxResults, topics.length);
             for (int i = 0; i < count; i++) {
-                String topicId = topics[i].getId(); 
+                String topicId = topics[i].getId();
                 if (!topicId.equals("_Interface0")) {
                     String associationType = "";
                     if ((null != associationTypes) && (associationTypes.containsKey(topicId))) {

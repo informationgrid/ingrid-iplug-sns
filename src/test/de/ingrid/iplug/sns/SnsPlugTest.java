@@ -50,9 +50,9 @@ public class SnsPlugTest extends TestCase {
         assertNotNull(hitsArray);
         for (int i = 0; i < hitsArray.length; i++) {
             Topic hit = (Topic) hitsArray[i];
-            assertFalse( hit.getTopicAssoc().trim().equals(""));
-            
-            System.out.println(hit.getTopicName() + ":" + hit.getTopicID()+":"+hit.getTopicAssoc());
+            assertFalse(hit.getTopicAssoc().trim().equals(""));
+
+            System.out.println(hit.getTopicName() + ":" + hit.getTopicID() + ":" + hit.getTopicAssoc());
         }
         System.out.println("##########");
     }
@@ -110,7 +110,7 @@ public class SnsPlugTest extends TestCase {
         assertNotNull(hitsArray);
         for (int i = 0; i < hitsArray.length; i++) {
             Topic hit = (Topic) hitsArray[i];
-            System.out.println(hit.getTopicName() + ":" + hit.getTopicID());
+            System.out.println(hit.getTopicName() + ":" + hit.getTopicID() + ":" + hit.getTopicAssoc());
         }
     }
 
