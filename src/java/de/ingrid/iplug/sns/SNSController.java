@@ -161,15 +161,38 @@ public class SNSController {
             metaData.addToList(DetailedTopic.INSTANCE_OF, href);
         }
         pushTimes(metaData, topic);
+        pushDefinitions(metaData, topic);
         pushOccurensie(DetailedTopic.DESCRIPTION_OCC, topic, metaData);
         pushOccurensie(DetailedTopic.SAMPLE_OCC, topic, metaData);
-        pushOccurensie(DetailedTopic.ASSICIATED_OCC, topic, metaData);
+        pushOccurensie(DetailedTopic.ASSOCIATED_OCC, topic, metaData);
 
         if (containsTypes(fAdministrativeTypes, topic.getInstanceOf()[0].getTopicRef().getHref())) {
             metaData.setAdministrativeID(topic.getId());
         }
 
         return metaData;
+    }
+
+    private void pushDefinitions(DetailedTopic metaData, _topic topic) {
+        _occurrence[] occurrences = topic.getOccurrence();
+        String type = null;
+        if (occurrences != null) {
+            for (int i = 0; i < occurrences.length; i++) {
+                if (occurrences[i].getInstanceOf() != null) {
+                    // Only compare the scope to the language if the element has one set.
+                    String scope = "#" + this.fLanguage;
+                    if (occurrences[i].getScope() != null) {
+                        scope = occurrences[i].getScope().getTopicRef(0).getHref();
+                    }
+                    type = occurrences[i].getInstanceOf().getTopicRef().getHref();
+                    if (type.endsWith(DetailedTopic.DESCRIPTION_OCC) && occurrences[i].getResourceRef() != null
+                            && scope.endsWith("#" + this.fLanguage)) {
+                        metaData.put(DetailedTopic.DEFINITIONS, occurrences[i].getResourceRef().getHref());
+                        //metaData.put(DetailedTopic.TITLES, occurrences[i].getResourceRef().getTitle());
+                    }
+                }
+            }
+        }
     }
 
     /**
