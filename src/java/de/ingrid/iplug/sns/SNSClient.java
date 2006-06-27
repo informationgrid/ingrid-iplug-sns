@@ -173,7 +173,7 @@ public class SNSClient {
             throw new IllegalArgumentException("document can not be null");
         }
         if (analyzeMaxWords < 0) {
-            throw new IllegalArgumentException("AnalyzeMaxWords can not lower than 0");
+            throw new IllegalArgumentException("AnalyzeMaxWords can not be lower than 0");
         }
 
         _autoClassify classifyRequest = new _autoClassify();
