@@ -133,7 +133,7 @@ public class SnsPlugTest extends TestCase {
             assertNotNull(detail);
             assertNotNull(detail.get(DetailedTopic.DESCRIPTION_OCC));
             // assertNotNull(detail.get(DetailedTopic.SAMPLE_OCC));
-            assertNotNull(detail.get(DetailedTopic.ASSICIATED_OCC));
+            assertNotNull(detail.get(DetailedTopic.ASSOCIATED_OCC));
         }
 
     }
@@ -300,7 +300,7 @@ public class SnsPlugTest extends TestCase {
             System.out.println(ihd.get(DetailedTopic.DESCRIPTION_OCC));
             System.out.println(ihd.get(DetailedTopic.TO));
             System.out.println(ihd.get(DetailedTopic.FROM));
-            System.out.println(ihd.get(DetailedTopic.ASSICIATED_OCC));
+            System.out.println(ihd.get(DetailedTopic.ASSOCIATED_OCC));
             System.out.println(ihd.get(DetailedTopic.SAMPLE_OCC));
         }
     }
