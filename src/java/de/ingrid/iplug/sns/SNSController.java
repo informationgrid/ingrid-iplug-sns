@@ -41,8 +41,6 @@ public class SNSController {
 
     private SNSClient fServiceClient = null;
 
-    private String fLanguage;
-
     private static final String[] fTypeFilters = new String[] { "narrowerTermAssoc", "synonymAssoc",
             "relatedTermsAssoc" };
 
@@ -54,7 +52,6 @@ public class SNSController {
      */
     public SNSController(SNSClient client) {
         this.fServiceClient = client;
-        this.fLanguage = client.getLanguage();
     }
 
     /**
@@ -104,16 +101,17 @@ public class SNSController {
      * @param maxToAnalyzeWords
      * @param filter
      * @param plugId
+     * @param lang 
      * @return array of detailed topics for the given text
      * @throws Exception
      */
     public synchronized DetailedTopic[] getTopicsForText(String documentText, int maxToAnalyzeWords, String filter,
-            String plugId) throws Exception {
+            String plugId, String lang) throws Exception {
         final _topicMapFragment mapFragment = this.fServiceClient.autoClassify(documentText, maxToAnalyzeWords, filter,
                 true);
         final _topic[] topics = mapFragment.getTopicMap().getTopic();
         if (topics != null) {
-            return toDetailedTopicArray(topics, plugId);
+            return toDetailedTopicArray(topics, plugId, lang);
         }
 
         return new DetailedTopic[0];
@@ -122,14 +120,15 @@ public class SNSController {
     /**
      * @param topics
      * @param plugId
+     * @param lang 
      * @return an array of detailed topics, we ignoring all topics of typ synonymType
      */
-    private synchronized DetailedTopic[] toDetailedTopicArray(_topic[] topics, String plugId) {
+    private synchronized DetailedTopic[] toDetailedTopicArray(_topic[] topics, String plugId, String lang) {
         final List returnList = new ArrayList();
         for (int i = 0; i < topics.length; i++) {
             // System.out.println(topics[i].getInstanceOf()[0].getTopicRef().getHref());
             if (!topics[i].getInstanceOf()[0].getTopicRef().getHref().endsWith(SYNONYM_TYPE)) {
-                returnList.add(buildDetailedTopicFrom_topic(topics[i], plugId));
+                returnList.add(buildDetailedTopicFrom_topic(topics[i], plugId, lang));
             }
         }
 
@@ -139,15 +138,16 @@ public class SNSController {
     /**
      * @param topic
      * @param plugId
+     * @param lang 
      * @return A detailed topic from _topic.
      */
-    private synchronized DetailedTopic buildDetailedTopicFrom_topic(_topic topic, String plugId) {
+    private synchronized DetailedTopic buildDetailedTopicFrom_topic(_topic topic, String plugId, String lang) {
         String topicId = topic.getId();
         _baseName[] bn = topic.getBaseName();
         String title = "";
         for (int i = 0; i < bn.length; i++) {
             final String href = bn[i].getScope().getTopicRef()[0].getHref();
-            if (href.endsWith("#" + this.fLanguage)) {
+            if (href.endsWith("#" + lang)) {
                 title = topic.getBaseName()[i].getBaseNameString().getValue();
                 break;
             }
@@ -161,10 +161,10 @@ public class SNSController {
             metaData.addToList(DetailedTopic.INSTANCE_OF, href);
         }
         pushTimes(metaData, topic);
-        pushDefinitions(metaData, topic);
-        pushOccurensie(DetailedTopic.DESCRIPTION_OCC, topic, metaData);
-        pushOccurensie(DetailedTopic.SAMPLE_OCC, topic, metaData);
-        pushOccurensie(DetailedTopic.ASSOCIATED_OCC, topic, metaData);
+        pushDefinitions(metaData, topic, lang);
+        pushSamples(metaData, topic, lang);
+        pushOccurensie(DetailedTopic.DESCRIPTION_OCC, topic, metaData, lang);
+        pushOccurensie(DetailedTopic.ASSOCIATED_OCC, topic, metaData, lang);
 
         if (containsTypes(fAdministrativeTypes, topic.getInstanceOf()[0].getTopicRef().getHref())) {
             metaData.setAdministrativeID(topic.getId());
@@ -173,28 +173,62 @@ public class SNSController {
         return metaData;
     }
 
-    private void pushDefinitions(DetailedTopic metaData, _topic topic) {
+    private void pushDefinitions(DetailedTopic metaData, _topic topic, String lang) {
         _occurrence[] occurrences = topic.getOccurrence();
+        ArrayList titles = new ArrayList();
+        ArrayList definitions = new ArrayList();
+
         String type = null;
         if (occurrences != null) {
             for (int i = 0; i < occurrences.length; i++) {
                 if (occurrences[i].getInstanceOf() != null) {
                     // Only compare the scope to the language if the element has one set.
-                    String scope = "#" + this.fLanguage;
+                    String scope = "#" + lang;
                     if (occurrences[i].getScope() != null) {
                         scope = occurrences[i].getScope().getTopicRef(0).getHref();
                     }
                     type = occurrences[i].getInstanceOf().getTopicRef().getHref();
                     if (type.endsWith(DetailedTopic.DESCRIPTION_OCC) && occurrences[i].getResourceRef() != null
-                            && scope.endsWith("#" + this.fLanguage)) {
-                        metaData.put(DetailedTopic.DEFINITIONS, occurrences[i].getResourceRef().getHref());
-                        //metaData.put(DetailedTopic.TITLES, occurrences[i].getResourceRef().getTitle());
+                            && scope.endsWith("#" + lang)) {
+                        definitions.add(occurrences[i].getResourceRef().getHref().toString());
+                        titles.add(occurrences[i].getResourceRef().getTitle());
                     }
                 }
             }
         }
+        
+        metaData.setDefinitions((String[]) definitions.toArray(new String[definitions.size()]));
+        metaData.setDefinitionTitles((String[]) titles.toArray(new String[titles.size()]));
     }
 
+    private void pushSamples(DetailedTopic metaData, _topic topic, String lang) {
+        _occurrence[] occurrences = topic.getOccurrence();
+        ArrayList titles = new ArrayList();
+        ArrayList samples = new ArrayList();
+
+        String type = null;
+        if (occurrences != null) {
+            for (int i = 0; i < occurrences.length; i++) {
+                if (occurrences[i].getInstanceOf() != null) {
+                    // Only compare the scope to the language if the element has one set.
+                    String scope = "#" + lang;
+                    if (occurrences[i].getScope() != null) {
+                        scope = occurrences[i].getScope().getTopicRef(0).getHref();
+                    }
+                    type = occurrences[i].getInstanceOf().getTopicRef().getHref();
+                    if (type.endsWith(DetailedTopic.SAMPLE_OCC) && occurrences[i].getResourceRef() != null
+                            && scope.endsWith("#" + lang)) {
+                        samples.add(occurrences[i].getResourceRef().getHref().toString());
+                        titles.add(occurrences[i].getResourceRef().getTitle());
+                    }
+                }
+            }
+        }
+        
+        metaData.setSamples((String[]) samples.toArray(new String[samples.size()]));
+        metaData.setSampleTitles((String[]) titles.toArray(new String[titles.size()]));
+    }
+    
     /**
      * pushs the time data in to the detailed topic
      * 
@@ -225,20 +259,20 @@ public class SNSController {
         }
     }
 
-    private synchronized void pushOccurensie(String occType, _topic topic, DetailedTopic detailedTopic) {
+    private synchronized void pushOccurensie(String occType, _topic topic, DetailedTopic detailedTopic, String lang) {
         _occurrence[] occurrences = topic.getOccurrence();
         String type = null;
         if (occurrences != null) {
             for (int i = 0; i < occurrences.length; i++) {
                 if (occurrences[i].getInstanceOf() != null) {
                     // Only compare the scope to the language if the element has one set.
-                    String scope = "#" + this.fLanguage;
+                    String scope = "#" + lang;
                     if (occurrences[i].getScope() != null) {
                         scope = occurrences[i].getScope().getTopicRef(0).getHref();
                     }
                     type = occurrences[i].getInstanceOf().getTopicRef().getHref();
                     if (type.endsWith(occType) && occurrences[i].getResourceData() != null
-                            && scope.endsWith("#" + this.fLanguage)) {
+                            && scope.endsWith("#" + lang)) {
                         detailedTopic.put(occType, occurrences[i].getResourceData().getValue());
                     }
                 }
@@ -526,20 +560,22 @@ public class SNSController {
 
     /**
      * @param hit
+     * @param lang 
      * @return A detailed topic.
      * @throws Exception
      */
-    public DetailedTopic getTopicDetail(IngridHit hit) throws Exception {
-        return getTopicDetail(hit, null);
+    public DetailedTopic getTopicDetail(IngridHit hit, String lang) throws Exception {
+        return getTopicDetail(hit, null, lang);
     }
 
     /**
      * @param hit
      * @param filter
+     * @param lang 
      * @return A detailed topic to a filter.
      * @throws Exception
      */
-    public DetailedTopic getTopicDetail(IngridHit hit, String filter) throws Exception {
+    public DetailedTopic getTopicDetail(IngridHit hit, String filter, String lang) throws Exception {
         Topic topic = (Topic) hit;
         String topicID = topic.getTopicID();
         DetailedTopic result = null;
@@ -550,7 +586,7 @@ public class SNSController {
 
             for (int i = 0; i < topics.length; i++) {
                 if (topics[i].getId().equals(topicID)) {
-                    result = buildDetailedTopicFrom_topic(topics[0], hit.getPlugId());
+                    result = buildDetailedTopicFrom_topic(topics[0], hit.getPlugId(), lang);
                 }
             }
         }
@@ -581,10 +617,11 @@ public class SNSController {
      * @param searchTerm
      * @param i
      * @param plugId
+     * @param lang 
      * @return Array of detailed topics for the given text.
      * @throws Exception
      */
-    public synchronized DetailedTopic[] getTopicsForText(String searchTerm, int i, String plugId) throws Exception {
-        return getTopicsForText(searchTerm, i, null, plugId);
+    public synchronized DetailedTopic[] getTopicsForText(String searchTerm, int i, String plugId, String lang) throws Exception {
+        return getTopicsForText(searchTerm, i, null, plugId, lang);
     }
 }

@@ -68,7 +68,7 @@ public class SNSIndexingInterfaceTest extends TestCase {
 
         final Temporal[] result = this.fSnsInterface.getReferencesToTime();
         assertNotNull(result);
-        assertEquals(5, result.length);
+        assertEquals(4, result.length);
         System.out.println(result[0].getAt());
     }
 

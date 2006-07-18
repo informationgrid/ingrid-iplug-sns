@@ -175,7 +175,11 @@ public class SnsPlug implements IPlug {
      *      java.lang.String[])
      */
     public IngridHitDetail getDetail(IngridHit hit, IngridQuery query, String[] fields) throws Exception {
-        return this.fSnsController.getTopicDetail(hit);
+        Object lang = query.get("lang");
+        if (null == lang) {
+            lang = this.fLanguage;
+        }
+        return this.fSnsController.getTopicDetail(hit, (String) lang);
     }
 
     /*

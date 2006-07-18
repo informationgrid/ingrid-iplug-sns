@@ -86,11 +86,58 @@ public class SNSControllerTest extends TestCase {
     public void testGetDocumentRelatedTopics() throws Exception {
         SNSController controller = new SNSController(fClient);
         String text = "Tschernobyl liegt in Halle gefunden";
-        DetailedTopic[] topics = controller.getTopicsForText(text, 100, "aPlugId");
+        DetailedTopic[] topics = controller.getTopicsForText(text, 100, "aPlugId", "de");
         assertNotNull(topics);
 
         text = "yyy xxx zzz";
-        topics = controller.getTopicsForText(text, 100, "aPlugId");
+        topics = controller.getTopicsForText(text, 100, "aPlugId", "de");
         assertNotNull(topics);
+    }
+    
+    /**
+     * @throws Exception
+     */
+    public void testGetDetails() throws Exception {
+        SNSController controller = new SNSController(fClient);
+        Topic topic = new Topic();
+        topic.setTopicID("t47098a_10220d1bc3e_4ee1");
+
+        DetailedTopic dt = controller.getTopicDetail(topic, "de");
+
+        String[] array = dt.getDefinitions();
+        assertEquals(1, array.length);
+        System.out.println("Defs:");
+        for (int i = 0; i < array.length; i++) {
+            System.out.println(array[i]);
+        }
+        
+        array = dt.getDefinitionTitles();
+        assertEquals(1, array.length);
+        System.out.println("DefTit:");
+        for (int i = 0; i < array.length; i++) {
+            System.out.println(array[i]);
+        }
+
+        array = dt.getSamples();
+        assertEquals(2, array.length);
+        System.out.println("Sam:");
+        for (int i = 0; i < array.length; i++) {
+            System.out.println(array[i]);
+        }
+        
+        array = dt.getSampleTitles();
+        assertEquals(2, array.length);
+        System.out.println("SamTit:");
+        for (int i = 0; i < array.length; i++) {
+            System.out.println(array[i]);
+        }
+        
+        System.out.println("Ass:");
+        String bla = (String) dt.get(DetailedTopic.ASSOCIATED_OCC);
+        System.out.println(bla);
+        
+        System.out.println("Des:");
+        bla = (String) dt.get(DetailedTopic.DESCRIPTION_OCC);
+        System.out.println(bla);
     }
 }
