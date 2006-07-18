@@ -76,7 +76,7 @@
   </developers>
     <shortDescription>todo short description</shortDescription>
     <issueTrackingUrl>http://jira.media-style.com/browse/INGRID</issueTrackingUrl>
-	<siteAddress>http://torwald.gistec-online.de/ingrid/ingrid-iplug-sns</siteAddress>
+	<siteAddress>scm:svn:https://mb@127.0.0.1:444/svn/ingrid/ingrid-iplug-sns</siteAddress>
     <siteDirectory>/srv/www/htdocs/ingrid/ingrid-iplug-sns</siteDirectory>
     <repository>
         <connection>scm:svn:http://torwald.gistec-online.de/svn/ingrid:ingrid-iplug-sns</connection>
