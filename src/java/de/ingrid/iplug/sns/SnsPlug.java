@@ -163,7 +163,8 @@ public class SnsPlug implements IPlug {
         this.fPassWord = (String) plugDescription.get("password");
         this.fLanguage = (String) plugDescription.get("language");
         this.fMaximalAnalyzedWord = plugDescription.getInt("maxWordForAnalyzing");
-        SNSClient snsClient = new SNSClient(this.fUserName, this.fPassWord, this.fLanguage, new URL("http://www.semantic-network.de/service-xtm-2.0/xtm/soap"));
+        SNSClient snsClient = new SNSClient(this.fUserName, this.fPassWord, this.fLanguage, new URL(
+                "http://www.semantic-network.de/service-xtm-2.0/xtm/soap"));
         snsClient.setTimeout(180000);
         this.fSnsController = new SNSController(snsClient);
     }
@@ -175,11 +176,16 @@ public class SnsPlug implements IPlug {
      *      java.lang.String[])
      */
     public IngridHitDetail getDetail(IngridHit hit, IngridQuery query, String[] fields) throws Exception {
-        Object lang = query.get("lang");
-        if (null == lang) {
-            lang = this.fLanguage;
+        String lang = this.fLanguage;
+        FieldQuery[] qFields = query.getFields();
+        for (int i = 0; i < qFields.length; i++) {
+            final String fieldName = qFields[i].getFieldName();
+            if (fieldName.equals("lang")) {
+                lang = qFields[i].getFieldValue();
+            }
         }
-        return this.fSnsController.getTopicDetail(hit, (String) lang);
+
+        return this.fSnsController.getTopicDetail(hit, lang);
     }
 
     /*
