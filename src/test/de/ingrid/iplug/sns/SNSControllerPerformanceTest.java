@@ -14,8 +14,10 @@ import junit.framework.TestCase;
 public class SNSControllerPerformanceTest extends TestCase {
 
     private SNSControllerTest fSNSControllerTest;
+    
+    private SNSIndexingInterfaceTest fSNSIndexingInterfaceTest;
 
-    private final int fMaxLoops = 20;
+    private final int fMaxLoops = 50;
 
     /**
      * @see junit.framework.TestCase#setUp()
@@ -23,6 +25,9 @@ public class SNSControllerPerformanceTest extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
 
+        this.fSNSIndexingInterfaceTest = new SNSIndexingInterfaceTest();
+        this.fSNSIndexingInterfaceTest.setSNSIndexingInterface(new SNSIndexingInterface("ms", "m3d1asyl3", "de"));
+        
         this.fSNSControllerTest = new SNSControllerTest();
         SNSClient snsClient = new SNSClient("ms", "m3d1asyl3", "de");
         snsClient.setTimeout(180000);
@@ -40,8 +45,8 @@ public class SNSControllerPerformanceTest extends TestCase {
         }
         final long stop = System.currentTimeMillis();
 
-        System.out.println("Time for 100 calls of testTopicsForTerm(): " + ((stop - start) / 1000) + " ("
-                + (100.0 / ((stop - start) / 1000)) + " calls/second)");
+        System.out.println("Time for " + this.fMaxLoops + " calls of testTopicsForTerm(): " + ((stop - start) / 1000) + " ("
+                + (this.fMaxLoops / ((stop - start) / 1000)) + " calls/second)");
     }
 
     /**
@@ -54,8 +59,8 @@ public class SNSControllerPerformanceTest extends TestCase {
         }
         final long stop = System.currentTimeMillis();
 
-        System.out.println("Time for 100 calls of testGetAssociatedTopics(): " + ((stop - start) / 1000) + " ("
-                + (100.0 / ((stop - start) / 1000)) + " calls/second)");
+        System.out.println("Time for " + this.fMaxLoops + " calls of testGetAssociatedTopics(): " + ((stop - start) / 1000) + " ("
+                + (this.fMaxLoops / ((stop - start) / 1000)) + " calls/second)");
     }
 
     /**
@@ -68,7 +73,21 @@ public class SNSControllerPerformanceTest extends TestCase {
         }
         final long stop = System.currentTimeMillis();
 
-        System.out.println("Time for 100 calls of testGetDocumentRelatedTopics(): " + ((stop - start) / 1000) + " ("
-                + (100.0 / ((stop - start) / 1000)) + " calls/second)");
+        System.out.println("Time for " + this.fMaxLoops + " calls of testGetDocumentRelatedTopics(): " + ((stop - start) / 1000) + " ("
+                + (this.fMaxLoops / ((stop - start) / 1000)) + " calls/second)");
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testGetBuzzword100() throws Exception {
+        final long start = System.currentTimeMillis();
+        for (int i = 0; i < this.fMaxLoops; i++) {
+            this.fSNSIndexingInterfaceTest.testGetBuzzword();
+        }
+        final long stop = System.currentTimeMillis();
+
+        System.out.println("Time for " + this.fMaxLoops + " calls of testGetBuzzword(): " + ((stop - start) / 1000) + " ("
+                + (this.fMaxLoops / ((stop - start) / 1000)) + " calls/second)");
     }
 }

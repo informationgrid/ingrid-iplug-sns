@@ -13,13 +13,25 @@ public class SNSIndexingInterfaceTest extends TestCase {
 
     private SNSIndexingInterface fSnsInterface;
 
+    private boolean fToStdout = false;
+
     protected void setUp() throws Exception {
         super.setUp();
 
         this.fSnsInterface = new SNSIndexingInterface("ms", "m3d1asyl3", "de");
         this.fSnsInterface.setTimeout(180000);
+        
+        this.fToStdout = true;
     }
 
+   /**
+    * @param iinterface 
+ * @throws Exception
+    */
+   public void setSNSIndexingInterface(SNSIndexingInterface iinterface) throws Exception {
+       this.fSnsInterface = iinterface;
+   }
+    
     /**
      * @throws Exception
      */
@@ -94,7 +106,11 @@ public class SNSIndexingInterfaceTest extends TestCase {
             fail();
         }
         final long end = System.currentTimeMillis();
-        System.out.println("Time for getting all buzzwords: " + ((end - start) / 1000) + " s");
+
+        if (this.fToStdout) {
+            System.out.println("Time for getting all buzzwords: " + ((end - start) / 1000) + " s");
+        }
+
         assertNotNull(result);
     }
 
