@@ -101,7 +101,7 @@ public class SNSController {
      * @param maxToAnalyzeWords
      * @param filter
      * @param plugId
-     * @param lang 
+     * @param lang
      * @return array of detailed topics for the given text
      * @throws Exception
      */
@@ -120,7 +120,7 @@ public class SNSController {
     /**
      * @param topics
      * @param plugId
-     * @param lang 
+     * @param lang
      * @return an array of detailed topics, we ignoring all topics of typ synonymType
      */
     private synchronized DetailedTopic[] toDetailedTopicArray(_topic[] topics, String plugId, String lang) {
@@ -138,7 +138,7 @@ public class SNSController {
     /**
      * @param topic
      * @param plugId
-     * @param lang 
+     * @param lang
      * @return A detailed topic from _topic.
      */
     private synchronized DetailedTopic buildDetailedTopicFrom_topic(_topic topic, String plugId, String lang) {
@@ -196,7 +196,7 @@ public class SNSController {
                 }
             }
         }
-        
+
         metaData.setDefinitions((String[]) definitions.toArray(new String[definitions.size()]));
         metaData.setDefinitionTitles((String[]) titles.toArray(new String[titles.size()]));
     }
@@ -224,11 +224,11 @@ public class SNSController {
                 }
             }
         }
-        
+
         metaData.setSamples((String[]) samples.toArray(new String[samples.size()]));
         metaData.setSampleTitles((String[]) titles.toArray(new String[titles.size()]));
     }
-    
+
     /**
      * pushs the time data in to the detailed topic
      * 
@@ -560,7 +560,7 @@ public class SNSController {
 
     /**
      * @param hit
-     * @param lang 
+     * @param lang
      * @return A detailed topic.
      * @throws Exception
      */
@@ -571,7 +571,7 @@ public class SNSController {
     /**
      * @param hit
      * @param filter
-     * @param lang 
+     * @param lang
      * @return A detailed topic to a filter.
      * @throws Exception
      */
@@ -617,11 +617,12 @@ public class SNSController {
      * @param searchTerm
      * @param i
      * @param plugId
-     * @param lang 
+     * @param lang
      * @return Array of detailed topics for the given text.
      * @throws Exception
      */
-    public synchronized DetailedTopic[] getTopicsForText(String searchTerm, int i, String plugId, String lang) throws Exception {
+    public synchronized DetailedTopic[] getTopicsForText(String searchTerm, int i, String plugId, String lang)
+            throws Exception {
         return getTopicsForText(searchTerm, i, null, plugId, lang);
     }
 }
