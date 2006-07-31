@@ -72,7 +72,8 @@ public class SnsPlug implements IPlug {
                 Topic[] hitsTemp = null;
                 switch (type) {
                 case Topic.TOPIC_FROM_TERM:
-                    hitsTemp = this.fSnsController.getTopicsForTerm(getSearchTerm(query), start, length, this.fPlugId);
+                    hitsTemp = this.fSnsController.getTopicsForTerm(getSearchTerm(query), 0, Integer.MAX_VALUE,
+                            this.fPlugId);
                     break;
                 case Topic.TOPIC_FROM_TEXT:
                     final String filter = (String) query.get("filter");
@@ -80,17 +81,20 @@ public class SnsPlug implements IPlug {
                             filter, this.fPlugId, lang);
                     break;
                 case Topic.TOPIC_FROM_TOPIC:
-                    hitsTemp = this.fSnsController.getTopicsForTopic(getSearchTerm(query), length, this.fPlugId);
+                    hitsTemp = this.fSnsController.getTopicsForTopic(getSearchTerm(query), Integer.MAX_VALUE,
+                            this.fPlugId);
                     break;
                 case Topic.ANNIVERSARY_FROM_TOPIC:
-                    hitsTemp = this.fSnsController.getAnniversaryFromTopic(getSearchTerm(query), length, this.fPlugId);
+                    hitsTemp = this.fSnsController.getAnniversaryFromTopic(getSearchTerm(query), Integer.MAX_VALUE,
+                            this.fPlugId);
                     break;
                 case Topic.SIMILARTERMS_FROM_TOPIC:
-                    hitsTemp = this.fSnsController.getSimilarTermsFromTopic(getSearchTerm(query), length, this.fPlugId);
+                    hitsTemp = this.fSnsController.getSimilarTermsFromTopic(getSearchTerm(query), Integer.MAX_VALUE,
+                            this.fPlugId);
                     break;
                 case Topic.SIMILARLOCATIONS_FROM_TOPIC:
-                    hitsTemp = this.fSnsController.getTopicSimilarLocationsFromTopic(getSearchTerm(query), length,
-                            this.fPlugId);
+                    hitsTemp = this.fSnsController.getTopicSimilarLocationsFromTopic(getSearchTerm(query),
+                            Integer.MAX_VALUE, this.fPlugId);
                     break;
                 case Topic.EVENT_FROM_TOPIC:
                     final String[] eventType = (String[]) query.get("eventtype");
@@ -98,11 +102,11 @@ public class SnsPlug implements IPlug {
                     final String fromDate = (String) query.get("t1");
                     final String toDate = (String) query.get("t2");
                     if (null != atDate) {
-                        hitsTemp = this.fSnsController.getEventFromTopic(getSearchTerm(query), eventType, atDate,
-                                start, length, this.fPlugId);
+                        hitsTemp = this.fSnsController.getEventFromTopic(getSearchTerm(query), eventType, atDate, 0,
+                                Integer.MAX_VALUE, this.fPlugId);
                     } else {
                         hitsTemp = this.fSnsController.getEventFromTopic(getSearchTerm(query), eventType, fromDate,
-                                toDate, start, length, this.fPlugId);
+                                toDate, 0, Integer.MAX_VALUE, this.fPlugId);
                     }
                     break;
                 default:
@@ -114,16 +118,10 @@ public class SnsPlug implements IPlug {
                     hits = hitsTemp;
                 }
 
-                int max = 0;
-                if (type == Topic.EVENT_FROM_TOPIC) {
-                    start = 0;
-                    max = Math.min(hits.length, length);
-                } else {
-                    if (start > hits.length) {
-                        start = hits.length;
-                    }
-                    max = Math.min((hits.length - start), length);
+                if (start > hits.length) {
+                    start = hits.length;
                 }
+                final int max = Math.min((hits.length - start), length);
                 IngridHit[] finalHits = new IngridHit[max];
                 System.arraycopy(hits, start, finalHits, 0, max);
                 if (log.isDebugEnabled()) {
