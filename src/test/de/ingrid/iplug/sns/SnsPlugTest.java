@@ -394,18 +394,18 @@ public class SnsPlugTest extends TestCase {
      */
     public void testMORE_THAN_TEN_RESULTS() throws Exception {
         SnsPlug plug = new SnsPlug(fPlugDescription);
-        String q = "Wasser";
+        String q = "Tschernobyl";
         IngridQuery query = QueryStringParser.parse(q);
         query.addField(new FieldQuery(true, false, "datatype", IDataTypes.SNS));
-        query.putInt(Topic.REQUEST_TYPE, Topic.TOPIC_FROM_TEXT);
-        IngridHits hits = plug.search(query, 47, 100);
+        query.putInt(Topic.REQUEST_TYPE, Topic.EVENT_FROM_TOPIC);
+        IngridHits hits = plug.search(query, 1, 2000);
         IngridHit[] hitsArray = hits.getHits();
         assertNotNull(hitsArray);
+        
         for (int i = 0; i < hitsArray.length; i++) {
             Topic hit = (Topic) hitsArray[i];
-
-            System.out.println(hit.getTopicName() + ":" + hit.getTopicID() + ":" + hit.getTopicAssoc());
+            System.out.println(hit.getTopicID());
         }
-        System.out.println("##########");
+        assertEquals(3, hitsArray.length);
     }
 }
