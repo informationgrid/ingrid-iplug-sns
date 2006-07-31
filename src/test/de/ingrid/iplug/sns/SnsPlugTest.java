@@ -394,11 +394,13 @@ public class SnsPlugTest extends TestCase {
      */
     public void testMORE_THAN_TEN_RESULTS() throws Exception {
         SnsPlug plug = new SnsPlug(fPlugDescription);
-        String q = "Tschernobyl";
+        String q = "";
         IngridQuery query = QueryStringParser.parse(q);
         query.addField(new FieldQuery(true, false, "datatype", IDataTypes.SNS));
         query.putInt(Topic.REQUEST_TYPE, Topic.EVENT_FROM_TOPIC);
-        IngridHits hits = plug.search(query, 1, 2000);
+        query.put("t2", "3000-01-01");
+        IngridHits hits = plug.search(query, 590, 10);
+        assertEquals(600, hits.length());
         IngridHit[] hitsArray = hits.getHits();
         assertNotNull(hitsArray);
         
@@ -406,6 +408,6 @@ public class SnsPlugTest extends TestCase {
             Topic hit = (Topic) hitsArray[i];
             System.out.println(hit.getTopicID());
         }
-        assertEquals(3, hitsArray.length);
+        assertEquals(10, hitsArray.length);
     }
 }

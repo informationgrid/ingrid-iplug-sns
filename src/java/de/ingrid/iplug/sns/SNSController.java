@@ -59,17 +59,18 @@ public class SNSController {
      * @param start
      * @param maxResults
      * @param plugId
+     * @param totalSize
      * @return an array of assiciated topics or null in case the term itself is not found as topic
      * @throws Exception
      */
-    public synchronized Topic[] getTopicsForTerm(String queryTerm, int start, int maxResults, String plugId)
-            throws Exception {
+    public synchronized Topic[] getTopicsForTerm(String queryTerm, int start, int maxResults, String plugId,
+            int[] totalSize) throws Exception {
         HashMap associationTypes = new HashMap();
         Topic[] result = new Topic[0];
 
-        _topic topic = getTopic(queryTerm, THESAURUS_DESCRIPTOR, start);
+        _topic topic = getTopic(queryTerm, THESAURUS_DESCRIPTOR, start, totalSize);
         if (topic != null) {
-            _topic[] associatedTopics = getAssociatedTopics(topic, fTypeFilters, associationTypes);
+            _topic[] associatedTopics = getAssociatedTopics(topic, fTypeFilters, associationTypes, totalSize);
             Topic[] topics = copyToTopicArray(associatedTopics, associationTypes, maxResults, plugId);
             result = topics;
         }
@@ -81,14 +82,16 @@ public class SNSController {
      * @param topicId
      * @param maxResults
      * @param plugId
+     * @param totalSize
      * @return an array of associated topics for a type identified by id
      * @throws Exception
      */
-    public synchronized Topic[] getTopicsForTopic(String topicId, int maxResults, String plugId) throws Exception {
+    public synchronized Topic[] getTopicsForTopic(String topicId, int maxResults, String plugId, int[] totalSize)
+            throws Exception {
         HashMap associationTypes = new HashMap();
         _topic topic = new _topic();
         topic.setId(topicId);
-        _topic[] associatedTopics = getAssociatedTopics(topic, fTypeFilters, associationTypes);
+        _topic[] associatedTopics = getAssociatedTopics(topic, fTypeFilters, associationTypes, totalSize);
         if (associatedTopics != null) {
             return copyToTopicArray(associatedTopics, associationTypes, maxResults, plugId);
         }
@@ -102,14 +105,19 @@ public class SNSController {
      * @param filter
      * @param plugId
      * @param lang
+     * @param totalSize
      * @return array of detailed topics for the given text
      * @throws Exception
      */
     public synchronized DetailedTopic[] getTopicsForText(String documentText, int maxToAnalyzeWords, String filter,
-            String plugId, String lang) throws Exception {
+            String plugId, String lang, int[] totalSize) throws Exception {
         final _topicMapFragment mapFragment = this.fServiceClient.autoClassify(documentText, maxToAnalyzeWords, filter,
                 true);
         final _topic[] topics = mapFragment.getTopicMap().getTopic();
+        if (null != mapFragment.getListExcerpt()) {
+            totalSize[0] = mapFragment.getListExcerpt().getTotalSize().intValue();
+        }
+
         if (topics != null) {
             return toDetailedTopicArray(topics, plugId, lang);
         }
@@ -297,15 +305,19 @@ public class SNSController {
      * @param baseTopic
      * @param typePattern
      * @param associationTypes
+     * @param totalSize
      * @return _topic array of associated topics filter by the given patterns
      * @throws Exception
      */
-    private synchronized _topic[] getAssociatedTopics(_topic baseTopic, String[] typePattern, HashMap associationTypes)
-            throws Exception {
+    private synchronized _topic[] getAssociatedTopics(_topic baseTopic, String[] typePattern, HashMap associationTypes,
+            int[] totalSize) throws Exception {
         ArrayList resultList = new ArrayList();
 
         final _topicMapFragment mapFragment = this.fServiceClient.getPSI(baseTopic.getId(), 1, null);
         final _topic[] topics = mapFragment.getTopicMap().getTopic();
+        if (null != mapFragment.getListExcerpt()) {
+            totalSize[0] = mapFragment.getListExcerpt().getTotalSize().intValue();
+        }
         final _association[] associations = mapFragment.getTopicMap().getAssociation();
         // iterate through associations to find the correct association types
         if (associations != null) {
@@ -359,13 +371,15 @@ public class SNSController {
      * @param queryTerm
      * @param topicType
      * @param offSet
+     * @param totalSize
      * @return just one matching topic, in case more topics match or no topic match we return null
      * @throws Exception
      */
-    private _topic getTopic(String queryTerm, String topicType, long offSet) throws Exception {
+    private _topic getTopic(String queryTerm, String topicType, long offSet, int[] totalSize) throws Exception {
         _topicMapFragment mapFragment = this.fServiceClient.findTopics(queryTerm, topicType, SearchType.exact,
                 FieldsType.captors, offSet);
         if (null != mapFragment) {
+            totalSize[0] = mapFragment.getListExcerpt().getTotalSize().intValue();
             _topic[] topics = mapFragment.getTopicMap().getTopic();
             if ((null != topics) && (topics.length == 1)) {
                 return topics[0];
@@ -426,11 +440,13 @@ public class SNSController {
      * @param start
      * @param length
      * @param plugId
+     * @param totalSize
+     *            Has the total size of the query set after the call.
      * @return A topic array of events.
      * @throws Exception
      */
     public Topic[] getEventFromTopic(String searchTerm, String[] eventTypes, String atDate, int start, int length,
-            String plugId) throws Exception {
+            String plugId, int[] totalSize) throws Exception {
         Topic[] result = new Topic[0];
         String[] eventPath = null;
 
@@ -450,6 +466,7 @@ public class SNSController {
         _topicMapFragment topicMapFragment = this.fServiceClient.findEvents(searchTerm, true, searchType, eventPath,
                 FieldsType.captors, start, atDate);
         _topic[] topic = topicMapFragment.getTopicMap().getTopic();
+        totalSize[0] = topicMapFragment.getListExcerpt().getTotalSize().intValue();
         if (topic != null) {
             Topic[] topics = copyToTopicArray(topic, null, length, plugId);
             result = topics;
@@ -464,11 +481,13 @@ public class SNSController {
      * @param searchTerm
      * @param length
      * @param plugId
+     * @param totalSize
      * @return Topics to similar terms.
      * @throws Exception
      */
-    public Topic[] getSimilarTermsFromTopic(String searchTerm, int length, String plugId) throws Exception {
-        return getSimilarTermsFromTopic(new String[] { searchTerm }, length, plugId);
+    public Topic[] getSimilarTermsFromTopic(String searchTerm, int length, String plugId, int[] totalSize)
+            throws Exception {
+        return getSimilarTermsFromTopic(new String[] { searchTerm }, length, plugId, totalSize);
     }
 
     /**
@@ -477,14 +496,17 @@ public class SNSController {
      * @param searchTerm
      * @param length
      * @param plugId
+     * @param totalSize 
      * @return Topics to similar terms.
      * @throws Exception
      */
-    public Topic[] getSimilarTermsFromTopic(String[] searchTerm, int length, String plugId) throws Exception {
+    public Topic[] getSimilarTermsFromTopic(String[] searchTerm, int length, String plugId, int[] totalSize)
+            throws Exception {
         Topic[] result = new Topic[0];
 
         _topicMapFragment topicMapFragment = this.fServiceClient.getSimilarTerms(true, searchTerm);
         _topic[] topic = topicMapFragment.getTopicMap().getTopic();
+        totalSize[0] = topicMapFragment.getListExcerpt().getTotalSize().intValue();
 
         if (topic != null) {
             Topic[] topics = copyToTopicArray(topic, null, length, plugId);
@@ -500,14 +522,17 @@ public class SNSController {
      * @param searchTerm
      * @param length
      * @param plugId
+     * @param totalSize
      * @return Topics to an anniversary.
      * @throws Exception
      */
-    public Topic[] getAnniversaryFromTopic(String searchTerm, int length, String plugId) throws Exception {
+    public Topic[] getAnniversaryFromTopic(String searchTerm, int length, String plugId, int[] totalSize)
+            throws Exception {
         Topic[] result = new Topic[0];
 
         _topicMapFragment topicMapFragment = this.fServiceClient.anniversary(searchTerm);
         _topic[] topic = topicMapFragment.getTopicMap().getTopic();
+        totalSize[0] = topicMapFragment.getListExcerpt().getTotalSize().intValue();
         if (topic != null) {
             Topic[] topics = copyToTopicArray(topic, null, length, plugId);
             result = topics;
@@ -526,11 +551,13 @@ public class SNSController {
      * @param start
      * @param length
      * @param plugId
+     * @param totalSize
+     *            Has the total size of the query set after the call.
      * @return Topics to an event.
      * @throws Exception
      */
     public Topic[] getEventFromTopic(String searchTerm, String[] eventTypes, String fromDate, String toDate, int start,
-            int length, String plugId) throws Exception {
+            int length, String plugId, int[] totalSize) throws Exception {
         Topic[] result = new Topic[0];
         String[] eventPath = null;
 
@@ -550,6 +577,7 @@ public class SNSController {
         _topicMapFragment topicMapFragment = this.fServiceClient.findEvents(searchTerm, true, searchType, eventPath,
                 FieldsType.captors, start, fromDate, toDate);
         _topic[] topic = topicMapFragment.getTopicMap().getTopic();
+        totalSize[0] = topicMapFragment.getListExcerpt().getTotalSize().intValue();
         if (topic != null) {
             Topic[] topics = copyToTopicArray(topic, null, length, plugId);
             result = topics;
@@ -598,13 +626,16 @@ public class SNSController {
      * @param topicId
      * @param length
      * @param plugId
+     * @param totalSize
      * @return A topic array from similar location topics.
      * @throws Exception
      */
-    public Topic[] getTopicSimilarLocationsFromTopic(String topicId, int length, String plugId) throws Exception {
+    public Topic[] getTopicSimilarLocationsFromTopic(String topicId, int length, String plugId, int[] totalSize)
+            throws Exception {
         Topic[] result = null;
 
         _topicMapFragment mapFragment = this.fServiceClient.getPSI(topicId, 0, "/location");
+        totalSize[0] = mapFragment.getListExcerpt().getTotalSize().intValue();
         if (null != mapFragment) {
             _topic[] topics = mapFragment.getTopicMap().getTopic();
             result = copyToTopicArray(topics, null, length, plugId);
@@ -618,11 +649,12 @@ public class SNSController {
      * @param i
      * @param plugId
      * @param lang
+     * @param totalSize
      * @return Array of detailed topics for the given text.
      * @throws Exception
      */
-    public synchronized DetailedTopic[] getTopicsForText(String searchTerm, int i, String plugId, String lang)
-            throws Exception {
-        return getTopicsForText(searchTerm, i, null, plugId, lang);
+    public synchronized DetailedTopic[] getTopicsForText(String searchTerm, int i, String plugId, String lang,
+            int[] totalSize) throws Exception {
+        return getTopicsForText(searchTerm, i, null, plugId, lang, totalSize);
     }
 }
