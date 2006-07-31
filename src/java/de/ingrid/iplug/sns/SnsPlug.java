@@ -75,8 +75,9 @@ public class SnsPlug implements IPlug {
                     break;
                 case Topic.TOPIC_FROM_TEXT:
                     final String filter = (String) query.get("filter");
+                    final String lang = getQueryLang(query);
                     hitsTemp = this.fSnsController.getTopicsForText(getSearchTerm(query), this.fMaximalAnalyzedWord,
-                            filter, this.fPlugId);
+                            filter, this.fPlugId, lang);
                     break;
                 case Topic.TOPIC_FROM_TOPIC:
                     hitsTemp = this.fSnsController.getTopicsForTopic(getSearchTerm(query), length, this.fPlugId);
@@ -113,7 +114,7 @@ public class SnsPlug implements IPlug {
                     hits = hitsTemp;
                 }
 
-                int max = Math.min(hits.length, length);
+                int max = Math.min((hits.length - start), length);
                 IngridHit[] finalHits = new IngridHit[max];
                 System.arraycopy(hits, start, finalHits, 0, max);
                 if (log.isDebugEnabled()) {
@@ -176,16 +177,23 @@ public class SnsPlug implements IPlug {
      *      java.lang.String[])
      */
     public IngridHitDetail getDetail(IngridHit hit, IngridQuery query, String[] fields) throws Exception {
-        String lang = this.fLanguage;
+        String lang = getQueryLang(query);
+
+        return this.fSnsController.getTopicDetail(hit, lang);
+    }
+
+    private String getQueryLang(IngridQuery query) {
+        String result = this.fLanguage;
+
         FieldQuery[] qFields = query.getFields();
         for (int i = 0; i < qFields.length; i++) {
             final String fieldName = qFields[i].getFieldName();
             if (fieldName.equals("lang")) {
-                lang = qFields[i].getFieldValue();
+                result = qFields[i].getFieldValue();
             }
         }
 
-        return this.fSnsController.getTopicDetail(hit, lang);
+        return result;
     }
 
     /*
