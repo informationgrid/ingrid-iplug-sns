@@ -66,6 +66,7 @@ public class SnsPlug implements IPlug {
 
         if (containsSNSDataType(query.getDataTypes())) {
             int type = query.getInt(Topic.REQUEST_TYPE);
+            final String lang = getQueryLang(query);
 
             try {
                 Topic[] hitsTemp = null;
@@ -75,7 +76,6 @@ public class SnsPlug implements IPlug {
                     break;
                 case Topic.TOPIC_FROM_TEXT:
                     final String filter = (String) query.get("filter");
-                    final String lang = getQueryLang(query);
                     hitsTemp = this.fSnsController.getTopicsForText(getSearchTerm(query), this.fMaximalAnalyzedWord,
                             filter, this.fPlugId, lang);
                     break;
@@ -114,7 +114,16 @@ public class SnsPlug implements IPlug {
                     hits = hitsTemp;
                 }
 
-                int max = Math.min((hits.length - start), length);
+                int max = 0;
+                if (type == Topic.EVENT_FROM_TOPIC) {
+                    start = 0;
+                    max = Math.min(hits.length, length);
+                } else {
+                    if (start > hits.length) {
+                        start = hits.length;
+                    }
+                    max = Math.min((hits.length - start), length);
+                }
                 IngridHit[] finalHits = new IngridHit[max];
                 System.arraycopy(hits, start, finalHits, 0, max);
                 if (log.isDebugEnabled()) {
