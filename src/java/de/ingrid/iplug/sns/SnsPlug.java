@@ -135,6 +135,9 @@ public class SnsPlug implements IPlug {
                     log.debug("hits: " + totalSize);
                 }
 
+                if ((0 == totalSize[0]) && (hits.length > 0)) {
+                    totalSize[0] = hits.length;
+                }
                 return new IngridHits(this.fPlugId, totalSize[0], finalHits, false);
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
