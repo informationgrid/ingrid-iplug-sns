@@ -506,7 +506,9 @@ public class SNSController {
 
         _topicMapFragment topicMapFragment = this.fServiceClient.getSimilarTerms(true, searchTerm);
         _topic[] topic = topicMapFragment.getTopicMap().getTopic();
-        totalSize[0] = topicMapFragment.getListExcerpt().getTotalSize().intValue();
+        if (null != topicMapFragment.getListExcerpt()) {
+            totalSize[0] = topicMapFragment.getListExcerpt().getTotalSize().intValue();
+        }
 
         if (topic != null) {
             Topic[] topics = copyToTopicArray(topic, null, length, plugId);
