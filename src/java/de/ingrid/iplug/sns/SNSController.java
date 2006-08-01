@@ -637,8 +637,8 @@ public class SNSController {
         Topic[] result = null;
 
         _topicMapFragment mapFragment = this.fServiceClient.getPSI(topicId, 0, "/location");
-        totalSize[0] = mapFragment.getListExcerpt().getTotalSize().intValue();
         if (null != mapFragment) {
+            totalSize[0] = mapFragment.getListExcerpt().getTotalSize().intValue();
             _topic[] topics = mapFragment.getTopicMap().getTopic();
             result = copyToTopicArray(topics, null, length, plugId);
         }
