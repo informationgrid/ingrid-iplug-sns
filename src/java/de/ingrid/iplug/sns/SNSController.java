@@ -72,7 +72,7 @@ public class SNSController {
         _topic topic = getTopic(queryTerm, THESAURUS_DESCRIPTOR, start, totalSize, lang);
         if (topic != null) {
             _topic[] associatedTopics = getAssociatedTopics(topic, fTypeFilters, associationTypes, totalSize);
-            Topic[] topics = copyToTopicArray(associatedTopics, associationTypes, maxResults, plugId);
+            Topic[] topics = copyToTopicArray(associatedTopics, associationTypes, maxResults, plugId, lang);
             result = topics;
         }
 
@@ -94,7 +94,7 @@ public class SNSController {
         topic.setId(topicId);
         _topic[] associatedTopics = getAssociatedTopics(topic, fTypeFilters, associationTypes, totalSize);
         if (associatedTopics != null) {
-            return copyToTopicArray(associatedTopics, associationTypes, maxResults, plugId);
+            return copyToTopicArray(associatedTopics, associationTypes, maxResults, plugId, "bla");
         }
 
         return null;
@@ -295,9 +295,27 @@ public class SNSController {
      * @param associationType
      * @return a ingrid topic from a _topic
      */
-    private synchronized Topic buildTopicFrom_topic(_topic topic, String plugId, String associationType) {
-        String title = topic.getBaseName()[0].getBaseNameString().getValue();
-        String summary = title + " " + topic.getInstanceOf()[0].getTopicRef().getHref();
+    private synchronized Topic buildTopicFrom_topic(_topic topic, String plugId, String associationType, String lang) {
+        _baseName[] baseNames = topic.getBaseName();
+        //Set a default if for the selected language nothing exists.
+        String title = baseNames[0].getBaseNameString().getValue();
+
+        for (int i = 0; i < baseNames.length; i++) {
+            final String href = baseNames[i].getScope().getTopicRef()[0].getHref();
+            if (href.endsWith("#" + lang)) {
+                title = baseNames[i].getBaseNameString().getValue();
+                break;
+            }
+        }
+        
+        _instanceOf[] instances = topic.getInstanceOf();
+        //Set a default if for the selected language nothing exists.
+        String summary = title + " " + instances[0].getTopicRef().getHref();        
+
+        for (int i = 0; i< instances.length; i++) {
+            summary = title + " " + instances[i].getTopicRef().getHref();
+        }
+        
         String topicId = topic.getId();
         return new Topic(plugId, topicId.hashCode(), topicId, title, summary, associationType);
     }
@@ -413,10 +431,11 @@ public class SNSController {
      * @param topics
      * @param associationTypes
      * @param plugId
+     * @param lang 
      * @return An array of Topic with the given length.
      * @throws Exception
      */
-    private Topic[] copyToTopicArray(_topic[] topics, HashMap associationTypes, int maxResults, String plugId)
+    private Topic[] copyToTopicArray(_topic[] topics, HashMap associationTypes, int maxResults, String plugId, String lang)
             throws Exception {
         ArrayList ingridTopics = new ArrayList();
 
@@ -429,7 +448,7 @@ public class SNSController {
                     if ((null != associationTypes) && (associationTypes.containsKey(topicId))) {
                         associationType = (String) associationTypes.get(topicId);
                     }
-                    ingridTopics.add(buildTopicFrom_topic(topics[i], plugId, associationType));
+                    ingridTopics.add(buildTopicFrom_topic(topics[i], plugId, associationType, lang));
                 }
             }
         }
@@ -473,7 +492,7 @@ public class SNSController {
         _topic[] topic = topicMapFragment.getTopicMap().getTopic();
         totalSize[0] = topicMapFragment.getListExcerpt().getTotalSize().intValue();
         if (topic != null) {
-            Topic[] topics = copyToTopicArray(topic, null, length, plugId);
+            Topic[] topics = copyToTopicArray(topic, null, length, plugId, lang);
             result = topics;
         }
 
@@ -517,7 +536,7 @@ public class SNSController {
         }
 
         if (topic != null) {
-            Topic[] topics = copyToTopicArray(topic, null, length, plugId);
+            Topic[] topics = copyToTopicArray(topic, null, length, plugId, lang);
             result = topics;
         }
 
@@ -542,7 +561,7 @@ public class SNSController {
         _topic[] topic = topicMapFragment.getTopicMap().getTopic();
         totalSize[0] = topicMapFragment.getListExcerpt().getTotalSize().intValue();
         if (topic != null) {
-            Topic[] topics = copyToTopicArray(topic, null, length, plugId);
+            Topic[] topics = copyToTopicArray(topic, null, length, plugId, "bla");
             result = topics;
         }
 
@@ -588,7 +607,7 @@ public class SNSController {
         _topic[] topic = topicMapFragment.getTopicMap().getTopic();
         totalSize[0] = topicMapFragment.getListExcerpt().getTotalSize().intValue();
         if (topic != null) {
-            Topic[] topics = copyToTopicArray(topic, null, length, plugId);
+            Topic[] topics = copyToTopicArray(topic, null, length, plugId, lang);
             result = topics;
         }
 
@@ -649,7 +668,7 @@ public class SNSController {
                 totalSize[0] = mapFragment.getListExcerpt().getTotalSize().intValue();
             }
             _topic[] topics = mapFragment.getTopicMap().getTopic();
-            result = copyToTopicArray(topics, null, length, plugId);
+            result = copyToTopicArray(topics, null, length, plugId, "bla");
         }
 
         return result;
