@@ -60,7 +60,7 @@ public class SNSController {
      * @param maxResults
      * @param plugId
      * @param totalSize
-     * @param lang 
+     * @param lang
      * @return an array of assiciated topics or null in case the term itself is not found as topic
      * @throws Exception
      */
@@ -293,11 +293,12 @@ public class SNSController {
      * @param topic
      * @param plugId
      * @param associationType
+     * @param lang 
      * @return a ingrid topic from a _topic
      */
     private synchronized Topic buildTopicFrom_topic(_topic topic, String plugId, String associationType, String lang) {
         _baseName[] baseNames = topic.getBaseName();
-        //Set a default if for the selected language nothing exists.
+        // Set a default if for the selected language nothing exists.
         String title = baseNames[0].getBaseNameString().getValue();
 
         for (int i = 0; i < baseNames.length; i++) {
@@ -307,15 +308,8 @@ public class SNSController {
                 break;
             }
         }
-        
-        _instanceOf[] instances = topic.getInstanceOf();
-        //Set a default if for the selected language nothing exists.
-        String summary = title + " " + instances[0].getTopicRef().getHref();        
 
-        for (int i = 0; i< instances.length; i++) {
-            summary = title + " " + instances[i].getTopicRef().getHref();
-        }
-        
+        String summary = title + " " + topic.getInstanceOf()[0].getTopicRef().getHref();
         String topicId = topic.getId();
         return new Topic(plugId, topicId.hashCode(), topicId, title, summary, associationType);
     }
@@ -393,11 +387,12 @@ public class SNSController {
      * @param topicType
      * @param offSet
      * @param totalSize
-     * @param lang 
+     * @param lang
      * @return just one matching topic, in case more topics match or no topic match we return null
      * @throws Exception
      */
-    private _topic getTopic(String queryTerm, String topicType, long offSet, int[] totalSize, String lang) throws Exception {
+    private _topic getTopic(String queryTerm, String topicType, long offSet, int[] totalSize, String lang)
+            throws Exception {
         _topicMapFragment mapFragment = this.fServiceClient.findTopics(queryTerm, topicType, SearchType.exact,
                 FieldsType.captors, offSet, lang);
         if (null != mapFragment) {
@@ -431,12 +426,12 @@ public class SNSController {
      * @param topics
      * @param associationTypes
      * @param plugId
-     * @param lang 
+     * @param lang
      * @return An array of Topic with the given length.
      * @throws Exception
      */
-    private Topic[] copyToTopicArray(_topic[] topics, HashMap associationTypes, int maxResults, String plugId, String lang)
-            throws Exception {
+    private Topic[] copyToTopicArray(_topic[] topics, HashMap associationTypes, int maxResults, String plugId,
+            String lang) throws Exception {
         ArrayList ingridTopics = new ArrayList();
 
         if (null != topics) {
@@ -465,7 +460,7 @@ public class SNSController {
      * @param plugId
      * @param totalSize
      *            Has the total size of the query set after the call.
-     * @param lang 
+     * @param lang
      * @return A topic array of events.
      * @throws Exception
      */
@@ -522,6 +517,7 @@ public class SNSController {
      * @param length
      * @param plugId
      * @param totalSize
+     * @param lang
      * @return Topics to similar terms.
      * @throws Exception
      */
@@ -580,7 +576,7 @@ public class SNSController {
      * @param plugId
      * @param totalSize
      *            Has the total size of the query set after the call.
-     * @param lang 
+     * @param lang
      * @return Topics to an event.
      * @throws Exception
      */
