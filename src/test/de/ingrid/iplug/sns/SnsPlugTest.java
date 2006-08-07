@@ -419,15 +419,16 @@ public class SnsPlugTest extends TestCase {
         String q = "water";
         IngridQuery query = QueryStringParser.parse(q);
         query.addField(new FieldQuery(true, false, "datatype", IDataTypes.SNS));
-        //FIXME: "en" provoziert nullpointer im sns. 
-        query.addField(new FieldQuery(true, false, "lang", "de"));
+        query.addField(new FieldQuery(true, false, "lang", "en"));
         query.putInt(Topic.REQUEST_TYPE, Topic.SIMILARTERMS_FROM_TOPIC);
-        IngridHits hits = plug.search(query, 0, 10);
+        IngridHits hits = plug.search(query, 0, 600);
+        assertEquals(114, hits.length());
         IngridHit[] hitsArray = hits.getHits();
         assertNotNull(hitsArray);
+        assertEquals(114, hitsArray.length);
         for (int i = 0; i < hitsArray.length; i++) {
             Topic hit = (Topic) hitsArray[i];
-            System.out.println(hit.getTopicName() + ":" + hit.getTopicID());
+            System.out.println(hit.getTopicName() + " -- " + hit.getTopicID() + " -- " + hit.getSummary());
         }
     }
 }
