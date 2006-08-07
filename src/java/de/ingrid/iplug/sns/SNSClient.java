@@ -96,13 +96,14 @@ public class SNSClient {
      *            Can be one of the provided <code>FieldsType</code>s.
      * @param offset
      *            Defines the number of topics to skip.
+     * @param lang
      * @return The response object.
      * @throws Exception
      * @see SearchType
      * @see FieldsType
      */
     public synchronized _topicMapFragment findTopics(String queryTerm, String path, SearchType searchType,
-            FieldsType fieldsType, long offset) throws Exception {
+            FieldsType fieldsType, long offset, String lang) throws Exception {
         if (queryTerm == null) {
             throw new IllegalArgumentException("QueryTerm can not be null");
         }
@@ -112,7 +113,7 @@ public class SNSClient {
         _findTopics topicRequest = new _findTopics();
         topicRequest.setUser(this.fUserName);
         topicRequest.setPassword(this.fPassword);
-        topicRequest.setLang(this.fLanguage);
+        topicRequest.setLang(lang);
         topicRequest.setPath(path);
         topicRequest.setSearchType(searchType);
         topicRequest.setFields(fieldsType);
@@ -168,7 +169,7 @@ public class SNSClient {
      * @throws Exception
      */
     public synchronized _topicMapFragment autoClassify(String document, int analyzeMaxWords, String filter,
-            boolean ignoreCase) throws Exception {
+            boolean ignoreCase, String lang) throws Exception {
         if (document == null) {
             throw new IllegalArgumentException("document can not be null");
         }
@@ -179,7 +180,7 @@ public class SNSClient {
         _autoClassify classifyRequest = new _autoClassify();
         classifyRequest.setUser(this.fUserName);
         classifyRequest.setPassword(this.fPassword);
-        classifyRequest.setLang(this.fLanguage);
+        classifyRequest.setLang(lang);
         classifyRequest.setDocument(document);
         classifyRequest.setAnalyzeMaxWords("" + analyzeMaxWords);
         if (ignoreCase) {
@@ -217,11 +218,14 @@ public class SNSClient {
      * @param fieldsType
      * @param offset
      * @param at
+     * @param lang
+     * @param length
      * @return A topic map fragment.
      * @throws RemoteException
      */
     public synchronized _topicMapFragment findEvents(String query, boolean ignoreCase, SearchType searchType,
-            String[] pathArray, FieldsType fieldsType, long offset, String at) throws RemoteException {
+            String[] pathArray, FieldsType fieldsType, long offset, String at, String lang, int length)
+            throws RemoteException {
         _findEvents findEvents = new _findEvents();
         findEvents.setUser(this.fUserName);
         findEvents.setPassword(this.fPassword);
@@ -233,10 +237,11 @@ public class SNSClient {
             findEvents.setIgnoreCase("false");
         }
         findEvents.setSearchType(searchType);
-        findEvents.setLang(this.fLanguage);
+        findEvents.setLang(lang);
         findEvents.setPath(pathArray);
         findEvents.setFields(fieldsType);
         findEvents.setOffset(BigInteger.valueOf(offset));
+        findEvents.setPageSize(BigInteger.valueOf(length));
         findEvents.setAt(at);
 
         return this.fXtmSoapPortType.findEventsOp(findEvents);
@@ -251,11 +256,13 @@ public class SNSClient {
      * @param offset
      * @param from
      * @param to
+     * @param lang
      * @return A topic map fragment.
      * @throws RemoteException
      */
     public synchronized _topicMapFragment findEvents(String query, boolean ignoreCase, SearchType searchType,
-            String[] pathArray, FieldsType fieldsType, long offset, String from, String to) throws RemoteException {
+            String[] pathArray, FieldsType fieldsType, long offset, String from, String to, String lang, int length)
+            throws RemoteException {
         _findEvents findEvents = new _findEvents();
         findEvents.setUser(this.fUserName);
         findEvents.setPassword(this.fPassword);
@@ -266,10 +273,11 @@ public class SNSClient {
             findEvents.setIgnoreCase("false");
         }
         findEvents.setSearchType(searchType);
-        findEvents.setLang(this.fLanguage);
+        findEvents.setLang(lang);
         findEvents.setPath(pathArray);
         findEvents.setFields(fieldsType);
         findEvents.setOffset(BigInteger.valueOf(offset));
+        findEvents.setPageSize(BigInteger.valueOf(length));
         findEvents.setFrom(from);
         findEvents.setTo(to);
 
@@ -301,10 +309,12 @@ public class SNSClient {
      * 
      * @param ignoreCase
      * @param terms
+     * @param lang
      * @return A topic map fragment.
      * @throws RemoteException
      */
-    public synchronized _topicMapFragment getSimilarTerms(boolean ignoreCase, String[] terms) throws RemoteException {
+    public synchronized _topicMapFragment getSimilarTerms(boolean ignoreCase, String[] terms, String lang)
+            throws RemoteException {
         if ((null == terms) || (terms.length < 1)) {
             throw new IllegalArgumentException("No terms set.");
         }
@@ -312,7 +322,7 @@ public class SNSClient {
         _getSimilarTerms getSimilarTerms = new _getSimilarTerms();
         getSimilarTerms.setUser(this.fUserName);
         getSimilarTerms.setPassword(this.fPassword);
-        getSimilarTerms.setLang(this.fLanguage);
+        getSimilarTerms.setLang(lang);
         if (ignoreCase) {
             getSimilarTerms.setIgnoreCase("true");
         } else {

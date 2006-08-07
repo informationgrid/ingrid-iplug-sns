@@ -218,7 +218,7 @@ public class SnsPlugTest extends TestCase {
             plug.getDetail(hit, query, this.fields);
         }
     }
-    
+
     /**
      * @throws Exception
      */
@@ -399,15 +399,34 @@ public class SnsPlugTest extends TestCase {
         query.addField(new FieldQuery(true, false, "datatype", IDataTypes.SNS));
         query.putInt(Topic.REQUEST_TYPE, Topic.EVENT_FROM_TOPIC);
         query.put("t2", "3000-01-01");
-        IngridHits hits = plug.search(query, 590, 10);
+        IngridHits hits = plug.search(query, 0, 30);
         assertEquals(600, hits.length());
         IngridHit[] hitsArray = hits.getHits();
         assertNotNull(hitsArray);
-        
+
         for (int i = 0; i < hitsArray.length; i++) {
             Topic hit = (Topic) hitsArray[i];
             System.out.println(hit.getTopicID());
         }
-        assertEquals(10, hitsArray.length);
+        assertEquals(30, hitsArray.length);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testSIMILARTERMSINENGLISH() throws Exception {
+        SnsPlug plug = new SnsPlug(fPlugDescription);
+        String q = "wasser";
+        IngridQuery query = QueryStringParser.parse(q);
+        query.addField(new FieldQuery(true, false, "datatype", IDataTypes.SNS));
+        query.addField(new FieldQuery(true, false, "lang", "en"));
+        query.putInt(Topic.REQUEST_TYPE, Topic.SIMILARTERMS_FROM_TOPIC);
+        IngridHits hits = plug.search(query, 0, 10);
+        IngridHit[] hitsArray = hits.getHits();
+        assertNotNull(hitsArray);
+        for (int i = 0; i < hitsArray.length; i++) {
+            Topic hit = (Topic) hitsArray[i];
+            System.out.println(hit.getTopicName() + ":" + hit.getTopicID());
+        }
     }
 }

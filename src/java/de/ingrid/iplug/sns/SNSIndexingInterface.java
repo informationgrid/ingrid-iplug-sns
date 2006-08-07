@@ -42,6 +42,8 @@ public class SNSIndexingInterface {
 
     private ArrayList fWgs84Box = new ArrayList();
 
+    private String fLanguage = null;
+
     /**
      * Interface for SN service connection handling.
      * 
@@ -56,6 +58,7 @@ public class SNSIndexingInterface {
      */
     public SNSIndexingInterface(final String login, final String password, final String language) throws Exception {
         this.fSNSClient = new SNSClient(login, password, language);
+        this.fLanguage = language;
     }
 
     /**
@@ -76,7 +79,8 @@ public class SNSIndexingInterface {
      *            The document to analyze.
      * @param maxToAnalyzeWords
      *            The first <code>maxToAnalyzeWords</code> words of the document that should be analyzed.
-     * @param ignoreCase Set to true ignore case of the document.
+     * @param ignoreCase
+     *            Set to true ignore case of the document.
      * @return A string array filled with all buzzwords.
      * @throws Exception
      *             If we cannot connect to the sns server.
@@ -84,7 +88,8 @@ public class SNSIndexingInterface {
     public String[] getBuzzwords(final String text, final int maxToAnalyzeWords, boolean ignoreCase) throws Exception {
         String[] result = new String[0];
 
-        final _topicMapFragment mapFragment = this.fSNSClient.autoClassify(text, maxToAnalyzeWords, null, ignoreCase);
+        final _topicMapFragment mapFragment = this.fSNSClient.autoClassify(text, maxToAnalyzeWords, null, ignoreCase,
+                this.fLanguage);
         this.fTopics = mapFragment.getTopicMap().getTopic();
 
         this.fTemporal.clear();

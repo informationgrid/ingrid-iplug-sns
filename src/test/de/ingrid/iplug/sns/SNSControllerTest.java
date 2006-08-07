@@ -53,7 +53,7 @@ public class SNSControllerTest extends TestCase {
      */
     public void testTopicsForTerm() throws Exception {
         SNSController controller = new SNSController(fClient);
-        Topic[] topicsForTerm = controller.getTopicsForTerm("Wasser", 0, 1000, "aId", new int[1]);
+        Topic[] topicsForTerm = controller.getTopicsForTerm("Wasser", 0, 1000, "aId", new int[1], "de");
         assertTrue(topicsForTerm.length > 0);
         for (int i = 0; i < topicsForTerm.length; i++) {
             Topic topic = topicsForTerm[i];

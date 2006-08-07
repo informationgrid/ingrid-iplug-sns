@@ -39,7 +39,7 @@ public class SNSServiceClientTest extends TestCase {
         int offset = -1;
 
         try {
-            adapter.findTopics(queryTerm, null, null, null, offset);
+            adapter.findTopics(queryTerm, null, null, null, offset, "de");
             fail("Should throw an exception");
         } catch (Exception e) {
             assertTrue(e instanceof IllegalArgumentException);
@@ -47,15 +47,15 @@ public class SNSServiceClientTest extends TestCase {
 
         queryTerm = "xyz";
         try {
-            adapter.findTopics(queryTerm, null, null, null, offset);
+            adapter.findTopics(queryTerm, null, null, null, offset, "de");
             fail("Should throw an exception");
         } catch (Exception e) {
             assertTrue(e instanceof IllegalArgumentException);
         }
         offset = 1;
-        assertNotNull(adapter.findTopics(queryTerm, null, null, null, offset));
+        assertNotNull(adapter.findTopics(queryTerm, null, null, null, offset, "de"));
         offset = Integer.MAX_VALUE;
-        assertNotNull(adapter.findTopics(queryTerm, null, null, null, offset));
+        assertNotNull(adapter.findTopics(queryTerm, null, null, null, offset, "de"));
     }
 
     /**
@@ -98,22 +98,22 @@ public class SNSServiceClientTest extends TestCase {
         String document = null;
         int maxWords = -1;
         try {
-            adapter.autoClassify(document, maxWords, null, true);
+            adapter.autoClassify(document, maxWords, null, true, "de");
             fail("Should throw an exception");
         } catch (Exception e) {
             assertTrue(e instanceof IllegalArgumentException);
         }
         document = "Die Ozonschicht ist sehr d�nn";
         try {
-            adapter.autoClassify(document, maxWords, null, true);
+            adapter.autoClassify(document, maxWords, null, true, "de");
             fail("Should throw an exception");
         } catch (Exception e) {
             assertTrue(e instanceof IllegalArgumentException);
         }
         maxWords = 0;
-        assertNotNull(adapter.autoClassify(document, maxWords, null, true));
+        assertNotNull(adapter.autoClassify(document, maxWords, null, true, "de"));
         maxWords = Integer.MAX_VALUE;
-        assertNotNull(adapter.autoClassify(document, maxWords, null, true));
+        assertNotNull(adapter.autoClassify(document, maxWords, null, true, "de"));
     }
 
     /**
@@ -137,7 +137,7 @@ public class SNSServiceClientTest extends TestCase {
      * @throws Exception
      */
     public void testGetSimilarTerms() throws Exception {
-        _topicMapFragment fragment = adapter.getSimilarTerms(true, new String[] { "1976-08-31" });
+        _topicMapFragment fragment = adapter.getSimilarTerms(true, new String[] { "1976-08-31" }, "de");
         assertNotNull(fragment);
     }
 
@@ -146,7 +146,7 @@ public class SNSServiceClientTest extends TestCase {
      */
     public void testFindEventsAt() throws Exception {
         _topicMapFragment fragment = adapter.findEvents("query", true, SearchType.contains, new String[] { "/event" },
-                FieldsType.allfields, 0, "1976-08-31");
+                FieldsType.allfields, 0, "1976-08-31", "de", 10);
         assertNotNull(fragment);
     }
 }

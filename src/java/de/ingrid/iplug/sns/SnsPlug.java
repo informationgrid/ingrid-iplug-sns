@@ -75,7 +75,7 @@ public class SnsPlug implements IPlug {
                 switch (type) {
                 case Topic.TOPIC_FROM_TERM:
                     hitsTemp = this.fSnsController.getTopicsForTerm(getSearchTerm(query), start, Integer.MAX_VALUE,
-                            this.fPlugId, totalSize);
+                            this.fPlugId, totalSize, lang);
                     break;
                 case Topic.TOPIC_FROM_TEXT:
                     final String filter = (String) query.get("filter");
@@ -92,7 +92,7 @@ public class SnsPlug implements IPlug {
                     break;
                 case Topic.SIMILARTERMS_FROM_TOPIC:
                     hitsTemp = this.fSnsController.getSimilarTermsFromTopic(getSearchTerm(query), Integer.MAX_VALUE,
-                            this.fPlugId, totalSize);
+                            this.fPlugId, totalSize, lang);
                     break;
                 case Topic.SIMILARLOCATIONS_FROM_TOPIC:
                     hitsTemp = this.fSnsController.getTopicSimilarLocationsFromTopic(getSearchTerm(query),
@@ -105,10 +105,10 @@ public class SnsPlug implements IPlug {
                     final String toDate = (String) query.get("t2");
                     if (null != atDate) {
                         hitsTemp = this.fSnsController.getEventFromTopic(getSearchTerm(query), eventType, atDate,
-                                start, Integer.MAX_VALUE, this.fPlugId, totalSize);
+                                start, Integer.MAX_VALUE, this.fPlugId, totalSize, lang);
                     } else {
                         hitsTemp = this.fSnsController.getEventFromTopic(getSearchTerm(query), eventType, fromDate,
-                                toDate, start, Integer.MAX_VALUE, this.fPlugId, totalSize);
+                                toDate, start, Integer.MAX_VALUE, this.fPlugId, totalSize, lang);
                     }
                     break;
                 default:
