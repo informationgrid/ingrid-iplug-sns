@@ -165,6 +165,7 @@ public class SNSClient {
      * @param filter
      * @param ignoreCase
      *            Set to true ignore case of the document.
+     * @param lang
      * @return A topic map fragment.
      * @throws Exception
      */
