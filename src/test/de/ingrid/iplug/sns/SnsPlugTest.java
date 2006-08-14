@@ -399,8 +399,8 @@ public class SnsPlugTest extends TestCase {
         query.addField(new FieldQuery(true, false, "datatype", IDataTypes.SNS));
         query.putInt(Topic.REQUEST_TYPE, Topic.EVENT_FROM_TOPIC);
         query.put("t2", "3000-01-01");
-        IngridHits hits = plug.search(query, 0, 30);
-        assertEquals(600, hits.length());
+        IngridHits hits = plug.search(query, 0, 57);
+        assertEquals(601, hits.length());
         IngridHit[] hitsArray = hits.getHits();
         assertNotNull(hitsArray);
 
@@ -408,7 +408,7 @@ public class SnsPlugTest extends TestCase {
             Topic hit = (Topic) hitsArray[i];
             System.out.println(hit.getTopicID());
         }
-        assertEquals(30, hitsArray.length);
+        assertEquals(57, hitsArray.length);
     }
 
     /**
