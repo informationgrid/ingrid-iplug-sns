@@ -105,10 +105,10 @@ public class SnsPlug implements IPlug {
                     final String toDate = (String) query.get("t2");
                     if (null != atDate) {
                         hitsTemp = this.fSnsController.getEventFromTopic(getSearchTerm(query), eventType, atDate,
-                                start, Integer.MAX_VALUE, this.fPlugId, totalSize, lang);
+                                start, length, this.fPlugId, totalSize, lang);
                     } else {
                         hitsTemp = this.fSnsController.getEventFromTopic(getSearchTerm(query), eventType, fromDate,
-                                toDate, start, Integer.MAX_VALUE, this.fPlugId, totalSize, lang);
+                                toDate, start, length, this.fPlugId, totalSize, lang);
                     }
                     break;
                 default:
