@@ -72,7 +72,8 @@ public class SNSInterfaceTest extends TestCase {
         } else {
             for (int i = 0; i < hitsArray.length; i++) {
                 Topic hit = (Topic) hitsArray[i];
-                System.out.println(hit.getTopicName() + ":" + hit.getTopicID());
+                final String output = hit.getTopicName() + ":" + hit.getTopicID();
+                System.out.println(output);
             }
         }
         System.out.println("--- try to fetch details:");
@@ -82,8 +83,9 @@ public class SNSInterfaceTest extends TestCase {
             for (int i = 0; i < details.length; i++) {
                 assertTrue(details[i] instanceof DetailedTopic);
                 DetailedTopic detail = (DetailedTopic) details[i];
-                System.out.println(detail.getTopicName() + ":" + detail.getTopicID() + ":" + detail.getFrom() + ":"
-                        + detail.getTo() + ":" + detail.getAdministrativeID());
+                final String output = detail.getTopicName() + ':' + detail.getTopicID() + ':' + detail.getFrom() + ':'
+                        + detail.getTo() + ':' + detail.getAdministrativeID();
+                System.out.println(output);
             }
         } else {
             System.out.println("!!!!!!!!!!!!!!!! NO ANNIVERSARY DETAILS FOUND");
@@ -109,7 +111,8 @@ public class SNSInterfaceTest extends TestCase {
         } else {
             for (int i = 0; i < hitsArray.length; i++) {
                 Topic hit = (Topic) hitsArray[i];
-                System.out.println(hit.getTopicName() + ":" + hit.getTopicID());
+                final String output = hit.getTopicName() + ':' + hit.getTopicID();
+                System.out.println(output);
             }
         }
     }
@@ -138,7 +141,7 @@ public class SNSInterfaceTest extends TestCase {
         } else {
             for (int i = 0; i < hitsArray.length; i++) {
                 Topic hit = (Topic) hitsArray[i];
-                System.out.println(hit.getTopicName() + ":" + hit.getTopicID());
+                System.out.println(hit.getTopicName() + ':' + hit.getTopicID());
             }
         }
     }
@@ -165,7 +168,7 @@ public class SNSInterfaceTest extends TestCase {
         } else {
             for (int i = 0; i < hitsArray.length; i++) {
                 Topic hit = (Topic) hitsArray[i];
-                System.out.println(hit.getTopicName() + ":" + hit.getTopicID());
+                System.out.println(hit.getTopicName() + ':' + hit.getTopicID());
             }
         }
     }
@@ -177,7 +180,7 @@ public class SNSInterfaceTest extends TestCase {
         System.out.println("########## testEVENT_DETAILS()");
         String term = "Tschernobyl";
 //        String eventType = "industrialAccident";
-        System.out.println("TERM = " + term);
+        System.out.println("TERM = ".concat(term));
 //          System.out.println("TYPE = " + eventType);
         IngridQuery query = QueryStringParser.parse(term);
         query.addField(new FieldQuery(true, false, "datatype", IDataTypes.SNS));
@@ -192,7 +195,7 @@ public class SNSInterfaceTest extends TestCase {
             System.out.println("!!!!!!!!!!!!!!!! NO EVENT OF TYPE AND TERM FOUND");
         } else {
             Topic hit = (Topic) hitsArray[0];
-            System.out.println(hit.getTopicName() + ":" + hit.getTopicID());
+            System.out.println(hit.getTopicName() + ':' + hit.getTopicID());
 
         }
         IngridHitDetail[] details = this.fPlug.getDetails(hitsArray, query, new String[0]);
@@ -201,8 +204,8 @@ public class SNSInterfaceTest extends TestCase {
             for (int i = 0; i < details.length; i++) {
                 assertTrue(details[i] instanceof DetailedTopic);
                 DetailedTopic detail = (DetailedTopic) details[i];
-                System.out.println(detail.getTopicName() + ":" + detail.getTopicID() + ":" + detail.getFrom() + ":"
-                        + detail.getTo() + ":" + detail.getType() + ":" + detail.getAdministrativeID());
+                System.out.println(detail.getTopicName() + ':' + detail.getTopicID() + ':' + detail.getFrom() + ':'
+                        + detail.getTo() + ':' + detail.getType() + ':' + detail.getAdministrativeID());
             }
         } else {
             System.out.println("!!!!!!!!!!!!!!!! NO EVENT DETAILS FOUND");

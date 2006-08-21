@@ -22,9 +22,9 @@ import de.ingrid.iplug.sns.utils.Topic;
  */
 public class SNSControllerTest extends TestCase {
 
-    private static SNSClient fClient = null;
+    private static SNSClient fClient;
 
-    private boolean fToStdout = false;
+    private boolean fToStdout;
 
     private final static String VALID_TOPIC_ID = "uba_thes_19054";
 

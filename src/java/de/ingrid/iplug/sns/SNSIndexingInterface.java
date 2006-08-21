@@ -42,7 +42,7 @@ public class SNSIndexingInterface {
 
     private ArrayList fWgs84Box = new ArrayList();
 
-    private String fLanguage = null;
+    private String fLanguage;
 
     /**
      * Interface for SN service connection handling.

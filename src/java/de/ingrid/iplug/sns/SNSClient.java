@@ -33,15 +33,15 @@ import com.slb.taxi.webservice.xtm.stubs._topicMapFragment;
  */
 public class SNSClient {
 
-    private String fUserName = null;
+    private String fUserName;
 
-    private String fPassword = null;
+    private String fPassword;
 
-    private String fLanguage = null;
+    private String fLanguage;
 
-    private XTMESoapPortType fXtmSoapPortType = null;
+    private XTMESoapPortType fXtmSoapPortType;
 
-    private HttpSoapBindingStub fSoapBinding = null;
+    private HttpSoapBindingStub fSoapBinding;
 
     /**
      * Constructs an instance by using the given parameters.
@@ -258,6 +258,7 @@ public class SNSClient {
      * @param from
      * @param to
      * @param lang
+     * @param length 
      * @return A topic map fragment.
      * @throws RemoteException
      */

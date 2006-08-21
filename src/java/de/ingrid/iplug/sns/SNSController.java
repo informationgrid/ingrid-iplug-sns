@@ -39,7 +39,7 @@ public class SNSController {
 
     private static final String THESAURUS_DESCRIPTOR = "/thesa/descriptor";
 
-    private SNSClient fServiceClient = null;
+    private SNSClient fServiceClient;
 
     private static final String[] fTypeFilters = new String[] { "narrowerTermAssoc", "synonymAssoc",
             "relatedTermsAssoc" };
@@ -110,7 +110,7 @@ public class SNSController {
      * @return array of detailed topics for the given text
      * @throws Exception
      */
-    public synchronized DetailedTopic[] getTopicsForText(String documentText, int maxToAnalyzeWords, String filter,
+    public DetailedTopic[] getTopicsForText(String documentText, int maxToAnalyzeWords, String filter,
             String plugId, String lang, int[] totalSize) throws Exception {
         final _topicMapFragment mapFragment = this.fServiceClient.autoClassify(documentText, maxToAnalyzeWords, filter,
                 true, lang);
@@ -132,7 +132,7 @@ public class SNSController {
      * @param lang
      * @return an array of detailed topics, we ignoring all topics of typ synonymType
      */
-    private synchronized DetailedTopic[] toDetailedTopicArray(_topic[] topics, String plugId, String lang) {
+    private DetailedTopic[] toDetailedTopicArray(_topic[] topics, String plugId, String lang) {
         final List returnList = new ArrayList();
         for (int i = 0; i < topics.length; i++) {
             // System.out.println(topics[i].getInstanceOf()[0].getTopicRef().getHref());
@@ -156,13 +156,13 @@ public class SNSController {
         String title = "";
         for (int i = 0; i < bn.length; i++) {
             final String href = bn[i].getScope().getTopicRef()[0].getHref();
-            if (href.endsWith("#" + lang)) {
+            if (href.endsWith('#' + lang)) {
                 title = topic.getBaseName()[i].getBaseNameString().getValue();
                 break;
             }
         }
 
-        String summary = title + " " + topic.getInstanceOf()[0].getTopicRef().getHref();
+        String summary = title + ' ' + topic.getInstanceOf()[0].getTopicRef().getHref();
         DetailedTopic metaData = new DetailedTopic(plugId, topicId.hashCode(), topicId, title, summary);
         _instanceOf[] instanceOfs = topic.getInstanceOf();
         for (int i = 0; i < instanceOfs.length; i++) {
@@ -192,13 +192,13 @@ public class SNSController {
             for (int i = 0; i < occurrences.length; i++) {
                 if (occurrences[i].getInstanceOf() != null) {
                     // Only compare the scope to the language if the element has one set.
-                    String scope = "#" + lang;
+                    String scope = '#' + lang;
                     if (occurrences[i].getScope() != null) {
                         scope = occurrences[i].getScope().getTopicRef(0).getHref();
                     }
                     type = occurrences[i].getInstanceOf().getTopicRef().getHref();
                     if (type.endsWith(DetailedTopic.DESCRIPTION_OCC) && occurrences[i].getResourceRef() != null
-                            && scope.endsWith("#" + lang)) {
+                            && scope.endsWith('#' + lang)) {
                         definitions.add(occurrences[i].getResourceRef().getHref().toString());
                         titles.add(occurrences[i].getResourceRef().getTitle());
                     }
@@ -220,13 +220,13 @@ public class SNSController {
             for (int i = 0; i < occurrences.length; i++) {
                 if (occurrences[i].getInstanceOf() != null) {
                     // Only compare the scope to the language if the element has one set.
-                    String scope = "#" + lang;
+                    String scope = '#' + lang;
                     if (occurrences[i].getScope() != null) {
                         scope = occurrences[i].getScope().getTopicRef(0).getHref();
                     }
                     type = occurrences[i].getInstanceOf().getTopicRef().getHref();
                     if (type.endsWith(DetailedTopic.SAMPLE_OCC) && occurrences[i].getResourceRef() != null
-                            && scope.endsWith("#" + lang)) {
+                            && scope.endsWith('#' + lang)) {
                         samples.add(occurrences[i].getResourceRef().getHref().toString());
                         titles.add(occurrences[i].getResourceRef().getTitle());
                     }
@@ -275,13 +275,13 @@ public class SNSController {
             for (int i = 0; i < occurrences.length; i++) {
                 if (occurrences[i].getInstanceOf() != null) {
                     // Only compare the scope to the language if the element has one set.
-                    String scope = "#" + lang;
+                    String scope = '#' + lang;
                     if (occurrences[i].getScope() != null) {
                         scope = occurrences[i].getScope().getTopicRef(0).getHref();
                     }
                     type = occurrences[i].getInstanceOf().getTopicRef().getHref();
                     if (type.endsWith(occType) && occurrences[i].getResourceData() != null
-                            && scope.endsWith("#" + lang)) {
+                            && scope.endsWith('#' + lang)) {
                         detailedTopic.put(occType, occurrences[i].getResourceData().getValue());
                     }
                 }
@@ -303,13 +303,13 @@ public class SNSController {
 
         for (int i = 0; i < baseNames.length; i++) {
             final String href = baseNames[i].getScope().getTopicRef()[0].getHref();
-            if (href.endsWith("#" + lang)) {
+            if (href.endsWith('#' + lang)) {
                 title = baseNames[i].getBaseNameString().getValue();
                 break;
             }
         }
 
-        String summary = title + " " + topic.getInstanceOf()[0].getTopicRef().getHref();
+        String summary = title + ' ' + topic.getInstanceOf()[0].getTopicRef().getHref();
         String topicId = topic.getId();
         return new Topic(plugId, topicId.hashCode(), topicId, title, summary, associationType);
     }
@@ -322,7 +322,7 @@ public class SNSController {
      * @return _topic array of associated topics filter by the given patterns
      * @throws Exception
      */
-    private synchronized _topic[] getAssociatedTopics(_topic baseTopic, String[] typePattern, HashMap associationTypes,
+    private _topic[] getAssociatedTopics(_topic baseTopic, String[] typePattern, HashMap associationTypes,
             int[] totalSize) throws Exception {
         ArrayList resultList = new ArrayList();
 
@@ -472,7 +472,7 @@ public class SNSController {
         if (null != eventTypes) {
             eventPath = new String[eventTypes.length];
             for (int i = 0; i < eventPath.length; i++) {
-                eventPath[i] = "/event/" + eventTypes[i] + "/";
+                eventPath[i] = "/event/" + eventTypes[i] + '/';
             }
         } else {
             eventPath = new String[] { "/event/" };
@@ -588,7 +588,7 @@ public class SNSController {
         if (null != eventTypes) {
             eventPath = new String[eventTypes.length];
             for (int i = 0; i < eventPath.length; i++) {
-                eventPath[i] = "/event/" + eventTypes[i] + "/";
+                eventPath[i] = "/event/" + eventTypes[i] + '/';
             }
         } else {
             eventPath = new String[] { "/event/" };

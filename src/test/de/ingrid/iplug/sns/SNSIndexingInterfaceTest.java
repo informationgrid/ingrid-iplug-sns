@@ -13,7 +13,7 @@ public class SNSIndexingInterfaceTest extends TestCase {
 
     private SNSIndexingInterface fSnsInterface;
 
-    private boolean fToStdout = false;
+    private boolean fToStdout;
 
     protected void setUp() throws Exception {
         super.setUp();
@@ -108,7 +108,8 @@ public class SNSIndexingInterfaceTest extends TestCase {
         final long end = System.currentTimeMillis();
 
         if (this.fToStdout) {
-            System.out.println("Time for getting all buzzwords: " + ((end - start) / 1000) + " s");
+            final String output = "Time for getting all buzzwords: " + ((end - start) / 1000) + " s";
+            System.out.println(output);
         }
 
         assertNotNull(result);

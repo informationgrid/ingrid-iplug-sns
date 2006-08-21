@@ -11,11 +11,11 @@ import java.util.Date;
  */
 public class Temporal {
 
-    private Date fFrom = null;
+    private Date fFrom;
 
-    private Date fAt = null;
+    private Date fAt;
 
-    private Date fTo = null;
+    private Date fTo;
 
     /**
      * The date at which something occured.
