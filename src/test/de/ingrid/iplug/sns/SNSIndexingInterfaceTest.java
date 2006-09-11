@@ -44,10 +44,10 @@ public class SNSIndexingInterfaceTest extends TestCase {
 
         for (int i = 0; i < result.length; i++) {
             System.out.println(result[i].getTopicName());
-            System.out.println(result[i].getX1());
-            System.out.println(result[i].getX2());
-            System.out.println(result[i].getY1());
-            System.out.println(result[i].getY2());
+            System.out.println("x1:" + result[i].getX1());
+            System.out.println("y1:" + result[i].getY1());
+            System.out.println("x2:" + result[i].getX2());
+            System.out.println("y2:" + result[i].getY2());
             System.out.println(result[i].getGemeindekennziffer());
         }
     }

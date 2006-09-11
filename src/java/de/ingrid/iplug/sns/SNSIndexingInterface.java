@@ -149,8 +149,8 @@ public class SNSIndexingInterface {
                                 m = this.fCoordPattern.matcher(coords);
                                 if (m.matches() && m.groupCount() == 4) {
                                     final double x1 = new Double(m.group(1)).doubleValue();
-                                    final double x2 = new Double(m.group(2)).doubleValue();
-                                    final double y1 = new Double(m.group(3)).doubleValue();
+                                    final double y1 = new Double(m.group(2)).doubleValue();
+                                    final double x2 = new Double(m.group(3)).doubleValue();
                                     final double y2 = new Double(m.group(4)).doubleValue();
                                     this.fWgs84Box.add(new Wgs84Box(baseName, x1, x2, y1, y2, gemeindekennziffer));
                                 }
