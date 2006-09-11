@@ -195,7 +195,7 @@ public class SNSInterfaceTest extends TestCase {
             System.out.println("!!!!!!!!!!!!!!!! NO EVENT OF TYPE AND TERM FOUND");
         } else {
             Topic hit = (Topic) hitsArray[0];
-            System.out.println(hit.getTopicName() + ':' + hit.getTopicID());
+            System.out.println((hit.getTopicName() + ':').concat(hit.getTopicID()));
 
         }
         IngridHitDetail[] details = this.fPlug.getDetails(hitsArray, query, new String[0]);
