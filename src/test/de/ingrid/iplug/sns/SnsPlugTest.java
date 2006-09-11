@@ -422,10 +422,10 @@ public class SnsPlugTest extends TestCase {
         query.addField(new FieldQuery(true, false, "lang", "en"));
         query.putInt(Topic.REQUEST_TYPE, Topic.SIMILARTERMS_FROM_TOPIC);
         IngridHits hits = plug.search(query, 0, 600);
-        assertEquals(114, hits.length());
+        assertEquals(145, hits.length());
         IngridHit[] hitsArray = hits.getHits();
         assertNotNull(hitsArray);
-        assertEquals(114, hitsArray.length);
+        assertEquals(145, hitsArray.length);
         for (int i = 0; i < hitsArray.length; i++) {
             Topic hit = (Topic) hitsArray[i];
             System.out.println(hit.getTopicName() + " -- " + hit.getTopicID() + " -- " + hit.getSummary());
