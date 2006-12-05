@@ -7,7 +7,7 @@ package de.ingrid.iplug.sns;
 import java.util.Date;
 
 /**
- * 
+ * Class for handling timeline events (from, to and at a given point in time). 
  */
 public class Temporal {
 
@@ -45,6 +45,8 @@ public class Temporal {
     }
 
     /**
+     * Set the date from which something occured.
+     * 
      * @param javaDate
      */
     public void setFrom(Date javaDate) {
@@ -52,6 +54,8 @@ public class Temporal {
     }
 
     /**
+     * Set the date to which something occured.
+     * 
      * @param javaDate
      */
     public void setTo(Date javaDate) {
@@ -59,6 +63,8 @@ public class Temporal {
     }
 
     /**
+     * Set the date at which something occured.
+     * 
      * @param javaDate
      */
     public void setAt(Date javaDate) {
