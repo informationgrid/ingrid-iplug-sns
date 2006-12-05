@@ -48,6 +48,8 @@ public class SNSController {
             "stateType", "nationType" };
 
     /**
+     * Constructor for SNS controller.
+     * 
      * @param client
      */
     public SNSController(SNSClient client) {
@@ -55,12 +57,20 @@ public class SNSController {
     }
 
     /**
+     * For a given term (that should be a topic itself) an array of associated topics will returned. 
+     * 
      * @param queryTerm
+     * 			The query term.
      * @param start
+     * 			The start offset.
      * @param maxResults
+     * 			Limit number of results.
      * @param plugId
+     * 			The plugId as String.
      * @param totalSize
+     * 			The quantity of the found topics altogether.
      * @param lang
+     * 			Is used to specify the preferred language for requests.
      * @return an array of assiciated topics or null in case the term itself is not found as topic
      * @throws Exception
      */
@@ -80,10 +90,16 @@ public class SNSController {
     }
 
     /**
+     * For a given topic (identified by id) an array of associated topics will returned.
+     * 
      * @param topicId
+     * 			The topic given by Id.
      * @param maxResults
+     * 			Limit number of results.
      * @param plugId
+     * 			The plugId as String
      * @param totalSize
+     * 			The quantity of the found topics altogether.
      * @return an array of associated topics for a type identified by id
      * @throws Exception
      */
@@ -101,12 +117,20 @@ public class SNSController {
     }
 
     /**
+     * For a given text an array of detailed topics will returned.
+     * 
      * @param documentText
+     * 			The given text to analyze. 
      * @param maxToAnalyzeWords
+     * 			Analyze only the first maxToAnalyzeWords words of the document in the body.
      * @param filter
+     * 			Topic type as search criterion (only root paths may be used). 
      * @param plugId
+     * 			The plugId as String.
      * @param lang
+     * 			Is used to specify the preferred language for requests.
      * @param totalSize
+     * 			The quantity of the found topics altogether.
      * @return array of detailed topics for the given text
      * @throws Exception
      */
@@ -127,9 +151,14 @@ public class SNSController {
     }
 
     /**
+     * For a given topic array an array of associated topics which are not synonymous one will returned.
+     * 
      * @param topics
+     * 			Array of given topics.
      * @param plugId
+     * 			The plugId as String.
      * @param lang
+     * 			Is used to specify the preferred language for requests.
      * @return an array of detailed topics, we ignoring all topics of typ synonymType
      */
     private DetailedTopic[] toDetailedTopicArray(_topic[] topics, String plugId, String lang) {
@@ -145,9 +174,14 @@ public class SNSController {
     }
 
     /**
+     * Build a detailed metadata index for a given topic.
+     * 
      * @param topic
+     * 			A given topic.
      * @param plugId
+     * 			The plugId as String
      * @param lang
+     * 			Is used to specify the preferred language for requests.
      * @return A detailed topic from _topic.
      */
     private synchronized DetailedTopic buildDetailedTopicFrom_topic(_topic topic, String plugId, String lang) {
@@ -239,10 +273,12 @@ public class SNSController {
     }
 
     /**
-     * pushs the time data in to the detailed topic
+     * Pushs the time data in to the detailed topic.
      * 
      * @param metaData
+     * 			The detailed topic for which the time data should be set.
      * @param topic
+     * 			A given topic.
      */
     private void pushTimes(DetailedTopic metaData, _topic topic) {
         _occurrence[] occurrences = topic.getOccurrence();
@@ -452,15 +488,24 @@ public class SNSController {
     }
 
     /**
+     * Search for a given date events of an requested event type.
+     * 
      * @param searchTerm
+     * 			The search term.
      * @param eventTypes
+     * 			Array with one or more types of events.
      * @param atDate
+     * 			A date at which an event occured.
      * @param start
+     * 			Defines the number of elements to skip.
      * @param length
+     * 			Number of elements that should be retrieved.
      * @param plugId
+     * 			The plugId as String.
      * @param totalSize
-     *            Has the total size of the query set after the call.
+     *          Has the total size of the query set after the call.
      * @param lang
+     * 			Is used to specify the preferred language for requests.
      * @return A topic array of events.
      * @throws Exception
      */
@@ -498,10 +543,15 @@ public class SNSController {
      * Returns all similar terms to a term.
      * 
      * @param searchTerm
+     * 			The given search term.
      * @param length
+     * 			Number of elements that should be retrieved.
      * @param plugId
+     * 			The plugId as String.
      * @param totalSize
+     * 			The total size of the query set after the call.
      * @param lang
+     * 			Is used to specify the preferred language for requests.
      * @return Topics to similar terms.
      * @throws Exception
      */
@@ -514,10 +564,15 @@ public class SNSController {
      * Returns all similar terms to an array of terms.
      * 
      * @param searchTerm
+     * 			The given search term.
      * @param length
+     * 			Number of elements that should be retrieved.
      * @param plugId
+     * 			The plugId as String.
      * @param totalSize
+     * 			The total size of the query set after the call.
      * @param lang
+     * 			Is used to specify the preferred language for requests.
      * @return Topics to similar terms.
      * @throws Exception
      */
@@ -543,9 +598,13 @@ public class SNSController {
      * Returns all anniversaries to a date.
      * 
      * @param searchTerm
+     * 			The given search term.
      * @param length
+     * 			Number of elements that should be retrieved.
      * @param plugId
+     * 			The plugId as String.
      * @param totalSize
+     * 			The total size of the query set after the call.
      * @return Topics to an anniversary.
      * @throws Exception
      */
@@ -568,15 +627,23 @@ public class SNSController {
      * Returns all events between two dates.
      * 
      * @param searchTerm
+     * 			The given search term.
      * @param eventTypes
+     * 			Array with one or more types of events.
      * @param fromDate
+     * 			A date after that an event occured.
      * @param toDate
+     * 			A date before an event occured.
      * @param start
+     * 			Defines the number of elements to skip.
      * @param length
+     * 			Number of elements that should be retrieved.
      * @param plugId
+     * 			The plugId as String.
      * @param totalSize
-     *            Has the total size of the query set after the call.
+     *          Has the total size of the query set after the call.
      * @param lang
+     * 			Is used to specify the preferred language for requests.
      * @return Topics to an event.
      * @throws Exception
      */
@@ -611,8 +678,12 @@ public class SNSController {
     }
 
     /**
+     * Deliver for a given hit the detailed topic description.
+     * 
      * @param hit
+     * 			The hit, for which further information should received.
      * @param lang
+     * 			Is used to specify the preferred language for requests.
      * @return A detailed topic.
      * @throws Exception
      */
@@ -621,9 +692,14 @@ public class SNSController {
     }
 
     /**
+     * Get detailed information for a hit. 
+     * 
      * @param hit
+     * 			The hit, for which further information should received. 
      * @param filter
+     * 			Topic type as search criterion (only root paths may be used). 
      * @param lang
+     * 			Is used to specify the preferred language for requests.
      * @return A detailed topic to a filter.
      * @throws Exception
      */
@@ -647,10 +723,16 @@ public class SNSController {
     }
 
     /**
+     * Find for a given topic similar locations. 
+     * 
      * @param topicId
+     * 			The topic given by Id.
      * @param length
+     * 			Number of elements that should be retrieved.
      * @param plugId
+     * 			The plugId as string.
      * @param totalSize
+     * 			Has the total size of the query set after the call.
      * @return A topic array from similar location topics.
      * @throws Exception
      */
@@ -671,16 +753,23 @@ public class SNSController {
     }
 
     /**
+     * For a given text an array of detailed topics will returned (synchronized version).
+     * 
      * @param searchTerm
-     * @param i
+     * 			The given text to analyze.
+     * @param maxToAnalyzeWords
+     * 			Analyze only the first maxToAnalyzeWords words of the document in the body.
      * @param plugId
+     * 			The plugId as String.
      * @param lang
+     * 			Is used to specify the preferred language for requests.
      * @param totalSize
+     * 			The quantity of the found topics altogether.
      * @return Array of detailed topics for the given text.
      * @throws Exception
      */
-    public synchronized DetailedTopic[] getTopicsForText(String searchTerm, int i, String plugId, String lang,
+    public synchronized DetailedTopic[] getTopicsForText(String searchTerm, int maxToAnalyzeWords, String plugId, String lang,
             int[] totalSize) throws Exception {
-        return getTopicsForText(searchTerm, i, null, plugId, lang, totalSize);
+        return getTopicsForText(searchTerm, maxToAnalyzeWords, null, plugId, lang, totalSize);
     }
 }
