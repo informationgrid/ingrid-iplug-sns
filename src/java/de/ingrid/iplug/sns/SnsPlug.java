@@ -23,6 +23,7 @@ import de.ingrid.utils.query.TermQuery;
 import de.ingrid.utils.queryparser.IDataTypes;
 
 /**
+ * Semantic Network Service as IPlug.
  */
 public class SnsPlug implements IPlug {
 
@@ -43,13 +44,17 @@ public class SnsPlug implements IPlug {
     private static final long serialVersionUID = SnsPlug.class.getName().hashCode();
 
     /**
+     * Default constructor needed for server instantiation.
      */
     public SnsPlug() {
-        // default constructor for server instantiation..
+        // Default constructor for server instantiation.
     }
 
     /**
+     * Constructor with full description as IPlug.
+     * 
      * @param description
+     * 				The description as IPlug.
      * @throws Exception
      */
     public SnsPlug(PlugDescription description) throws Exception {
@@ -187,9 +192,7 @@ public class SnsPlug implements IPlug {
         this.fSnsController = new SNSController(snsClient);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    /**
      * @see de.ingrid.utils.IDetailer#getDetail(de.ingrid.utils.IngridHit, de.ingrid.utils.query.IngridQuery,
      *      java.lang.String[])
      */
@@ -213,9 +216,7 @@ public class SnsPlug implements IPlug {
         return result;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    /**
      * @see de.ingrid.utils.IDetailer#getDetails(de.ingrid.utils.IngridHit[], de.ingrid.utils.query.IngridQuery,
      *      java.lang.String[])
      */
