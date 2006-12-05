@@ -58,7 +58,10 @@ public class Wgs84Box {
     }
 
     /**
+     * Sets the name of a topic.
+     * 
      * @param topicName
+     * 			The name of the topic.
      */
     public void setTopicName(String topicName) {
         this.fTopicName = topicName;
@@ -74,8 +77,10 @@ public class Wgs84Box {
     }
 
     /**
-     * @param x1
-     *            Longitude of the point left down.
+     * Sets longitude of the point left down. 
+     * 
+     * @param x1 
+     * 			A double coordinate.
      */
     public void setX1(double x1) {
         this.fX1 = x1;
@@ -91,8 +96,10 @@ public class Wgs84Box {
     }
 
     /**
-     * @param x2
-     *            Latitude of the point left down.
+     * Sets the latitude of the point left down.
+     * 
+     * @param x2 
+     * 			A double coordinate.
      */
     public void setX2(double x2) {
         this.fX2 = x2;
@@ -108,8 +115,11 @@ public class Wgs84Box {
     }
 
     /**
-     * @param y1
-     *            Longitude of the point right up.
+     * Sets longitude of the point right up.
+     * 
+     * @param y1 
+     * 			A double coordinate.
+     * 
      */
     public void setY1(double y1) {
         this.fY1 = y1;
@@ -125,8 +135,10 @@ public class Wgs84Box {
     }
 
     /**
-     * @param y2
-     *            Latitude of the point right up.
+     * Sets latitude of the point right up.
+     * 
+     * @param y2 
+     * 			A double coordinate.
      */
     public void setY2(double y2) {
         this.fY2 = y2;
