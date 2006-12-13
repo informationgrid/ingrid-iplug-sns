@@ -10,17 +10,7 @@
 #   INGRID_OPTS      addtional java runtime options
 #
 
-# resolve links - $0 may be a softlink
 THIS="$0"
-while [ -h "$THIS" ]; do
-  ls=`ls -ld "$THIS"`
-  link=`expr "$ls" : '.*-> \(.*\)$'`
-  if expr "$link" : '.*/.*' > /dev/null; then
-    THIS="$link"
-  else
-    THIS=`dirname "$THIS"`/"$link"
-  fi
-done
 
 # some directories
 THIS_DIR=`dirname "$THIS"`
