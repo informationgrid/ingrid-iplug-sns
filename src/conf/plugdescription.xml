@@ -34,7 +34,7 @@
     <string>aPlugId</string>
     <string>username</string>
     <string>ms</string>
-    <string>maxWordForAnalyzing</string>
+    <string>maxWordAnalyzing</string>
     <int>100</int>
     <string>language</string>
     <string>de</string>
