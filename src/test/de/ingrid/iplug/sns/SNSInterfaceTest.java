@@ -30,7 +30,7 @@ public class SNSInterfaceTest extends TestCase {
         fPlugDescription.put("username", "ms");
         fPlugDescription.put("password", "m3d1asyl3");
         fPlugDescription.put("language", "de");
-        fPlugDescription.putInt("maxWordForAnalyzing", 100);
+        fPlugDescription.putInt("maxWordAnalyzing", 100);
     }
     private SnsPlug fPlug;
     
