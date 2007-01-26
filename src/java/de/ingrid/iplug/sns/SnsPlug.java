@@ -190,10 +190,14 @@ public class SnsPlug implements IPlug {
         this.fServiceUrl = (String) plugDescription.get("serviceUrl");
         this.fMaximalAnalyzedWord = plugDescription.getInt("maxWordForAnalyzing");
         
+        if ((this.fServiceUrl == null) || (this.fServiceUrl.trim().equals(""))) {
+        	this.fServiceUrl = "http://www.semantic-network.de/service-xtm-2.0/xtm/soap"; 
+        
         SNSClient snsClient = new SNSClient(this.fUserName, this.fPassWord, this.fLanguage, new URL(
-                "http://www.semantic-network.de/service-xtm-2.0/xtm/soap"));
+                this.fServiceUrl));
         snsClient.setTimeout(180000);
         this.fSnsController = new SNSController(snsClient);
+        }
     }
 
     /**
