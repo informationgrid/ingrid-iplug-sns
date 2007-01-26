@@ -41,6 +41,8 @@ public class SnsPlug implements IPlug {
 
     private String fLanguage;
 
+    private String fServiceUrl;
+
     private static final long serialVersionUID = SnsPlug.class.getName().hashCode();
 
     /**
@@ -185,7 +187,9 @@ public class SnsPlug implements IPlug {
         this.fUserName = (String) plugDescription.get("username");
         this.fPassWord = (String) plugDescription.get("password");
         this.fLanguage = (String) plugDescription.get("language");
+        this.fServiceUrl = (String) plugDescription.get("serviceUrl");
         this.fMaximalAnalyzedWord = plugDescription.getInt("maxWordForAnalyzing");
+        
         SNSClient snsClient = new SNSClient(this.fUserName, this.fPassWord, this.fLanguage, new URL(
                 "http://www.semantic-network.de/service-xtm-2.0/xtm/soap"));
         snsClient.setTimeout(180000);
