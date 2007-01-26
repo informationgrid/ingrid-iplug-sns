@@ -188,7 +188,7 @@ public class SnsPlug implements IPlug {
         this.fPassWord = (String) plugDescription.get("password");
         this.fLanguage = (String) plugDescription.get("language");
         this.fServiceUrl = (String) plugDescription.get("serviceUrl");
-        this.fMaximalAnalyzedWord = plugDescription.getInt("maxWordForAnalyzing");
+        this.fMaximalAnalyzedWord = plugDescription.getInt("maxWordAnalyzing");
         
         if ((this.fServiceUrl == null) || (this.fServiceUrl.trim().equals(""))) {
         	this.fServiceUrl = "http://www.semantic-network.de/service-xtm-2.0/xtm/soap"; 
