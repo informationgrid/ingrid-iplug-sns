@@ -208,6 +208,15 @@
                 <include>**/*Test.java</include>
             </includes>
         </unitTest>
+        <resources>
+            <resource>
+                <directory>src/conf/</directory>
+                <filtering>false</filtering>
+                <excludes>
+                	<exclude>**/*</exclude>
+                </excludes>
+            </resource>
+        </resources>
     </build>
 	<reports>
 		<report>maven-junit-report-plugin</report>
