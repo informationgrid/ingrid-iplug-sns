@@ -118,6 +118,29 @@ public class SNSIndexingInterfaceTest extends TestCase {
     /**
      * @throws Exception
      */
+    public void testGetBuzzwordEnglish() throws Exception {
+        String[] result = null;
+        final String words = "In this year we are all happy.";
+        final long start = System.currentTimeMillis();
+        try {
+            result = this.fSnsInterface.getBuzzwords(words, 1000, false, "en");
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail();
+        }
+        final long end = System.currentTimeMillis();
+
+        if (this.fToStdout) {
+            final String output = "Time for getting all english buzzwords: " + ((end - start) / 1000) + " s";
+            System.out.println(output);
+        }
+
+        assertNotNull(result);
+    }
+    
+    /**
+     * @throws Exception
+     */
     public void testGetBuzzwordNotExistent() throws Exception {
         final String[] result = this.fSnsInterface.getBuzzwords("blabla", 1000, false);
         assertNotNull(result);

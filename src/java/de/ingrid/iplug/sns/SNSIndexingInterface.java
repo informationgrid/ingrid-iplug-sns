@@ -86,10 +86,31 @@ public class SNSIndexingInterface {
      *             If we cannot connect to the sns server.
      */
     public String[] getBuzzwords(final String text, final int maxToAnalyzeWords, boolean ignoreCase) throws Exception {
+        return getBuzzwords(text, maxToAnalyzeWords, ignoreCase, this.fLanguage);
+    }
+
+    /**
+     * All buzzwords to the given document. You must call this method first to get results from
+     * <code>getReferencesToTime</code> and <code>getReferencesToSpace</code>.
+     * 
+     * @param text
+     *            The document to analyze.
+     * @param maxToAnalyzeWords
+     *            The first <code>maxToAnalyzeWords</code> words of the document that should be analyzed.
+     * @param ignoreCase
+     *            Set to true ignore case of the document.
+     * @param language
+     *            The language the text is encoded.
+     * @return A string array filled with all buzzwords.
+     * @throws Exception
+     *             If we cannot connect to the sns server.
+     */
+    public String[] getBuzzwords(final String text, final int maxToAnalyzeWords, boolean ignoreCase, String language)
+            throws Exception {
         String[] result = new String[0];
 
         final _topicMapFragment mapFragment = this.fSNSClient.autoClassify(text, maxToAnalyzeWords, null, ignoreCase,
-                this.fLanguage);
+                language);
         this.fTopics = mapFragment.getTopicMap().getTopic();
 
         this.fTemporal.clear();
