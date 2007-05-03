@@ -425,7 +425,7 @@ public class SnsPlugTest extends TestCase {
         assertEquals(160, hits.length());
         IngridHit[] hitsArray = hits.getHits();
         assertNotNull(hitsArray);
-        assertEquals(145, hitsArray.length);
+        assertEquals(160, hitsArray.length);
         for (int i = 0; i < hitsArray.length; i++) {
             Topic hit = (Topic) hitsArray[i];
             System.out.println(hit.getTopicName() + " -- " + hit.getTopicID() + " -- " + hit.getSummary());
