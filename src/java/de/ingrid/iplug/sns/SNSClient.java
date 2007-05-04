@@ -188,7 +188,9 @@ public class SNSClient {
         _autoClassify classifyRequest = new _autoClassify();
         classifyRequest.setUser(this.fUserName);
         classifyRequest.setPassword(this.fPassword);
-        classifyRequest.setLang(lang);
+        if(lang != null) {
+            classifyRequest.setLang(lang);    
+        }
         classifyRequest.setDocument(document);
         classifyRequest.setAnalyzeMaxWords("" + analyzeMaxWords);
         if (ignoreCase) {
