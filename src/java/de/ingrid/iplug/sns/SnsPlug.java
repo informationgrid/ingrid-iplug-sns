@@ -72,7 +72,13 @@ public class SnsPlug implements IPlug {
         }
 
         if (containsSNSDataType(query.getDataTypes())) {
-            int type = query.getInt(Topic.REQUEST_TYPE);
+            Object typeO = query.get(Topic.REQUEST_TYPE);
+            int type = -1;
+            if (typeO instanceof Integer) {
+                type = ((Integer) typeO).intValue();
+            } else if (typeO instanceof String) {
+                type = Integer.parseInt((String) typeO);
+            }
             final String lang = getQueryLang(query);
             int[] totalSize = new int[1];
             totalSize[0] = 0;
