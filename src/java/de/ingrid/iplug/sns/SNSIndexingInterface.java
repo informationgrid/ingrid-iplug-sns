@@ -116,7 +116,6 @@ public class SNSIndexingInterface {
         this.fTemporal.clear();
         this.fWgs84Box.clear();
 
-        // FIXME: The doc of the sns lib says it gaves everytime non null back.
         if (null != this.fTopics) {
             result = getBasenames(this.fTopics);
         }
@@ -135,7 +134,6 @@ public class SNSIndexingInterface {
     }
 
     private void getReferences() throws Exception, ParseException {
-        // FIXME: The doc of the sns lib says it gaves everytime non null back.
         if (this.fTopics != null) {
             for (int i = 0; i < this.fTopics.length; i++) {
                 _occurrence[] occ = this.fTopics[i].getOccurrence();
