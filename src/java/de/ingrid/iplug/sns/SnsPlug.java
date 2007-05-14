@@ -56,7 +56,7 @@ public class SnsPlug implements IPlug {
      * Constructor with full description as IPlug.
      * 
      * @param description
-     * 				The description as IPlug.
+     *            The description as IPlug.
      * @throws Exception
      */
     public SnsPlug(PlugDescription description) throws Exception {
@@ -72,13 +72,8 @@ public class SnsPlug implements IPlug {
         }
 
         if (containsSNSDataType(query.getDataTypes())) {
-            Object typeO = query.get(Topic.REQUEST_TYPE);
-            int type = -1;
-            if (typeO instanceof Integer) {
-                type = ((Integer) typeO).intValue();
-            } else if (typeO instanceof String) {
-                type = Integer.parseInt((String) typeO);
-            }
+            int type = getRequestType(query);
+
             final String lang = getQueryLang(query);
             int[] totalSize = new int[1];
             totalSize[0] = 0;
@@ -163,6 +158,30 @@ public class SnsPlug implements IPlug {
         return new IngridHits(this.fPlugId, 0, new IngridHit[0], true);
     }
 
+    private int getRequestType(final IngridQuery query) {
+        Object resultO = null;
+        int result = -1;
+
+        resultO = query.get(Topic.REQUEST_TYPE);
+
+        if (null == resultO) {
+            FieldQuery[] fieldQueries = query.getFields();
+            for (int i = 0; i < fieldQueries.length; i++) {
+                String fieldName = fieldQueries[i].getFieldName();
+                if (fieldName.equals(Topic.REQUEST_TYPE)) {
+                    resultO = fieldQueries[i].getFieldValue();
+                }
+            }
+        }
+
+        if (resultO instanceof Integer) {
+            result = ((Integer) resultO).intValue();
+        } else if (resultO instanceof String) {
+            result = Integer.parseInt((String) resultO);
+        }
+        return result;
+    }
+
     private boolean containsSNSDataType(FieldQuery[] dataTypes) {
         int count = dataTypes.length;
         for (int i = 0; i < count; i++) {
@@ -195,13 +214,12 @@ public class SnsPlug implements IPlug {
         this.fLanguage = (String) plugDescription.get("language");
         this.fServiceUrl = (String) plugDescription.get("serviceUrl");
         this.fMaximalAnalyzedWord = plugDescription.getInt("maxWordAnalyzing");
-        
+
         if ((this.fServiceUrl == null) || (this.fServiceUrl.trim().equals(""))) {
-        	this.fServiceUrl = "http://www.semantic-network.de/service-xtm-2.0/xtm/soap"; 
+            this.fServiceUrl = "http://www.semantic-network.de/service-xtm-2.0/xtm/soap";
         }
-        
-        SNSClient snsClient = new SNSClient(this.fUserName, this.fPassWord, this.fLanguage, new URL(
-                this.fServiceUrl));
+
+        SNSClient snsClient = new SNSClient(this.fUserName, this.fPassWord, this.fLanguage, new URL(this.fServiceUrl));
         snsClient.setTimeout(180000);
         this.fSnsController = new SNSController(snsClient);
     }
