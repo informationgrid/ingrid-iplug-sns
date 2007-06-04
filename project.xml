@@ -4,7 +4,7 @@
     <artifactId>ingrid-iplug-sns</artifactId>
     <name>ingrid-iplug-sns</name>
     <groupId>ingrid</groupId>
-    <currentVersion>0.1-SNAPSHOT</currentVersion>
+    <currentVersion>0.2.0-SNAPSHOT</currentVersion>
     <inceptionYear>2005</inceptionYear>
     <logo>/images/logo.gif</logo>
     <description>description</description>
@@ -147,19 +147,19 @@
       <dependency>
         <groupId>ingrid</groupId>
         <artifactId>ingrid-utils</artifactId>
-        <version>0.1-SNAPSHOT</version>
+        <version>0.2.0-SNAPSHOT</version>
 	    <type>jar</type>
       </dependency>
       <dependency>
         <groupId>ingrid</groupId>
         <artifactId>ingrid-iplug</artifactId>
-        <version>0.1-SNAPSHOT</version>
+        <version>0.2.0-SNAPSHOT</version>
 	    <type>jar</type>
       </dependency>
       <dependency>
         <groupId>ingrid</groupId>
         <artifactId>ingrid-ibus</artifactId>
-        <version>0.1-SNAPSHOT</version>
+        <version>0.2.0-SNAPSHOT</version>
 	    <type>jar</type>
       </dependency>
        <dependency>
@@ -174,24 +174,6 @@
             <version>1.1.2</version>
             <type>jar</type>
         </dependency>
-      <dependency>
-            <groupId>weta-components</groupId>
-            <artifactId>communication</artifactId>
-            <version>SNAPSHOT</version>
-            <type>jar</type>
-        </dependency>
-        <dependency>
-            <groupId>weta-components</groupId>
-            <artifactId>remote-proxies</artifactId>
-            <version>SNAPSHOT</version>
-            <type>jar</type>
-        </dependency>
-        <dependency>
-            <groupId>weta-components</groupId>
-            <artifactId>communication-sockets</artifactId>
-            <version>SNAPSHOT</version>
-            <type>jar</type>
-        </dependency>
         <dependency>
             <groupId>cglib</groupId>
             <artifactId>cglib-nodep</artifactId>
@@ -199,7 +181,7 @@
             <type>jar</type>
             <url>http://ibiblio.org/maven</url>
         </dependency>
-  </dependencies>
+	  </dependencies>
     <build>
         <sourceDirectory>src/java</sourceDirectory>
         <unitTestSourceDirectory>src/test</unitTestSourceDirectory>
