@@ -102,7 +102,7 @@ startIplug()
   fi  
 
   # run it
-  exec nohup "$JAVA" $JAVA_HEAP_MAX $INGRID_OPTS -classpath "$CLASSPATH" $CLASS --descriptor conf/jxta.properties > console.log &
+  exec nohup "$JAVA" $JAVA_HEAP_MAX $INGRID_OPTS -classpath "$CLASSPATH" $CLASS --descriptor conf/communication.properties > console.log &
   
   echo "ingrid component ($INGRID_HOME) started."
 }
