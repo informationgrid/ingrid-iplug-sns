@@ -151,6 +151,40 @@ public class SNSController {
     }
 
     /**
+     * For a given URL an array of detailed topics will returned.
+     * 
+     * @param documentText
+     *          The given text to analyze. 
+     * @param maxToAnalyzeWords
+     *          Analyze only the first maxToAnalyzeWords words of the document in the body.
+     * @param filter
+     *          Topic type as search criterion (only root paths may be used). 
+     * @param plugId
+     *          The plugId as String.
+     * @param lang
+     *          Is used to specify the preferred language for requests.
+     * @param totalSize
+     *          The quantity of the found topics altogether.
+     * @return array of detailed topics for the given text
+     * @throws Exception
+     */
+    public DetailedTopic[] getTopicsForURL(String url, int maxToAnalyzeWords, String filter,
+            String plugId, String lang, int[] totalSize) throws Exception {
+        final _topicMapFragment mapFragment = this.fServiceClient.autoClassifyToUrl(url, maxToAnalyzeWords, filter,
+                true, lang);
+        final _topic[] topics = mapFragment.getTopicMap().getTopic();
+        if (null != mapFragment.getListExcerpt()) {
+            totalSize[0] = mapFragment.getListExcerpt().getTotalSize().intValue();
+        }
+
+        if (topics != null) {
+            return toDetailedTopicArray(topics, plugId, lang);
+        }
+
+        return new DetailedTopic[0];
+    }
+
+    /**
      * For a given topic array an array of associated topics which are not synonymous one will returned.
      * 
      * @param topics

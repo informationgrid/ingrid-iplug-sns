@@ -79,6 +79,7 @@ public class SnsPlug implements IPlug {
             totalSize[0] = 0;
 
             try {
+                String filter = null;
                 Topic[] hitsTemp = null;
                 switch (type) {
                 case Topic.TOPIC_FROM_TERM:
@@ -86,8 +87,13 @@ public class SnsPlug implements IPlug {
                             this.fPlugId, totalSize, lang);
                     break;
                 case Topic.TOPIC_FROM_TEXT:
-                    final String filter = (String) query.get("filter");
+                    filter = (String) query.get("filter");
                     hitsTemp = this.fSnsController.getTopicsForText(getSearchTerm(query), this.fMaximalAnalyzedWord,
+                            filter, this.fPlugId, lang, totalSize);
+                    break;
+                case Topic.TOPIC_FROM_URL:
+                    filter = (String) query.get("filter");
+                    hitsTemp = this.fSnsController.getTopicsForURL(getSearchTerm(query), this.fMaximalAnalyzedWord,
                             filter, this.fPlugId, lang, totalSize);
                     break;
                 case Topic.TOPIC_FROM_TOPIC:
