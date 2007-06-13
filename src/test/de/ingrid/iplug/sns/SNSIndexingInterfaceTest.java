@@ -20,18 +20,18 @@ public class SNSIndexingInterfaceTest extends TestCase {
 
         this.fSnsInterface = new SNSIndexingInterface("ms", "m3d1asyl3", "de");
         this.fSnsInterface.setTimeout(180000);
-        
+
         this.fToStdout = true;
     }
 
-   /**
-    * @param iinterface 
- * @throws Exception
-    */
-   public void setSNSIndexingInterface(SNSIndexingInterface iinterface) throws Exception {
-       this.fSnsInterface = iinterface;
-   }
-    
+    /**
+     * @param iinterface
+     * @throws Exception
+     */
+    public void setSNSIndexingInterface(SNSIndexingInterface iinterface) throws Exception {
+        this.fSnsInterface = iinterface;
+    }
+
     /**
      * @throws Exception
      */
@@ -118,6 +118,29 @@ public class SNSIndexingInterfaceTest extends TestCase {
     /**
      * @throws Exception
      */
+    public void testGetBuzzwordToUrl() throws Exception {
+        String[] result = null;
+        final String url = "http://www.101tec.com/";
+        final long start = System.currentTimeMillis();
+        try {
+            result = this.fSnsInterface.getBuzzwords(url, 1000, false);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail();
+        }
+        final long end = System.currentTimeMillis();
+
+        if (this.fToStdout) {
+            final String output = "Time for getting all buzzwords: " + ((end - start) / 1000) + " s";
+            System.out.println(output);
+        }
+
+        assertNotNull(result);
+    }
+
+    /**
+     * @throws Exception
+     */
     public void testGetBuzzwordEnglish() throws Exception {
         String[] result = null;
         final String words = "In this year we are all happy.";
@@ -137,7 +160,7 @@ public class SNSIndexingInterfaceTest extends TestCase {
 
         assertNotNull(result);
     }
-    
+
     /**
      * @throws Exception
      */

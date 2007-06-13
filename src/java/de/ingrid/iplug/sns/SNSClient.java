@@ -88,7 +88,7 @@ public class SNSClient {
      * All parameters will passed to the _findTopics request object.
      * 
      * @param queryTerm
-     * 			  The Query.
+     *            The Query.
      * @param path
      *            The path is used to qualify the result.
      * @param searchType
@@ -98,7 +98,7 @@ public class SNSClient {
      * @param offset
      *            Defines the number of topics to skip.
      * @param lang
-     * 			  Is used to specify the preferred language for requests.
+     *            Is used to specify the preferred language for requests.
      * @return The response object.
      * @throws Exception
      * @see SearchType
@@ -126,15 +126,15 @@ public class SNSClient {
     }
 
     /**
-     * Sends a getPSI request by using the underlying webservice client. All parameters 
-     * will passed to the _getPSI request object.
+     * Sends a getPSI request by using the underlying webservice client. All parameters will passed to the _getPSI
+     * request object.
      * 
      * @param topicID
-     * 				Current topic ID.
+     *            Current topic ID.
      * @param distance
-     * 				The distance-Parameter isn't used. Source: Interface-Spec. version 0.6.				
+     *            The distance-Parameter isn't used. Source: Interface-Spec. version 0.6.
      * @param filter
-     * 				Define filter for limit to a topic.
+     *            Define filter for limit to a topic.
      * @return The response object.
      * @throws Exception
      */
@@ -168,11 +168,11 @@ public class SNSClient {
      * @param analyzeMaxWords
      *            The maximal number of words to analyze for a document.
      * @param filter
-     * 			  Define filter for limit to a topic.
+     *            Define filter for limit to a topic.
      * @param ignoreCase
      *            Set to true ignore capitalization of the document.
      * @param lang
-     * 			  Language distinction.
+     *            Language distinction.
      * @return A topic map fragment.
      * @throws Exception
      */
@@ -188,8 +188,8 @@ public class SNSClient {
         _autoClassify classifyRequest = new _autoClassify();
         classifyRequest.setUser(this.fUserName);
         classifyRequest.setPassword(this.fPassword);
-        if(lang != null) {
-            classifyRequest.setLang(lang);    
+        if (lang != null) {
+            classifyRequest.setLang(lang);
         }
         classifyRequest.setDocument(document);
         classifyRequest.setAnalyzeMaxWords("" + analyzeMaxWords);
@@ -206,7 +206,53 @@ public class SNSClient {
     }
 
     /**
-     * Sets user name and password for a topic map fragment. 
+     * Sends a autoClassify request by using the underlying webservice client.<br>
+     * All parameters will passed to a _autoClassify request object.
+     * 
+     * @param document
+     *            The text to analyze.
+     * @param analyzeMaxWords
+     *            The maximal number of words to analyze for a document.
+     * @param filter
+     *            Define filter for limit to a topic.
+     * @param ignoreCase
+     *            Set to true ignore capitalization of the document.
+     * @param lang
+     *            Language distinction.
+     * @return A topic map fragment.
+     * @throws Exception
+     */
+    public synchronized _topicMapFragment autoClassifyToUrl(String url, int analyzeMaxWords, String filter,
+            boolean ignoreCase, String lang) throws Exception {
+        if (url == null) {
+            throw new IllegalArgumentException("Url can not be null");
+        }
+        if (analyzeMaxWords < 0) {
+            throw new IllegalArgumentException("AnalyzeMaxWords can not be lower than 0");
+        }
+
+        _autoClassify classifyRequest = new _autoClassify();
+        classifyRequest.setUser(this.fUserName);
+        classifyRequest.setPassword(this.fPassword);
+        if (lang != null) {
+            classifyRequest.setLang(lang);
+        }
+        classifyRequest.setUrl(url);
+        classifyRequest.setAnalyzeMaxWords("" + analyzeMaxWords);
+        if (ignoreCase) {
+            classifyRequest.setIgnoreCase("true");
+        } else {
+            classifyRequest.setIgnoreCase("false");
+        }
+        if (null != filter) {
+            classifyRequest.setFilter(filter);
+        }
+
+        return this.fXtmSoapPortType.autoClassifyOp(classifyRequest);
+    }
+
+    /**
+     * Sets user name and password for a topic map fragment.
      * 
      * @return A topic map fragment.
      * @throws RemoteException
@@ -220,27 +266,27 @@ public class SNSClient {
     }
 
     /**
-     * Search the environment chronicles bases on findTopicslimits his however on the event 
-     * types and extends the search conditions by a time range or date.
+     * Search the environment chronicles bases on findTopicslimits his however on the event types and extends the search
+     * conditions by a time range or date.
      * 
      * @param query
-     * 				The Query.
+     *            The Query.
      * @param ignoreCase
-     * 				Set to true ignore capitalization of the document.
+     *            Set to true ignore capitalization of the document.
      * @param searchType
-     * 				Can be one of the provided <code>SearchType</code>s.
+     *            Can be one of the provided <code>SearchType</code>s.
      * @param pathArray
-     * 				Array of paths for a topic type as search criterion.
+     *            Array of paths for a topic type as search criterion.
      * @param fieldsType
-     * 				Can be one of the provided <code>FieldsType</code>s.
+     *            Can be one of the provided <code>FieldsType</code>s.
      * @param offset
-     * 				Defines the number of topics to skip.
+     *            Defines the number of topics to skip.
      * @param at
-     * 				Exact time as parameter for the search for events.
+     *            Exact time as parameter for the search for events.
      * @param lang
-     * 				Is used to specify the preferred language for requests.
+     *            Is used to specify the preferred language for requests.
      * @param length
-     * 				Number of elements that should be retrieved.
+     *            Number of elements that should be retrieved.
      * @return A topic map fragment.
      * @throws RemoteException
      * @see SearchType
@@ -271,29 +317,29 @@ public class SNSClient {
     }
 
     /**
-     * The request findEvents bases on findTopics, limits his however on the event 
-     * types and extends the search conditions by a time range or date.
+     * The request findEvents bases on findTopics, limits his however on the event types and extends the search
+     * conditions by a time range or date.
      * 
      * @param query
-     * 				The Que
+     *            The Que
      * @param ignoreCase
-     * 				Set to true ignore capitalization of the document.
+     *            Set to true ignore capitalization of the document.
      * @param searchType
-     * 				Can be one of the provided <code>SearchType</code>s.
+     *            Can be one of the provided <code>SearchType</code>s.
      * @param pathArray
-     * 				Array of paths for a topic type as search criterion.
+     *            Array of paths for a topic type as search criterion.
      * @param fieldsType
-     * 				Can be one of the provided <code>FieldsType</code>s.
+     *            Can be one of the provided <code>FieldsType</code>s.
      * @param offset
-     * 				Defines the number of topics to skip.
+     *            Defines the number of topics to skip.
      * @param from
-     * 				Search from a time point in histrory on.
+     *            Search from a time point in histrory on.
      * @param to
-     * 				Search until to time point in histrory on.
+     *            Search until to time point in histrory on.
      * @param lang
-     * 				Is used to specify the preferred language for requests.
-     * @param length 
-     * 				Number of elements that should be retrieved.
+     *            Is used to specify the preferred language for requests.
+     * @param length
+     *            Number of elements that should be retrieved.
      * @return A topic map fragment.
      * @throws RemoteException
      * @see SearchType
@@ -327,7 +373,7 @@ public class SNSClient {
      * Anniversaries for past years are returned for a given date .
      * 
      * @param date
-     * 				The date which can be indicated.
+     *            The date which can be indicated.
      * @return A topic map fragment.
      * @throws RemoteException
      */
@@ -345,16 +391,16 @@ public class SNSClient {
     }
 
     /**
-     * To a handed over output term SNS determines syntactically or semantically similar thesaurus terms. 
-     * This request can be implemented for several terms at the same time, whereby the results are assigned 
-     * to their output term in each case.
+     * To a handed over output term SNS determines syntactically or semantically similar thesaurus terms. This request
+     * can be implemented for several terms at the same time, whereby the results are assigned to their output term in
+     * each case.
      * 
      * @param ignoreCase
-     * 				Set to true ignore capitalization of the document.
+     *            Set to true ignore capitalization of the document.
      * @param terms
-     * 				Output term, to which similar terms are looked for.
+     *            Output term, to which similar terms are looked for.
      * @param lang
-     * 				Is used to specify the preferred language for requests.
+     *            Is used to specify the preferred language for requests.
      * @return A topic map fragment.
      * @throws RemoteException
      */
