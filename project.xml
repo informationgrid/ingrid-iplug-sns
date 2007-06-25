@@ -4,7 +4,7 @@
     <artifactId>ingrid-iplug-sns</artifactId>
     <name>ingrid-iplug-sns</name>
     <groupId>ingrid</groupId>
-    <currentVersion>0.1-SNAPSHOT</currentVersion>
+    <currentVersion>1.0.0</currentVersion>
     <inceptionYear>2005</inceptionYear>
     <logo>/images/logo.gif</logo>
     <description>description</description>
@@ -153,13 +153,13 @@
       <dependency>
         <groupId>ingrid</groupId>
         <artifactId>ingrid-iplug</artifactId>
-        <version>0.1-SNAPSHOT</version>
+        <version>1.0.0</version>
 	    <type>jar</type>
       </dependency>
       <dependency>
         <groupId>ingrid</groupId>
         <artifactId>ingrid-ibus</artifactId>
-        <version>0.1-SNAPSHOT</version>
+        <version>1.0.0</version>
 	    <type>jar</type>
       </dependency>
        <dependency>
