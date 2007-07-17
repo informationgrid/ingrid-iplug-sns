@@ -422,7 +422,7 @@ public class SnsPlugTest extends TestCase {
         query.addField(new FieldQuery(true, false, "lang", "en"));
         query.putInt(Topic.REQUEST_TYPE, Topic.SIMILARTERMS_FROM_TOPIC);
         IngridHits hits = plug.search(query, 0, 600);
-        assertEquals(160, hits.length());
+        assertEquals(145, hits.length());
         IngridHit[] hitsArray = hits.getHits();
         assertNotNull(hitsArray);
         assertEquals(160, hitsArray.length);
