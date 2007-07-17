@@ -4,7 +4,7 @@
     <artifactId>ingrid-iplug-sns</artifactId>
     <name>ingrid-iplug-sns</name>
     <groupId>ingrid</groupId>
-    <currentVersion>0.2.0-SNAPSHOT</currentVersion>
+    <currentVersion>1.1.0-SNAPSHOT</currentVersion>
     <inceptionYear>2005</inceptionYear>
     <logo>/images/logo.gif</logo>
     <description>description</description>
@@ -140,26 +140,26 @@
       <dependency>
         <groupId>log4j</groupId>
         <artifactId>log4j</artifactId>
-        <version>1.2.8</version>
+        <version>1.2.9</version>
 	    <type>jar</type>
 	    <url>http://ibiblio.org/maven</url>
       </dependency>
       <dependency>
         <groupId>ingrid</groupId>
         <artifactId>ingrid-utils</artifactId>
-        <version>0.2.0-SNAPSHOT</version>
+        <version>1.1.0-SNAPSHOT</version>
 	    <type>jar</type>
       </dependency>
       <dependency>
         <groupId>ingrid</groupId>
         <artifactId>ingrid-iplug</artifactId>
-        <version>0.2.0-SNAPSHOT</version>
+        <version>1.1.0-SNAPSHOT</version>
 	    <type>jar</type>
       </dependency>
       <dependency>
         <groupId>ingrid</groupId>
         <artifactId>ingrid-ibus</artifactId>
-        <version>0.2.0-SNAPSHOT</version>
+        <version>1.1.0-SNAPSHOT</version>
 	    <type>jar</type>
       </dependency>
        <dependency>
@@ -173,13 +173,6 @@
             <artifactId>xstream</artifactId>
             <version>1.1.2</version>
             <type>jar</type>
-        </dependency>
-        <dependency>
-            <groupId>cglib</groupId>
-            <artifactId>cglib-nodep</artifactId>
-            <version>2.1_3</version>
-            <type>jar</type>
-            <url>http://ibiblio.org/maven</url>
         </dependency>
 	  </dependencies>
     <build>
