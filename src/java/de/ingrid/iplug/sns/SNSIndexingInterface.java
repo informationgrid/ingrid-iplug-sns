@@ -44,6 +44,8 @@ public class SNSIndexingInterface {
 
     private String fLanguage;
 
+    private ArrayList fTopicIds = new ArrayList();
+
     /**
      * Interface for SN service connection handling.
      * 
@@ -113,6 +115,7 @@ public class SNSIndexingInterface {
                 language);
         this.fTopics = mapFragment.getTopicMap().getTopic();
 
+        this.fTopicIds.clear();
         this.fTemporal.clear();
         this.fWgs84Box.clear();
 
@@ -147,6 +150,7 @@ public class SNSIndexingInterface {
                 ignoreCase, language);
         this.fTopics = mapFragment.getTopicMap().getTopic();
 
+        this.fTopicIds.clear();
         this.fTemporal.clear();
         this.fWgs84Box.clear();
 
@@ -174,6 +178,7 @@ public class SNSIndexingInterface {
                 if (null != occ) {
                     final String baseName = this.fTopics[i].getBaseName(0).getBaseNameString().getValue();
                     final String topicId = this.fTopics[i].getId();
+                    this.fTopicIds.add(topicId);
                     final Temporal temporal = new Temporal();
 
                     for (int k = 0; k < occ.length; k++) {
@@ -240,6 +245,21 @@ public class SNSIndexingInterface {
         }
 
         return result;
+    }
+
+    /**
+     * All topic ids to the result.
+     * 
+     * @return
+     * @throws Exception
+     * @throws ParseException
+     */
+    public String[] getTopicIds() throws Exception, ParseException {
+        if (this.fTopicIds.isEmpty()) {
+            getReferences();
+        }
+
+        return (String[]) this.fTopicIds.toArray(new String[this.fTopicIds.size()]);
     }
 
     /**
