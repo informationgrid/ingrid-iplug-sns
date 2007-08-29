@@ -180,4 +180,15 @@ public class SNSIndexingInterfaceTest extends TestCase {
         assertNotNull(result);
         assertEquals(0, result.length);
     }
+
+    /**
+     * @throws Exception
+     */
+    public void testGetTopicIds() throws Exception {
+        this.fSnsInterface.getBuzzwords("http://www.101tec.com/", 1000, false);
+
+        final String[] result = this.fSnsInterface.getTopicIds();
+        assertNotNull(result);
+        assertEquals(0, result.length);
+    }
 }
