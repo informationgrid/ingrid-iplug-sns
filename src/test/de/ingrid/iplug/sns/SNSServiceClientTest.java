@@ -10,7 +10,9 @@ import junit.framework.TestCase;
 
 import com.slb.taxi.webservice.xtm.stubs.FieldsType;
 import com.slb.taxi.webservice.xtm.stubs.SearchType;
-import com.slb.taxi.webservice.xtm.stubs._topicMapFragment;
+import com.slb.taxi.webservice.xtm.stubs.TopicMapFragment;
+
+import de.ingrid.iplug.sns.utils.Topic;
 
 /**
  * created on 21.07.2005
@@ -103,7 +105,7 @@ public class SNSServiceClientTest extends TestCase {
         } catch (Exception e) {
             assertTrue(e instanceof IllegalArgumentException);
         }
-        document = "Die Ozonschicht ist sehr d�nn";
+        document = "Die Ozonschicht ist sehr dünn";
         try {
             adapter.autoClassify(document, maxWords, null, true, "de");
             fail("Should throw an exception");
@@ -121,7 +123,7 @@ public class SNSServiceClientTest extends TestCase {
      */
 
     public void testGetTypes() throws Exception {
-        _topicMapFragment fragment = adapter.getTypes();
+        TopicMapFragment fragment = adapter.getTypes();
         assertNotNull(fragment);
     }
 
@@ -129,7 +131,7 @@ public class SNSServiceClientTest extends TestCase {
      * @throws Exception
      */
     public void testAnniversary() throws Exception {
-        _topicMapFragment fragment = adapter.anniversary("1976-08-31");
+        TopicMapFragment fragment = adapter.anniversary("1976-08-31");
         assertNotNull(fragment);
     }
 
@@ -137,7 +139,7 @@ public class SNSServiceClientTest extends TestCase {
      * @throws Exception
      */
     public void testGetSimilarTerms() throws Exception {
-        _topicMapFragment fragment = adapter.getSimilarTerms(true, new String[] { "1976-08-31" }, "de");
+        TopicMapFragment fragment = adapter.getSimilarTerms(true, new String[] { "1976-08-31" }, "de");
         assertNotNull(fragment);
     }
 
@@ -145,7 +147,7 @@ public class SNSServiceClientTest extends TestCase {
      * @throws Exception
      */
     public void testFindEventsAt() throws Exception {
-        _topicMapFragment fragment = adapter.findEvents("query", true, SearchType.contains, new String[] { "/event" },
+        TopicMapFragment fragment = adapter.findEvents("query", true, SearchType.contains, new String[] { "/event/" },
                 FieldsType.allfields, 0, "1976-08-31", "de", 10);
         assertNotNull(fragment);
     }

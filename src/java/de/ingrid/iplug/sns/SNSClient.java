@@ -9,19 +9,19 @@ import java.math.BigInteger;
 import java.net.URL;
 import java.rmi.RemoteException;
 
+import com.slb.taxi.webservice.xtm.stubs.Anniversary;
+import com.slb.taxi.webservice.xtm.stubs.AutoClassify;
 import com.slb.taxi.webservice.xtm.stubs.FieldsType;
+import com.slb.taxi.webservice.xtm.stubs.FindEvents;
+import com.slb.taxi.webservice.xtm.stubs.FindTopics;
+import com.slb.taxi.webservice.xtm.stubs.GetPSI;
+import com.slb.taxi.webservice.xtm.stubs.GetSimilarTerms;
+import com.slb.taxi.webservice.xtm.stubs.GetTypes;
 import com.slb.taxi.webservice.xtm.stubs.HttpSoapBindingStub;
 import com.slb.taxi.webservice.xtm.stubs.SearchType;
+import com.slb.taxi.webservice.xtm.stubs.TopicMapFragment;
 import com.slb.taxi.webservice.xtm.stubs.XTMESoapPortType;
 import com.slb.taxi.webservice.xtm.stubs.XTMserviceLocator;
-import com.slb.taxi.webservice.xtm.stubs._anniversary;
-import com.slb.taxi.webservice.xtm.stubs._autoClassify;
-import com.slb.taxi.webservice.xtm.stubs._findEvents;
-import com.slb.taxi.webservice.xtm.stubs._findTopics;
-import com.slb.taxi.webservice.xtm.stubs._getPSI;
-import com.slb.taxi.webservice.xtm.stubs._getSimilarTerms;
-import com.slb.taxi.webservice.xtm.stubs._getTypes;
-import com.slb.taxi.webservice.xtm.stubs._topicMapFragment;
 
 /**
  * Adapter which provides the access to the sns webservice.
@@ -104,7 +104,7 @@ public class SNSClient {
      * @see SearchType
      * @see FieldsType
      */
-    public synchronized _topicMapFragment findTopics(String queryTerm, String path, SearchType searchType,
+    public synchronized TopicMapFragment findTopics(String queryTerm, String path, SearchType searchType,
             FieldsType fieldsType, long offset, String lang) throws Exception {
         if (queryTerm == null) {
             throw new IllegalArgumentException("QueryTerm can not be null");
@@ -112,7 +112,7 @@ public class SNSClient {
         if (offset < 0) {
             throw new IllegalArgumentException("Offset can not be lower than 0");
         }
-        _findTopics topicRequest = new _findTopics();
+        FindTopics topicRequest = new FindTopics();
         topicRequest.setUser(this.fUserName);
         topicRequest.setPassword(this.fPassword);
         topicRequest.setLang(lang);
@@ -138,7 +138,7 @@ public class SNSClient {
      * @return The response object.
      * @throws Exception
      */
-    public synchronized _topicMapFragment getPSI(String topicID, int distance, String filter) throws Exception {
+    public synchronized TopicMapFragment getPSI(String topicID, int distance, String filter) throws Exception {
         if (topicID == null) {
             throw new IllegalArgumentException("TopicID can not be null");
         }
@@ -146,7 +146,7 @@ public class SNSClient {
             throw new IllegalArgumentException("Distance must have a value between 0 and 3");
         }
 
-        _getPSI psiRequest = new _getPSI();
+        GetPSI psiRequest = new GetPSI();
         psiRequest.setUser(this.fUserName);
         psiRequest.setPassword(this.fPassword);
         // The distance-Parameter isn't used. Source: Interface-Spec. version 0.6.
@@ -176,7 +176,7 @@ public class SNSClient {
      * @return A topic map fragment.
      * @throws Exception
      */
-    public synchronized _topicMapFragment autoClassify(String document, int analyzeMaxWords, String filter,
+    public synchronized TopicMapFragment autoClassify(String document, int analyzeMaxWords, String filter,
             boolean ignoreCase, String lang) throws Exception {
         if (document == null) {
             throw new IllegalArgumentException("document can not be null");
@@ -185,7 +185,7 @@ public class SNSClient {
             throw new IllegalArgumentException("AnalyzeMaxWords can not be lower than 0");
         }
 
-        _autoClassify classifyRequest = new _autoClassify();
+        AutoClassify classifyRequest = new AutoClassify();
         classifyRequest.setUser(this.fUserName);
         classifyRequest.setPassword(this.fPassword);
         if (lang != null) {
@@ -208,9 +208,8 @@ public class SNSClient {
     /**
      * Sends a autoClassify request by using the underlying webservice client.<br>
      * All parameters will passed to a _autoClassify request object.
-     * 
-     * @param document
-     *            The text to analyze.
+     * @param url 
+     *            The url to analyze.
      * @param analyzeMaxWords
      *            The maximal number of words to analyze for a document.
      * @param filter
@@ -222,7 +221,7 @@ public class SNSClient {
      * @return A topic map fragment.
      * @throws Exception
      */
-    public synchronized _topicMapFragment autoClassifyToUrl(String url, int analyzeMaxWords, String filter,
+    public synchronized TopicMapFragment autoClassifyToUrl(String url, int analyzeMaxWords, String filter,
             boolean ignoreCase, String lang) throws Exception {
         if (url == null) {
             throw new IllegalArgumentException("Url can not be null");
@@ -231,7 +230,7 @@ public class SNSClient {
             throw new IllegalArgumentException("AnalyzeMaxWords can not be lower than 0");
         }
 
-        _autoClassify classifyRequest = new _autoClassify();
+        AutoClassify classifyRequest = new AutoClassify();
         classifyRequest.setUser(this.fUserName);
         classifyRequest.setPassword(this.fPassword);
         if (lang != null) {
@@ -257,8 +256,8 @@ public class SNSClient {
      * @return A topic map fragment.
      * @throws RemoteException
      */
-    public synchronized _topicMapFragment getTypes() throws RemoteException {
-        _getTypes typeRequest = new _getTypes();
+    public synchronized TopicMapFragment getTypes() throws RemoteException {
+        GetTypes typeRequest = new GetTypes();
         typeRequest.setUser(this.fUserName);
         typeRequest.setPassword(this.fPassword);
 
@@ -292,10 +291,10 @@ public class SNSClient {
      * @see SearchType
      * @see FieldsType
      */
-    public synchronized _topicMapFragment findEvents(String query, boolean ignoreCase, SearchType searchType,
+    public synchronized TopicMapFragment findEvents(String query, boolean ignoreCase, SearchType searchType,
             String[] pathArray, FieldsType fieldsType, long offset, String at, String lang, int length)
             throws RemoteException {
-        _findEvents findEvents = new _findEvents();
+        FindEvents findEvents = new FindEvents();
         findEvents.setUser(this.fUserName);
         findEvents.setPassword(this.fPassword);
         findEvents.setQueryTerm(query);
@@ -345,10 +344,10 @@ public class SNSClient {
      * @see SearchType
      * @see FieldsType
      */
-    public synchronized _topicMapFragment findEvents(String query, boolean ignoreCase, SearchType searchType,
+    public synchronized TopicMapFragment findEvents(String query, boolean ignoreCase, SearchType searchType,
             String[] pathArray, FieldsType fieldsType, long offset, String from, String to, String lang, int length)
             throws RemoteException {
-        _findEvents findEvents = new _findEvents();
+        FindEvents findEvents = new FindEvents();
         findEvents.setUser(this.fUserName);
         findEvents.setPassword(this.fPassword);
         findEvents.setQueryTerm(query);
@@ -377,12 +376,12 @@ public class SNSClient {
      * @return A topic map fragment.
      * @throws RemoteException
      */
-    public synchronized _topicMapFragment anniversary(String date) throws RemoteException {
+    public synchronized TopicMapFragment anniversary(String date) throws RemoteException {
         if (null == date) {
             throw new IllegalArgumentException("Date must be set.");
         }
 
-        _anniversary anniversary = new _anniversary();
+        Anniversary anniversary = new Anniversary();
         anniversary.setUser(this.fUserName);
         anniversary.setPassword(this.fPassword);
         anniversary.setRefDate(date);
@@ -404,13 +403,13 @@ public class SNSClient {
      * @return A topic map fragment.
      * @throws RemoteException
      */
-    public synchronized _topicMapFragment getSimilarTerms(boolean ignoreCase, String[] terms, String lang)
+    public synchronized TopicMapFragment getSimilarTerms(boolean ignoreCase, String[] terms, String lang)
             throws RemoteException {
         if ((null == terms) || (terms.length < 1)) {
             throw new IllegalArgumentException("No terms set.");
         }
 
-        _getSimilarTerms getSimilarTerms = new _getSimilarTerms();
+        GetSimilarTerms getSimilarTerms = new GetSimilarTerms();
         getSimilarTerms.setUser(this.fUserName);
         getSimilarTerms.setPassword(this.fPassword);
         getSimilarTerms.setLang(lang);

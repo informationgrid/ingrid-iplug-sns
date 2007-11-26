@@ -40,7 +40,7 @@ public class SNSIndexingInterfaceTest extends TestCase {
 
         final Wgs84Box[] result = this.fSnsInterface.getReferencesToSpace();
         assertNotNull(result);
-        assertEquals(5, result.length);
+        assertEquals(3, result.length);
 
         for (int i = 0; i < result.length; i++) {
             System.out.println(result[i].getTopicName());
@@ -60,7 +60,7 @@ public class SNSIndexingInterfaceTest extends TestCase {
 
         final Wgs84Box[] result = this.fSnsInterface.getReferencesToSpace();
         assertNotNull(result);
-        assertEquals(2, result.length);
+        assertEquals(1, result.length);
 
         for (int i = 0; i < result.length; i++) {
             System.out.println(result[i].getTopicName());
@@ -80,7 +80,7 @@ public class SNSIndexingInterfaceTest extends TestCase {
 
         final Temporal[] result = this.fSnsInterface.getReferencesToTime();
         assertNotNull(result);
-        assertEquals(4, result.length);
+        assertEquals(5, result.length);
         System.out.println(result[0].getAt());
     }
 

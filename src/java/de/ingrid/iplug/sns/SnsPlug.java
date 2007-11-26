@@ -75,6 +75,7 @@ public class SnsPlug implements IPlug {
             int type = getRequestType(query);
 
             final String lang = getQueryLang(query);
+            final boolean expired = getExpiredField(query);
             int[] totalSize = new int[1];
             totalSize[0] = 0;
 
@@ -84,21 +85,21 @@ public class SnsPlug implements IPlug {
                 switch (type) {
                 case Topic.TOPIC_FROM_TERM:
                     hitsTemp = this.fSnsController.getTopicsForTerm(getSearchTerm(query), start, Integer.MAX_VALUE,
-                            this.fPlugId, totalSize, lang);
+                            this.fPlugId, totalSize, lang, expired);
                     break;
                 case Topic.TOPIC_FROM_TEXT:
                     filter = (String) query.get("filter");
                     hitsTemp = this.fSnsController.getTopicsForText(getSearchTerm(query), this.fMaximalAnalyzedWord,
-                            filter, this.fPlugId, lang, totalSize);
+                            filter, this.fPlugId, lang, totalSize, expired);
                     break;
                 case Topic.TOPIC_FROM_URL:
                     filter = (String) query.get("filter");
                     hitsTemp = this.fSnsController.getTopicsForURL(getSearchTerm(query), this.fMaximalAnalyzedWord,
-                            filter, this.fPlugId, lang, totalSize);
+                            filter, this.fPlugId, lang, totalSize, expired);
                     break;
                 case Topic.TOPIC_FROM_TOPIC:
                     hitsTemp = this.fSnsController.getTopicsForTopic(getSearchTerm(query), Integer.MAX_VALUE,
-                            this.fPlugId, totalSize);
+                            this.fPlugId, totalSize, expired);
                     break;
                 case Topic.ANNIVERSARY_FROM_TOPIC:
                     hitsTemp = this.fSnsController.getAnniversaryFromTopic(getSearchTerm(query), Integer.MAX_VALUE,
@@ -110,7 +111,7 @@ public class SnsPlug implements IPlug {
                     break;
                 case Topic.SIMILARLOCATIONS_FROM_TOPIC:
                     hitsTemp = this.fSnsController.getTopicSimilarLocationsFromTopic(getSearchTerm(query),
-                            Integer.MAX_VALUE, this.fPlugId, totalSize);
+                            Integer.MAX_VALUE, this.fPlugId, totalSize, expired);
                     break;
                 case Topic.EVENT_FROM_TOPIC:
                     final String[] eventType = (String[]) query.get("eventtype");
@@ -248,6 +249,20 @@ public class SnsPlug implements IPlug {
             final String fieldName = qFields[i].getFieldName();
             if (fieldName.equals("lang")) {
                 result = qFields[i].getFieldValue();
+            }
+        }
+
+        return result;
+    }
+    
+    private boolean getExpiredField(IngridQuery query) {
+        boolean result = false;
+
+        FieldQuery[] qFields = query.getFields();
+        for (int i = 0; i < qFields.length; i++) {
+            final String fieldName = qFields[i].getFieldName();
+            if (fieldName.equals("expired")) {
+                result = Boolean.parseBoolean(qFields[i].getFieldValue());
             }
         }
 

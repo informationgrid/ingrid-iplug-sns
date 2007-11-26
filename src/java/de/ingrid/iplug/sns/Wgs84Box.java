@@ -48,6 +48,7 @@ public class Wgs84Box {
         this.fGemeindekennziffer = gemeindekennziffer;
     }
 
+
     /**
      * The name of the topic. In the language of the SNS it is the basename.
      * 

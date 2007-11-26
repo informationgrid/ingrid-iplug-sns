@@ -1,21 +1,26 @@
 package de.ingrid.iplug.sns;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.slb.taxi.webservice.xtm.stubs.FieldsType;
 import com.slb.taxi.webservice.xtm.stubs.SearchType;
-import com.slb.taxi.webservice.xtm.stubs._topicMapFragment;
-import com.slb.taxi.webservice.xtm.stubs.xtm._association;
-import com.slb.taxi.webservice.xtm.stubs.xtm._baseName;
-import com.slb.taxi.webservice.xtm.stubs.xtm._instanceOf;
-import com.slb.taxi.webservice.xtm.stubs.xtm._member;
-import com.slb.taxi.webservice.xtm.stubs.xtm._occurrence;
-import com.slb.taxi.webservice.xtm.stubs.xtm._topic;
+import com.slb.taxi.webservice.xtm.stubs.TopicMapFragment;
+import com.slb.taxi.webservice.xtm.stubs.xtm.Association;
+import com.slb.taxi.webservice.xtm.stubs.xtm.BaseName;
+import com.slb.taxi.webservice.xtm.stubs.xtm.InstanceOf;
+import com.slb.taxi.webservice.xtm.stubs.xtm.Member;
+import com.slb.taxi.webservice.xtm.stubs.xtm.Occurrence;
+import com.slb.taxi.webservice.xtm.stubs.xtm.Topic;
 
 import de.ingrid.iplug.sns.utils.DetailedTopic;
-import de.ingrid.iplug.sns.utils.Topic;
 import de.ingrid.utils.IngridHit;
 
 /**
@@ -29,15 +34,19 @@ import de.ingrid.utils.IngridHit;
  */
 public class SNSController {
 
-    private static final String TEMPORAL_TO_OCCURRENCE = "temporalToOcc";
+    private static Log log = LogFactory.getLog(SNSController.class);
 
-    private static final String TEMPORAL_FROM_OCCURRENCE = "temporalFromOcc";
+    private static final String TEMPORAL_TOOccurrence = "temporalToOcc";
 
-    private static final String TEMPORAL_AT_OCCURRENCE = "temporalAtOcc";
+    private static final String TEMPORAL_FROMOccurrence = "temporalFromOcc";
+
+    private static final String TEMPORAL_ATOccurrence = "temporalAtOcc";
 
     private static final String SYNONYM_TYPE = "synonymType";
 
     private static final String THESAURUS_DESCRIPTOR = "/thesa/descriptor";
+
+    private static final SimpleDateFormat expiredDateParser = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
 
     private SNSClient fServiceClient;
 
@@ -57,32 +66,34 @@ public class SNSController {
     }
 
     /**
-     * For a given term (that should be a topic itself) an array of associated topics will returned. 
+     * For a given term (that should be a topic itself) an array of associated topics will returned.
      * 
      * @param queryTerm
-     * 			The query term.
+     *            The query term.
      * @param start
-     * 			The start offset.
+     *            The start offset.
      * @param maxResults
-     * 			Limit number of results.
+     *            Limit number of results.
      * @param plugId
-     * 			The plugId as String.
+     *            The plugId as String.
      * @param totalSize
-     * 			The quantity of the found topics altogether.
+     *            The quantity of the found topics altogether.
      * @param lang
-     * 			Is used to specify the preferred language for requests.
+     *            Is used to specify the preferred language for requests.
+     * @param expired
      * @return an array of assiciated topics or null in case the term itself is not found as topic
      * @throws Exception
      */
-    public synchronized Topic[] getTopicsForTerm(String queryTerm, int start, int maxResults, String plugId,
-            int[] totalSize, String lang) throws Exception {
-        HashMap associationTypes = new HashMap();
-        Topic[] result = new Topic[0];
+    public synchronized de.ingrid.iplug.sns.utils.Topic[] getTopicsForTerm(String queryTerm, int start, int maxResults,
+            String plugId, int[] totalSize, String lang, boolean expired) throws Exception {
+        HashMap<String, String> associationTypes = new HashMap<String, String>();
+        de.ingrid.iplug.sns.utils.Topic[] result = new de.ingrid.iplug.sns.utils.Topic[0];
 
-        _topic topic = getTopic(queryTerm, THESAURUS_DESCRIPTOR, start, totalSize, lang);
+        Topic topic = getTopic(queryTerm, THESAURUS_DESCRIPTOR, start, totalSize, lang);
         if (topic != null) {
-            _topic[] associatedTopics = getAssociatedTopics(topic, fTypeFilters, associationTypes, totalSize);
-            Topic[] topics = copyToTopicArray(associatedTopics, associationTypes, maxResults, plugId, lang);
+            Topic[] associatedTopics = getAssociatedTopics(topic, fTypeFilters, associationTypes, totalSize, expired);
+            de.ingrid.iplug.sns.utils.Topic[] topics = copyToTopicArray(associatedTopics, associationTypes, maxResults,
+                    plugId, lang);
             result = topics;
         }
 
@@ -93,22 +104,24 @@ public class SNSController {
      * For a given topic (identified by id) an array of associated topics will returned.
      * 
      * @param topicId
-     * 			The topic given by Id.
+     *            The topic given by Id.
      * @param maxResults
-     * 			Limit number of results.
+     *            Limit number of results.
      * @param plugId
-     * 			The plugId as String
+     *            The plugId as String
      * @param totalSize
-     * 			The quantity of the found topics altogether.
+     *            The quantity of the found topics altogether.
+     * @param expired
+     *            If true return also expired topics.
      * @return an array of associated topics for a type identified by id
      * @throws Exception
      */
-    public synchronized Topic[] getTopicsForTopic(String topicId, int maxResults, String plugId, int[] totalSize)
-            throws Exception {
-        HashMap associationTypes = new HashMap();
-        _topic topic = new _topic();
+    public synchronized de.ingrid.iplug.sns.utils.Topic[] getTopicsForTopic(String topicId, int maxResults,
+            String plugId, int[] totalSize, boolean expired) throws Exception {
+        HashMap<String, String> associationTypes = new HashMap<String, String>();
+        Topic topic = new Topic();
         topic.setId(topicId);
-        _topic[] associatedTopics = getAssociatedTopics(topic, fTypeFilters, associationTypes, totalSize);
+        Topic[] associatedTopics = getAssociatedTopics(topic, fTypeFilters, associationTypes, totalSize, expired);
         if (associatedTopics != null) {
             return copyToTopicArray(associatedTopics, associationTypes, maxResults, plugId, "bla");
         }
@@ -120,31 +133,32 @@ public class SNSController {
      * For a given text an array of detailed topics will returned.
      * 
      * @param documentText
-     * 			The given text to analyze. 
+     *            The given text to analyze.
      * @param maxToAnalyzeWords
-     * 			Analyze only the first maxToAnalyzeWords words of the document in the body.
+     *            Analyze only the first maxToAnalyzeWords words of the document in the body.
      * @param filter
-     * 			Topic type as search criterion (only root paths may be used). 
+     *            Topic type as search criterion (only root paths may be used).
      * @param plugId
-     * 			The plugId as String.
+     *            The plugId as String.
      * @param lang
-     * 			Is used to specify the preferred language for requests.
+     *            Is used to specify the preferred language for requests.
      * @param totalSize
-     * 			The quantity of the found topics altogether.
+     *            The quantity of the found topics altogether.
+     * @param expired
      * @return array of detailed topics for the given text
      * @throws Exception
      */
-    public DetailedTopic[] getTopicsForText(String documentText, int maxToAnalyzeWords, String filter,
-            String plugId, String lang, int[] totalSize) throws Exception {
-        final _topicMapFragment mapFragment = this.fServiceClient.autoClassify(documentText, maxToAnalyzeWords, filter,
+    public DetailedTopic[] getTopicsForText(String documentText, int maxToAnalyzeWords, String filter, String plugId,
+            String lang, int[] totalSize, boolean expired) throws Exception {
+        final TopicMapFragment mapFragment = this.fServiceClient.autoClassify(documentText, maxToAnalyzeWords, filter,
                 true, lang);
-        final _topic[] topics = mapFragment.getTopicMap().getTopic();
+        final Topic[] topics = mapFragment.getTopicMap().getTopic();
         if (null != mapFragment.getListExcerpt()) {
             totalSize[0] = mapFragment.getListExcerpt().getTotalSize().intValue();
         }
 
         if (topics != null) {
-            return toDetailedTopicArray(topics, plugId, lang);
+            return toDetailedTopicArray(topics, plugId, lang, expired);
         }
 
         return new DetailedTopic[0];
@@ -153,32 +167,33 @@ public class SNSController {
     /**
      * For a given URL an array of detailed topics will returned.
      * 
-     * @param documentText
-     *          The given text to analyze. 
+     * @param url
+     *            The given url to analyze.
      * @param maxToAnalyzeWords
-     *          Analyze only the first maxToAnalyzeWords words of the document in the body.
+     *            Analyze only the first maxToAnalyzeWords words of the document in the body.
      * @param filter
-     *          Topic type as search criterion (only root paths may be used). 
+     *            Topic type as search criterion (only root paths may be used).
      * @param plugId
-     *          The plugId as String.
+     *            The plugId as String.
      * @param lang
-     *          Is used to specify the preferred language for requests.
+     *            Is used to specify the preferred language for requests.
      * @param totalSize
-     *          The quantity of the found topics altogether.
+     *            The quantity of the found topics altogether.
+     * @param expired
      * @return array of detailed topics for the given text
      * @throws Exception
      */
-    public DetailedTopic[] getTopicsForURL(String url, int maxToAnalyzeWords, String filter,
-            String plugId, String lang, int[] totalSize) throws Exception {
-        final _topicMapFragment mapFragment = this.fServiceClient.autoClassifyToUrl(url, maxToAnalyzeWords, filter,
+    public DetailedTopic[] getTopicsForURL(String url, int maxToAnalyzeWords, String filter, String plugId,
+            String lang, int[] totalSize, boolean expired) throws Exception {
+        final TopicMapFragment mapFragment = this.fServiceClient.autoClassifyToUrl(url, maxToAnalyzeWords, filter,
                 true, lang);
-        final _topic[] topics = mapFragment.getTopicMap().getTopic();
+        final Topic[] topics = mapFragment.getTopicMap().getTopic();
         if (null != mapFragment.getListExcerpt()) {
             totalSize[0] = mapFragment.getListExcerpt().getTotalSize().intValue();
         }
 
         if (topics != null) {
-            return toDetailedTopicArray(topics, plugId, lang);
+            return toDetailedTopicArray(topics, plugId, lang, expired);
         }
 
         return new DetailedTopic[0];
@@ -188,51 +203,56 @@ public class SNSController {
      * For a given topic array an array of associated topics which are not synonymous one will returned.
      * 
      * @param topics
-     * 			Array of given topics.
+     *            Array of given topics.
      * @param plugId
-     * 			The plugId as String.
+     *            The plugId as String.
      * @param lang
-     * 			Is used to specify the preferred language for requests.
+     *            Is used to specify the preferred language for requests.
      * @return an array of detailed topics, we ignoring all topics of typ synonymType
      */
-    private DetailedTopic[] toDetailedTopicArray(_topic[] topics, String plugId, String lang) {
-        final List returnList = new ArrayList();
-        for (int i = 0; i < topics.length; i++) {
-            // System.out.println(topics[i].getInstanceOf()[0].getTopicRef().getHref());
-            if (!topics[i].getInstanceOf()[0].getTopicRef().getHref().endsWith(SYNONYM_TYPE)) {
-                returnList.add(buildDetailedTopicFrom_topic(topics[i], plugId, lang));
+    private DetailedTopic[] toDetailedTopicArray(Topic[] topics, String plugId, String lang, boolean expired) {
+        final List<DetailedTopic> returnList = new ArrayList<DetailedTopic>();
+        for (Topic topic : topics) {
+            if (!topic.getInstanceOf()[0].getTopicRef().getHref().endsWith(SYNONYM_TYPE)) {
+                if (!expired) {
+                    Date expiredDate = getExpiredDate(topic);
+                    if ((null != expiredDate) && expiredDate.before(new Date())) {
+                        continue;
+                    }
+                }
+                returnList.add(buildDetailedTopicFromTopic(topic, plugId, lang));
             }
         }
 
-        return (DetailedTopic[]) returnList.toArray(new DetailedTopic[returnList.size()]);
+        return returnList.toArray(new DetailedTopic[returnList.size()]);
     }
 
     /**
      * Build a detailed metadata index for a given topic.
      * 
      * @param topic
-     * 			A given topic.
+     *            A given topic.
      * @param plugId
-     * 			The plugId as String
+     *            The plugId as String
      * @param lang
-     * 			Is used to specify the preferred language for requests.
-     * @return A detailed topic from _topic.
+     *            Is used to specify the preferred language for requests.
+     * @return A detailed topic from Topic.
      */
-    private synchronized DetailedTopic buildDetailedTopicFrom_topic(_topic topic, String plugId, String lang) {
+    private synchronized DetailedTopic buildDetailedTopicFromTopic(Topic topic, String plugId, String lang) {
         String topicId = topic.getId();
-        _baseName[] bn = topic.getBaseName();
+        BaseName[] bn = topic.getBaseName();
         String title = "";
         for (int i = 0; i < bn.length; i++) {
             final String href = bn[i].getScope().getTopicRef()[0].getHref();
             if (href.endsWith('#' + lang)) {
-                title = topic.getBaseName()[i].getBaseNameString().getValue();
+                title = topic.getBaseName()[i].getBaseNameString().get_value();
                 break;
             }
         }
 
         String summary = title + ' ' + topic.getInstanceOf()[0].getTopicRef().getHref();
         DetailedTopic metaData = new DetailedTopic(plugId, topicId.hashCode(), topicId, title, summary);
-        _instanceOf[] instanceOfs = topic.getInstanceOf();
+        InstanceOf[] instanceOfs = topic.getInstanceOf();
         for (int i = 0; i < instanceOfs.length; i++) {
             String href = instanceOfs[i].getTopicRef().getHref();
             metaData.addToList(DetailedTopic.INSTANCE_OF, href);
@@ -250,10 +270,10 @@ public class SNSController {
         return metaData;
     }
 
-    private void pushDefinitions(DetailedTopic metaData, _topic topic, String lang) {
-        _occurrence[] occurrences = topic.getOccurrence();
-        ArrayList titles = new ArrayList();
-        ArrayList definitions = new ArrayList();
+    private void pushDefinitions(DetailedTopic metaData, Topic topic, String lang) {
+        Occurrence[] occurrences = topic.getOccurrence();
+        ArrayList<String> titles = new ArrayList<String>();
+        ArrayList<String> definitions = new ArrayList<String>();
 
         String type = null;
         if (occurrences != null) {
@@ -265,8 +285,8 @@ public class SNSController {
                         scope = occurrences[i].getScope().getTopicRef(0).getHref();
                     }
                     type = occurrences[i].getInstanceOf().getTopicRef().getHref();
-                    if (type.endsWith(DetailedTopic.DESCRIPTION_OCC) && occurrences[i].getResourceRef() != null
-                            && scope.endsWith('#' + lang)) {
+                    if (type.endsWith(DetailedTopic.DESCRIPTION_OCC) && occurrences[i].getResourceRef() != null &&
+                            scope.endsWith('#' + lang)) {
                         definitions.add(occurrences[i].getResourceRef().getHref().toString());
                         titles.add(occurrences[i].getResourceRef().getTitle());
                     }
@@ -274,14 +294,14 @@ public class SNSController {
             }
         }
 
-        metaData.setDefinitions((String[]) definitions.toArray(new String[definitions.size()]));
-        metaData.setDefinitionTitles((String[]) titles.toArray(new String[titles.size()]));
+        metaData.setDefinitions(definitions.toArray(new String[definitions.size()]));
+        metaData.setDefinitionTitles(titles.toArray(new String[titles.size()]));
     }
 
-    private void pushSamples(DetailedTopic metaData, _topic topic, String lang) {
-        _occurrence[] occurrences = topic.getOccurrence();
-        ArrayList titles = new ArrayList();
-        ArrayList samples = new ArrayList();
+    private void pushSamples(DetailedTopic metaData, Topic topic, String lang) {
+        Occurrence[] occurrences = topic.getOccurrence();
+        ArrayList<String> titles = new ArrayList<String>();
+        ArrayList<String> samples = new ArrayList<String>();
 
         String type = null;
         if (occurrences != null) {
@@ -293,8 +313,8 @@ public class SNSController {
                         scope = occurrences[i].getScope().getTopicRef(0).getHref();
                     }
                     type = occurrences[i].getInstanceOf().getTopicRef().getHref();
-                    if (type.endsWith(DetailedTopic.SAMPLE_OCC) && occurrences[i].getResourceRef() != null
-                            && scope.endsWith('#' + lang)) {
+                    if (type.endsWith(DetailedTopic.SAMPLE_OCC) && occurrences[i].getResourceRef() != null &&
+                            scope.endsWith('#' + lang)) {
                         samples.add(occurrences[i].getResourceRef().getHref().toString());
                         titles.add(occurrences[i].getResourceRef().getTitle());
                     }
@@ -302,44 +322,44 @@ public class SNSController {
             }
         }
 
-        metaData.setSamples((String[]) samples.toArray(new String[samples.size()]));
-        metaData.setSampleTitles((String[]) titles.toArray(new String[titles.size()]));
+        metaData.setSamples(samples.toArray(new String[samples.size()]));
+        metaData.setSampleTitles(titles.toArray(new String[titles.size()]));
     }
 
     /**
      * Pushs the time data in to the detailed topic.
      * 
      * @param metaData
-     * 			The detailed topic for which the time data should be set.
+     *            The detailed topic for which the time data should be set.
      * @param topic
-     * 			A given topic.
+     *            A given topic.
      */
-    private void pushTimes(DetailedTopic metaData, _topic topic) {
-        _occurrence[] occurrences = topic.getOccurrence();
+    private void pushTimes(DetailedTopic metaData, Topic topic) {
+        Occurrence[] occurrences = topic.getOccurrence();
         String type = null;
         if (occurrences != null) {
             for (int i = 0; i < occurrences.length; i++) {
                 if (occurrences[i].getInstanceOf() != null) {
                     type = occurrences[i].getInstanceOf().getTopicRef().getHref();
-                    if (type.endsWith(TEMPORAL_AT_OCCURRENCE)) {
-                        final String at = occurrences[i].getResourceData().getValue();
+                    if (type.endsWith(TEMPORAL_ATOccurrence)) {
+                        final String at = occurrences[i].getResourceData().get_value();
                         metaData.setFrom(at);
                         metaData.setTo(at);
                         break;
                     }
-                    if (type.endsWith(TEMPORAL_FROM_OCCURRENCE)) {
-                        metaData.setFrom(occurrences[i].getResourceData().getValue());
+                    if (type.endsWith(TEMPORAL_FROMOccurrence)) {
+                        metaData.setFrom(occurrences[i].getResourceData().get_value());
                     }
-                    if (type.endsWith(TEMPORAL_TO_OCCURRENCE)) {
-                        metaData.setTo(occurrences[i].getResourceData().getValue());
+                    if (type.endsWith(TEMPORAL_TOOccurrence)) {
+                        metaData.setTo(occurrences[i].getResourceData().get_value());
                     }
                 }
             }
         }
     }
 
-    private synchronized void pushOccurensie(String occType, _topic topic, DetailedTopic detailedTopic, String lang) {
-        _occurrence[] occurrences = topic.getOccurrence();
+    private synchronized void pushOccurensie(String occType, Topic topic, DetailedTopic detailedTopic, String lang) {
+        Occurrence[] occurrences = topic.getOccurrence();
         String type = null;
         if (occurrences != null) {
             for (int i = 0; i < occurrences.length; i++) {
@@ -350,9 +370,9 @@ public class SNSController {
                         scope = occurrences[i].getScope().getTopicRef(0).getHref();
                     }
                     type = occurrences[i].getInstanceOf().getTopicRef().getHref();
-                    if (type.endsWith(occType) && occurrences[i].getResourceData() != null
-                            && scope.endsWith('#' + lang)) {
-                        detailedTopic.put(occType, occurrences[i].getResourceData().getValue());
+                    if (type.endsWith(occType) && occurrences[i].getResourceData() != null &&
+                            scope.endsWith('#' + lang)) {
+                        detailedTopic.put(occType, occurrences[i].getResourceData().get_value());
                     }
                 }
             }
@@ -363,25 +383,26 @@ public class SNSController {
      * @param topic
      * @param plugId
      * @param associationType
-     * @param lang 
-     * @return a ingrid topic from a _topic
+     * @param lang
+     * @return a ingrid topic from a Topic
      */
-    private synchronized Topic buildTopicFrom_topic(_topic topic, String plugId, String associationType, String lang) {
-        _baseName[] baseNames = topic.getBaseName();
+    private synchronized de.ingrid.iplug.sns.utils.Topic buildTopicFromTopic(Topic topic, String plugId,
+            String associationType, String lang) {
+        BaseName[] baseNames = topic.getBaseName();
         // Set a default if for the selected language nothing exists.
-        String title = baseNames[0].getBaseNameString().getValue();
+        String title = baseNames[0].getBaseNameString().get_value();
 
         for (int i = 0; i < baseNames.length; i++) {
             final String href = baseNames[i].getScope().getTopicRef()[0].getHref();
             if (href.endsWith('#' + lang)) {
-                title = baseNames[i].getBaseNameString().getValue();
+                title = baseNames[i].getBaseNameString().get_value();
                 break;
             }
         }
 
         String summary = title + ' ' + topic.getInstanceOf()[0].getTopicRef().getHref();
         String topicId = topic.getId();
-        return new Topic(plugId, topicId.hashCode(), topicId, title, summary, associationType);
+        return new de.ingrid.iplug.sns.utils.Topic(plugId, topicId.hashCode(), topicId, title, summary, associationType);
     }
 
     /**
@@ -389,38 +410,44 @@ public class SNSController {
      * @param typePattern
      * @param associationTypes
      * @param totalSize
-     * @return _topic array of associated topics filter by the given patterns
+     * @return Topic array of associated topics filter by the given patterns
      * @throws Exception
      */
-    private _topic[] getAssociatedTopics(_topic baseTopic, String[] typePattern, HashMap associationTypes,
-            int[] totalSize) throws Exception {
-        ArrayList resultList = new ArrayList();
+    private Topic[] getAssociatedTopics(Topic baseTopic, String[] typePattern,
+            HashMap<String, String> associationTypes, int[] totalSize, boolean expired) throws Exception {
+        ArrayList<Topic> resultList = new ArrayList<Topic>();
 
-        final _topicMapFragment mapFragment = this.fServiceClient.getPSI(baseTopic.getId(), 1, null);
-        final _topic[] topics = mapFragment.getTopicMap().getTopic();
+        final TopicMapFragment mapFragment = this.fServiceClient.getPSI(baseTopic.getId(), 1, null);
+        final Topic[] topics = mapFragment.getTopicMap().getTopic();
         if (null != mapFragment.getListExcerpt()) {
             if (null != mapFragment.getListExcerpt().getTotalSize()) {
                 totalSize[0] = mapFragment.getListExcerpt().getTotalSize().intValue();
             }
         }
-        final _association[] associations = mapFragment.getTopicMap().getAssociation();
+        final Association[] associations = mapFragment.getTopicMap().getAssociation();
         // iterate through associations to find the correct association types
         if (associations != null) {
             for (int i = 0; i < associations.length; i++) {
-                final _association association = associations[i];
+                final Association association = associations[i];
                 // association type
                 final String assocType = association.getInstanceOf().getTopicRef().getHref();
                 if (containsTypes(typePattern, assocType)) {
-                    // association mebers are the basetopic and it association
-                    final _member[] members = association.getMember();
+                    // association members are the basetopic and it association
+                    final Member[] members = association.getMember();
                     for (int j = 0; j < members.length; j++) {
-                        final _member member = members[j];
+                        final Member member = members[j];
                         // here is only the topic id available
                         final String topicId = member.getTopicRef()[0].getHref();
                         final String assocMember = member.getRoleSpec().getTopicRef().getHref();
                         if (!topicId.equals(baseTopic.getId())) {
-                            final _topic topicById = getTopicById(topics, topicId);
+                            final Topic topicById = getTopicById(topics, topicId);
                             if (topicById != null) {
+                                if (!expired) {
+                                    Date expiredDate = getExpiredDate(topicById);
+                                    if ((null != expiredDate) && expiredDate.before(new Date())) {
+                                        continue;
+                                    }
+                                }
                                 if (null != associationTypes) {
                                     associationTypes.put(topicById.getId(), assocMember);
                                 }
@@ -431,7 +458,7 @@ public class SNSController {
                 }
             }
 
-            return (_topic[]) resultList.toArray(new _topic[resultList.size()]);
+            return resultList.toArray(new Topic[resultList.size()]);
         }
 
         return null;
@@ -440,9 +467,9 @@ public class SNSController {
     /**
      * @param topics
      * @param topicId
-     * @return the topic that match the topicId from the given _topic array
+     * @return the topic that match the topicId from the given Topic array
      */
-    private _topic getTopicById(_topic[] topics, String topicId) {
+    private Topic getTopicById(Topic[] topics, String topicId) {
         for (int k = 0; k < topics.length; k++) {
             if (topicId.equals(topics[k].getId())) {
                 return topics[k];
@@ -461,13 +488,14 @@ public class SNSController {
      * @return just one matching topic, in case more topics match or no topic match we return null
      * @throws Exception
      */
-    private _topic getTopic(String queryTerm, String topicType, long offSet, int[] totalSize, String lang)
+    private Topic getTopic(String queryTerm, String topicType, long offSet, int[] totalSize, String lang)
             throws Exception {
-        _topicMapFragment mapFragment = this.fServiceClient.findTopics(queryTerm, topicType, SearchType.exact,
-                FieldsType.captors, offSet, lang);
+        // changed from FieldsType.captors to FieldTypes.names
+        TopicMapFragment mapFragment = this.fServiceClient.findTopics(queryTerm, topicType, SearchType.exact,
+                FieldsType.names, offSet, lang);
         if (null != mapFragment) {
             totalSize[0] = mapFragment.getListExcerpt().getTotalSize().intValue();
-            _topic[] topics = mapFragment.getTopicMap().getTopic();
+            Topic[] topics = mapFragment.getTopicMap().getTopic();
             if ((null != topics) && (topics.length == 1)) {
                 return topics[0];
             }
@@ -500,9 +528,9 @@ public class SNSController {
      * @return An array of Topic with the given length.
      * @throws Exception
      */
-    private Topic[] copyToTopicArray(_topic[] topics, HashMap associationTypes, int maxResults, String plugId,
-            String lang) throws Exception {
-        ArrayList ingridTopics = new ArrayList();
+    private de.ingrid.iplug.sns.utils.Topic[] copyToTopicArray(Topic[] topics,
+            HashMap<String, String> associationTypes, int maxResults, String plugId, String lang) throws Exception {
+        ArrayList<de.ingrid.iplug.sns.utils.Topic> ingridTopics = new ArrayList<de.ingrid.iplug.sns.utils.Topic>();
 
         if (null != topics) {
             int count = Math.min(maxResults, topics.length);
@@ -511,41 +539,41 @@ public class SNSController {
                 if (!topicId.equals("_Interface0")) {
                     String associationType = "";
                     if ((null != associationTypes) && (associationTypes.containsKey(topicId))) {
-                        associationType = (String) associationTypes.get(topicId);
+                        associationType = associationTypes.get(topicId);
                     }
-                    ingridTopics.add(buildTopicFrom_topic(topics[i], plugId, associationType, lang));
+                    ingridTopics.add(buildTopicFromTopic(topics[i], plugId, associationType, lang));
                 }
             }
         }
 
-        return (Topic[]) ingridTopics.toArray(new Topic[ingridTopics.size()]);
+        return ingridTopics.toArray(new de.ingrid.iplug.sns.utils.Topic[ingridTopics.size()]);
     }
 
     /**
      * Search for a given date events of an requested event type.
      * 
      * @param searchTerm
-     * 			The search term.
+     *            The search term.
      * @param eventTypes
-     * 			Array with one or more types of events.
+     *            Array with one or more types of events.
      * @param atDate
-     * 			A date at which an event occured.
+     *            A date at which an event occured.
      * @param start
-     * 			Defines the number of elements to skip.
+     *            Defines the number of elements to skip.
      * @param length
-     * 			Number of elements that should be retrieved.
+     *            Number of elements that should be retrieved.
      * @param plugId
-     * 			The plugId as String.
+     *            The plugId as String.
      * @param totalSize
-     *          Has the total size of the query set after the call.
+     *            Has the total size of the query set after the call.
      * @param lang
-     * 			Is used to specify the preferred language for requests.
+     *            Is used to specify the preferred language for requests.
      * @return A topic array of events.
      * @throws Exception
      */
-    public Topic[] getEventFromTopic(String searchTerm, String[] eventTypes, String atDate, int start, int length,
-            String plugId, int[] totalSize, String lang) throws Exception {
-        Topic[] result = new Topic[0];
+    public de.ingrid.iplug.sns.utils.Topic[] getEventFromTopic(String searchTerm, String[] eventTypes, String atDate,
+            int start, int length, String plugId, int[] totalSize, String lang) throws Exception {
+        de.ingrid.iplug.sns.utils.Topic[] result = new de.ingrid.iplug.sns.utils.Topic[0];
         String[] eventPath = null;
 
         if (null != eventTypes) {
@@ -561,12 +589,12 @@ public class SNSController {
         if ((null == searchTerm) || (searchTerm.trim().equals(""))) {
             searchType = SearchType.contains;
         }
-        _topicMapFragment topicMapFragment = this.fServiceClient.findEvents(searchTerm, true, searchType, eventPath,
+        TopicMapFragment topicMapFragment = this.fServiceClient.findEvents(searchTerm, true, searchType, eventPath,
                 FieldsType.captors, start, atDate, lang, length);
-        _topic[] topic = topicMapFragment.getTopicMap().getTopic();
+        Topic[] topic = topicMapFragment.getTopicMap().getTopic();
         totalSize[0] = topicMapFragment.getListExcerpt().getTotalSize().intValue();
         if (topic != null) {
-            Topic[] topics = copyToTopicArray(topic, null, length, plugId, lang);
+            de.ingrid.iplug.sns.utils.Topic[] topics = copyToTopicArray(topic, null, length, plugId, lang);
             result = topics;
         }
 
@@ -577,20 +605,20 @@ public class SNSController {
      * Returns all similar terms to a term.
      * 
      * @param searchTerm
-     * 			The given search term.
+     *            The given search term.
      * @param length
-     * 			Number of elements that should be retrieved.
+     *            Number of elements that should be retrieved.
      * @param plugId
-     * 			The plugId as String.
+     *            The plugId as String.
      * @param totalSize
-     * 			The total size of the query set after the call.
+     *            The total size of the query set after the call.
      * @param lang
-     * 			Is used to specify the preferred language for requests.
+     *            Is used to specify the preferred language for requests.
      * @return Topics to similar terms.
      * @throws Exception
      */
-    public Topic[] getSimilarTermsFromTopic(String searchTerm, int length, String plugId, int[] totalSize, String lang)
-            throws Exception {
+    public de.ingrid.iplug.sns.utils.Topic[] getSimilarTermsFromTopic(String searchTerm, int length, String plugId,
+            int[] totalSize, String lang) throws Exception {
         return getSimilarTermsFromTopic(new String[] { searchTerm }, length, plugId, totalSize, lang);
     }
 
@@ -598,30 +626,30 @@ public class SNSController {
      * Returns all similar terms to an array of terms.
      * 
      * @param searchTerm
-     * 			The given search term.
+     *            The given search term.
      * @param length
-     * 			Number of elements that should be retrieved.
+     *            Number of elements that should be retrieved.
      * @param plugId
-     * 			The plugId as String.
+     *            The plugId as String.
      * @param totalSize
-     * 			The total size of the query set after the call.
+     *            The total size of the query set after the call.
      * @param lang
-     * 			Is used to specify the preferred language for requests.
+     *            Is used to specify the preferred language for requests.
      * @return Topics to similar terms.
      * @throws Exception
      */
-    public Topic[] getSimilarTermsFromTopic(String[] searchTerm, int length, String plugId, int[] totalSize, String lang)
-            throws Exception {
-        Topic[] result = new Topic[0];
+    public de.ingrid.iplug.sns.utils.Topic[] getSimilarTermsFromTopic(String[] searchTerm, int length, String plugId,
+            int[] totalSize, String lang) throws Exception {
+        de.ingrid.iplug.sns.utils.Topic[] result = new de.ingrid.iplug.sns.utils.Topic[0];
 
-        _topicMapFragment topicMapFragment = this.fServiceClient.getSimilarTerms(true, searchTerm, lang);
-        _topic[] topic = topicMapFragment.getTopicMap().getTopic();
+        TopicMapFragment topicMapFragment = this.fServiceClient.getSimilarTerms(true, searchTerm, lang);
+        Topic[] topic = topicMapFragment.getTopicMap().getTopic();
         if (null != topicMapFragment.getListExcerpt()) {
             totalSize[0] = topicMapFragment.getListExcerpt().getTotalSize().intValue();
         }
 
         if (topic != null) {
-            Topic[] topics = copyToTopicArray(topic, null, length, plugId, lang);
+            de.ingrid.iplug.sns.utils.Topic[] topics = copyToTopicArray(topic, null, length, plugId, lang);
             result = topics;
         }
 
@@ -632,25 +660,25 @@ public class SNSController {
      * Returns all anniversaries to a date.
      * 
      * @param searchTerm
-     * 			The given search term.
+     *            The given search term.
      * @param length
-     * 			Number of elements that should be retrieved.
+     *            Number of elements that should be retrieved.
      * @param plugId
-     * 			The plugId as String.
+     *            The plugId as String.
      * @param totalSize
-     * 			The total size of the query set after the call.
+     *            The total size of the query set after the call.
      * @return Topics to an anniversary.
      * @throws Exception
      */
-    public Topic[] getAnniversaryFromTopic(String searchTerm, int length, String plugId, int[] totalSize)
-            throws Exception {
-        Topic[] result = new Topic[0];
+    public de.ingrid.iplug.sns.utils.Topic[] getAnniversaryFromTopic(String searchTerm, int length, String plugId,
+            int[] totalSize) throws Exception {
+        de.ingrid.iplug.sns.utils.Topic[] result = new de.ingrid.iplug.sns.utils.Topic[0];
 
-        _topicMapFragment topicMapFragment = this.fServiceClient.anniversary(searchTerm);
-        _topic[] topic = topicMapFragment.getTopicMap().getTopic();
+        TopicMapFragment topicMapFragment = this.fServiceClient.anniversary(searchTerm);
+        Topic[] topic = topicMapFragment.getTopicMap().getTopic();
         totalSize[0] = topicMapFragment.getListExcerpt().getTotalSize().intValue();
         if (topic != null) {
-            Topic[] topics = copyToTopicArray(topic, null, length, plugId, "bla");
+            de.ingrid.iplug.sns.utils.Topic[] topics = copyToTopicArray(topic, null, length, plugId, "bla");
             result = topics;
         }
 
@@ -661,29 +689,29 @@ public class SNSController {
      * Returns all events between two dates.
      * 
      * @param searchTerm
-     * 			The given search term.
+     *            The given search term.
      * @param eventTypes
-     * 			Array with one or more types of events.
+     *            Array with one or more types of events.
      * @param fromDate
-     * 			A date after that an event occured.
+     *            A date after that an event occured.
      * @param toDate
-     * 			A date before an event occured.
+     *            A date before an event occured.
      * @param start
-     * 			Defines the number of elements to skip.
+     *            Defines the number of elements to skip.
      * @param length
-     * 			Number of elements that should be retrieved.
+     *            Number of elements that should be retrieved.
      * @param plugId
-     * 			The plugId as String.
+     *            The plugId as String.
      * @param totalSize
-     *          Has the total size of the query set after the call.
+     *            Has the total size of the query set after the call.
      * @param lang
-     * 			Is used to specify the preferred language for requests.
+     *            Is used to specify the preferred language for requests.
      * @return Topics to an event.
      * @throws Exception
      */
-    public Topic[] getEventFromTopic(String searchTerm, String[] eventTypes, String fromDate, String toDate, int start,
-            int length, String plugId, int[] totalSize, String lang) throws Exception {
-        Topic[] result = new Topic[0];
+    public de.ingrid.iplug.sns.utils.Topic[] getEventFromTopic(String searchTerm, String[] eventTypes, String fromDate,
+            String toDate, int start, int length, String plugId, int[] totalSize, String lang) throws Exception {
+        de.ingrid.iplug.sns.utils.Topic[] result = new de.ingrid.iplug.sns.utils.Topic[0];
         String[] eventPath = null;
 
         if (null != eventTypes) {
@@ -699,12 +727,12 @@ public class SNSController {
         if ((null == searchTerm) || (searchTerm.trim().equals(""))) {
             searchType = SearchType.contains;
         }
-        _topicMapFragment topicMapFragment = this.fServiceClient.findEvents(searchTerm, true, searchType, eventPath,
+        TopicMapFragment topicMapFragment = this.fServiceClient.findEvents(searchTerm, true, searchType, eventPath,
                 FieldsType.captors, start, fromDate, toDate, lang, length);
-        _topic[] topic = topicMapFragment.getTopicMap().getTopic();
+        Topic[] topic = topicMapFragment.getTopicMap().getTopic();
         totalSize[0] = topicMapFragment.getListExcerpt().getTotalSize().intValue();
         if (topic != null) {
-            Topic[] topics = copyToTopicArray(topic, null, length, plugId, lang);
+            de.ingrid.iplug.sns.utils.Topic[] topics = copyToTopicArray(topic, null, length, plugId, lang);
             result = topics;
         }
 
@@ -715,9 +743,9 @@ public class SNSController {
      * Deliver for a given hit the detailed topic description.
      * 
      * @param hit
-     * 			The hit, for which further information should received.
+     *            The hit, for which further information should received.
      * @param lang
-     * 			Is used to specify the preferred language for requests.
+     *            Is used to specify the preferred language for requests.
      * @return A detailed topic.
      * @throws Exception
      */
@@ -726,29 +754,29 @@ public class SNSController {
     }
 
     /**
-     * Get detailed information for a hit. 
+     * Get detailed information for a hit.
      * 
      * @param hit
-     * 			The hit, for which further information should received. 
+     *            The hit, for which further information should received.
      * @param filter
-     * 			Topic type as search criterion (only root paths may be used). 
+     *            Topic type as search criterion (only root paths may be used).
      * @param lang
-     * 			Is used to specify the preferred language for requests.
+     *            Is used to specify the preferred language for requests.
      * @return A detailed topic to a filter.
      * @throws Exception
      */
     public DetailedTopic getTopicDetail(IngridHit hit, String filter, String lang) throws Exception {
-        Topic topic = (Topic) hit;
+        de.ingrid.iplug.sns.utils.Topic topic = (de.ingrid.iplug.sns.utils.Topic) hit;
         String topicID = topic.getTopicID();
         DetailedTopic result = null;
 
-        _topicMapFragment mapFragment = this.fServiceClient.getPSI(topicID, 0, filter);
+        TopicMapFragment mapFragment = this.fServiceClient.getPSI(topicID, 0, filter);
         if (null != mapFragment) {
-            _topic[] topics = mapFragment.getTopicMap().getTopic();
+            Topic[] topics = mapFragment.getTopicMap().getTopic();
 
             for (int i = 0; i < topics.length; i++) {
                 if (topics[i].getId().equals(topicID)) {
-                    result = buildDetailedTopicFrom_topic(topics[0], hit.getPlugId(), lang);
+                    result = buildDetailedTopicFromTopic(topics[0], hit.getPlugId(), lang);
                 }
             }
         }
@@ -757,29 +785,41 @@ public class SNSController {
     }
 
     /**
-     * Find for a given topic similar locations. 
+     * Find for a given topic similar locations.
      * 
      * @param topicId
-     * 			The topic given by Id.
+     *            The topic given by Id.
      * @param length
-     * 			Number of elements that should be retrieved.
+     *            Number of elements that should be retrieved.
      * @param plugId
-     * 			The plugId as string.
+     *            The plugId as string.
      * @param totalSize
-     * 			Has the total size of the query set after the call.
+     *            Has the total size of the query set after the call.
+     * @param expired 
      * @return A topic array from similar location topics.
      * @throws Exception
      */
-    public Topic[] getTopicSimilarLocationsFromTopic(String topicId, int length, String plugId, int[] totalSize)
-            throws Exception {
-        Topic[] result = null;
+    public de.ingrid.iplug.sns.utils.Topic[] getTopicSimilarLocationsFromTopic(String topicId, int length,
+            String plugId, int[] totalSize, boolean expired) throws Exception {
+        de.ingrid.iplug.sns.utils.Topic[] result = null;
 
-        _topicMapFragment mapFragment = this.fServiceClient.getPSI(topicId, 0, "/location");
+        TopicMapFragment mapFragment = this.fServiceClient.getPSI(topicId, 0, "/location/");
         if (null != mapFragment) {
             if (null != mapFragment.getListExcerpt().getTotalSize()) {
                 totalSize[0] = mapFragment.getListExcerpt().getTotalSize().intValue();
             }
-            _topic[] topics = mapFragment.getTopicMap().getTopic();
+            Topic[] topics = mapFragment.getTopicMap().getTopic();
+            if (!expired) {
+                ArrayList<Topic> expiredTopics = new ArrayList<Topic>();
+                for (Topic topic : topics) {
+                    Date expiredDate = getExpiredDate(topic);
+                    if ((null != expiredDate) && expiredDate.before(new Date())) {
+                        continue;
+                    }
+                    expiredTopics.add(topic);
+                }
+                topics = expiredTopics.toArray(new Topic[expiredTopics.size()]);
+            }
             result = copyToTopicArray(topics, null, length, plugId, "bla");
         }
 
@@ -790,20 +830,42 @@ public class SNSController {
      * For a given text an array of detailed topics will returned (synchronized version).
      * 
      * @param searchTerm
-     * 			The given text to analyze.
+     *            The given text to analyze.
      * @param maxToAnalyzeWords
-     * 			Analyze only the first maxToAnalyzeWords words of the document in the body.
+     *            Analyze only the first maxToAnalyzeWords words of the document in the body.
      * @param plugId
-     * 			The plugId as String.
+     *            The plugId as String.
      * @param lang
-     * 			Is used to specify the preferred language for requests.
+     *            Is used to specify the preferred language for requests.
      * @param totalSize
-     * 			The quantity of the found topics altogether.
+     *            The quantity of the found topics altogether.
+     * @param expired
      * @return Array of detailed topics for the given text.
      * @throws Exception
      */
-    public synchronized DetailedTopic[] getTopicsForText(String searchTerm, int maxToAnalyzeWords, String plugId, String lang,
-            int[] totalSize) throws Exception {
-        return getTopicsForText(searchTerm, maxToAnalyzeWords, null, plugId, lang, totalSize);
+    public synchronized DetailedTopic[] getTopicsForText(String searchTerm, int maxToAnalyzeWords, String plugId,
+            String lang, int[] totalSize, boolean expired) throws Exception {
+        return getTopicsForText(searchTerm, maxToAnalyzeWords, null, plugId, lang, totalSize, expired);
+    }
+
+    private Date getExpiredDate(Topic topic) {
+        Date result = null;
+        Occurrence[] occurrences = topic.getOccurrence();
+        if (null != occurrences) {
+            for (Occurrence occurrence : occurrences) {
+                final InstanceOf instanceOf = occurrence.getInstanceOf();
+                if (instanceOf != null) {
+                    final String type = instanceOf.getTopicRef().getHref();
+                    if (type.endsWith("expiredOcc")) {
+                        try {
+                            result = expiredDateParser.parse(occurrence.getResourceData().get_value());
+                        } catch (ParseException e) {
+                            log.error("Not expected date format in sns expiredOcc.", e);
+                        }
+                    }
+                }
+            }
+        }
+        return result;
     }
 }

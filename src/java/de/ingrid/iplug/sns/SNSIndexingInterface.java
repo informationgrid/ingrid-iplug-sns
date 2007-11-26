@@ -11,10 +11,10 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.slb.taxi.webservice.xtm.stubs._topicMapFragment;
-import com.slb.taxi.webservice.xtm.stubs.xtm._occurrence;
-import com.slb.taxi.webservice.xtm.stubs.xtm._resourceData;
-import com.slb.taxi.webservice.xtm.stubs.xtm._topic;
+import com.slb.taxi.webservice.xtm.stubs.TopicMapFragment;
+import com.slb.taxi.webservice.xtm.stubs.xtm.Occurrence;
+import com.slb.taxi.webservice.xtm.stubs.xtm.ResourceData;
+import com.slb.taxi.webservice.xtm.stubs.xtm.Topic;
 
 import de.ingrid.utils.tool.SNSUtil;
 
@@ -33,18 +33,15 @@ public class SNSIndexingInterface {
 
     private final Pattern fDateYearMonthDayPattern = Pattern.compile("^[0-9]{4,4}-[0-9]{2,2}-[0-9]{2,2}$");
 
-    private final Pattern fGemeindekennzifferPattern = Pattern
-            .compile("^(GEMEINDE|STAAT|BUNDESLAND|KREIS)([0-9]{1,10})$");
+    private Topic[] fTopics = new Topic[0];
 
-    private _topic[] fTopics = new _topic[0];
+    private ArrayList<Temporal> fTemporal = new ArrayList<Temporal>();
 
-    private ArrayList fTemporal = new ArrayList();
-
-    private ArrayList fWgs84Box = new ArrayList();
+    private ArrayList<Wgs84Box> fWgs84Box = new ArrayList<Wgs84Box>();
 
     private String fLanguage;
 
-    private ArrayList fTopicIds = new ArrayList();
+    private ArrayList<String> fTopicIds = new ArrayList<String>();
 
     /**
      * Interface for SN service connection handling.
@@ -111,7 +108,7 @@ public class SNSIndexingInterface {
             throws Exception {
         String[] result = new String[0];
 
-        final _topicMapFragment mapFragment = this.fSNSClient.autoClassify(text, maxToAnalyzeWords, null, ignoreCase,
+        final TopicMapFragment mapFragment = this.fSNSClient.autoClassify(text, maxToAnalyzeWords, null, ignoreCase,
                 language);
         this.fTopics = mapFragment.getTopicMap().getTopic();
 
@@ -129,9 +126,8 @@ public class SNSIndexingInterface {
     /**
      * All buzzwords to the given URL. You must call this method first to get results from
      * <code>getReferencesToTime</code> and <code>getReferencesToSpace</code>.
-     * 
-     * @param text
-     *            The document to analyze.
+     * @param url 
+     *            The url to analyze.
      * @param maxToAnalyzeWords
      *            The first <code>maxToAnalyzeWords</code> words of the document that should be analyzed.
      * @param ignoreCase
@@ -146,7 +142,7 @@ public class SNSIndexingInterface {
             throws Exception {
         String[] result = new String[0];
 
-        final _topicMapFragment mapFragment = this.fSNSClient.autoClassifyToUrl(url, maxToAnalyzeWords, null,
+        final TopicMapFragment mapFragment = this.fSNSClient.autoClassifyToUrl(url, maxToAnalyzeWords, null,
                 ignoreCase, language);
         this.fTopics = mapFragment.getTopicMap().getTopic();
 
@@ -161,59 +157,68 @@ public class SNSIndexingInterface {
         return result;
     }
 
-    private String[] getBasenames(_topic[] topics) {
-        ArrayList result = new ArrayList();
+    private String[] getBasenames(Topic[] topics) {
+        ArrayList<String> result = new ArrayList<String>();
 
         for (int i = 0; i < topics.length; i++) {
-            result.add(topics[i].getBaseName(0).getBaseNameString().getValue());
+            result.add(topics[i].getBaseName(0).getBaseNameString().get_value());
         }
 
-        return (String[]) result.toArray(new String[result.size()]);
+        return result.toArray(new String[result.size()]);
     }
 
     private void getReferences() throws Exception, ParseException {
         if (this.fTopics != null) {
             for (int i = 0; i < this.fTopics.length; i++) {
-                _occurrence[] occ = this.fTopics[i].getOccurrence();
+                Occurrence[] occ = this.fTopics[i].getOccurrence();
                 if (null != occ) {
-                    final String baseName = this.fTopics[i].getBaseName(0).getBaseNameString().getValue();
-                    final String topicId = this.fTopics[i].getId();
-                    this.fTopicIds.add(topicId);
+                    final String baseName = this.fTopics[i].getBaseName(0).getBaseNameString().get_value();
+                    this.fTopicIds.add(this.fTopics[i].getId());
                     final Temporal temporal = new Temporal();
-
+                    final Wgs84Box wgs84Box = new Wgs84Box(baseName, 0, 0 ,0, 0, "");
+                    boolean wgs84BoxSet = false;
                     for (int k = 0; k < occ.length; k++) {
-                        final _resourceData data = occ[k].getResourceData();
+                        final ResourceData data = occ[k].getResourceData();
                         if (data != null) {
                             final String topicRef = occ[k].getInstanceOf().getTopicRef().getHref();
                             if (topicRef.endsWith("temporalFromOcc")) {
-                                final String date = data.getValue();
+                                final String date = data.get_value();
 
                                 Date javaDate = parseDate(date);
                                 temporal.setFrom(javaDate);
                             } else if (topicRef.endsWith("temporalAtOcc")) {
-                                final String date = data.getValue();
+                                final String date = data.get_value();
 
                                 Date javaDate = parseDate(date);
                                 temporal.setAt(javaDate);
                             } else if (topicRef.endsWith("temporalToOcc")) {
-                                final String date = data.getValue();
+                                final String date = data.get_value();
 
                                 Date javaDate = parseDate(date);
                                 temporal.setTo(javaDate);
                             } else if (topicRef.endsWith("wgs84BoxOcc")) {
-                                String gemeindekennziffer = SNSUtil.transformSpacialReference(topicId);
-                                Matcher m = this.fGemeindekennzifferPattern.matcher(topicId);
-                                final String coords = data.getValue();
-                                m = this.fCoordPattern.matcher(coords);
+                                final String coords = data.get_value();
+                                Matcher m = this.fCoordPattern.matcher(coords);
                                 if (m.matches() && m.groupCount() == 4) {
                                     final double x1 = new Double(m.group(1)).doubleValue();
                                     final double y1 = new Double(m.group(2)).doubleValue();
                                     final double x2 = new Double(m.group(3)).doubleValue();
                                     final double y2 = new Double(m.group(4)).doubleValue();
-                                    this.fWgs84Box.add(new Wgs84Box(baseName, x1, x2, y1, y2, gemeindekennziffer));
+                                    wgs84Box.setX1(x1);
+                                    wgs84Box.setY1(y1);
+                                    wgs84Box.setX2(x2);
+                                    wgs84Box.setY2(y2);
+                                    wgs84BoxSet = true;
                                 }
+                            } else if (topicRef.endsWith("nativeKeyOcc")) {
+                                final String gemeindekennziffer = SNSUtil.transformSpacialReference(data.get_value());
+                                wgs84Box.setGemeindekennziffer(gemeindekennziffer);
+                                wgs84BoxSet = true;
                             }
                         }
+                    }
+                    if (wgs84BoxSet) {
+                        this.fWgs84Box.add(wgs84Box);
                     }
                     if (!temporal.isEmpty()) {
                         this.fTemporal.add(temporal);
@@ -259,7 +264,7 @@ public class SNSIndexingInterface {
             getReferences();
         }
 
-        return (String[]) this.fTopicIds.toArray(new String[this.fTopicIds.size()]);
+        return this.fTopicIds.toArray(new String[this.fTopicIds.size()]);
     }
 
     /**
@@ -276,7 +281,7 @@ public class SNSIndexingInterface {
             getReferences();
         }
 
-        return (Temporal[]) this.fTemporal.toArray(new Temporal[this.fTemporal.size()]);
+        return this.fTemporal.toArray(new Temporal[this.fTemporal.size()]);
     }
 
     /**
@@ -291,6 +296,6 @@ public class SNSIndexingInterface {
             getReferences();
         }
 
-        return (Wgs84Box[]) this.fWgs84Box.toArray(new Wgs84Box[this.fWgs84Box.size()]);
+        return this.fWgs84Box.toArray(new Wgs84Box[this.fWgs84Box.size()]);
     }
 }
