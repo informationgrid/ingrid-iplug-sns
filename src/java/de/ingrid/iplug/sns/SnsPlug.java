@@ -254,7 +254,7 @@ public class SnsPlug implements IPlug {
 
         return result;
     }
-    
+
     private boolean getExpiredField(IngridQuery query) {
         boolean result = false;
 
@@ -262,7 +262,7 @@ public class SnsPlug implements IPlug {
         for (int i = 0; i < qFields.length; i++) {
             final String fieldName = qFields[i].getFieldName();
             if (fieldName.equals("expired")) {
-                result = Boolean.parseBoolean(qFields[i].getFieldValue());
+                result = Boolean.valueOf(qFields[i].getFieldValue()).booleanValue();
             }
         }
 
