@@ -12,8 +12,6 @@ import com.slb.taxi.webservice.xtm.stubs.FieldsType;
 import com.slb.taxi.webservice.xtm.stubs.SearchType;
 import com.slb.taxi.webservice.xtm.stubs.TopicMapFragment;
 
-import de.ingrid.iplug.sns.utils.Topic;
-
 /**
  * created on 21.07.2005
  * 

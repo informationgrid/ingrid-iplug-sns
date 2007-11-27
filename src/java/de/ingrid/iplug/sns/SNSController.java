@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -86,7 +87,7 @@ public class SNSController {
      */
     public synchronized de.ingrid.iplug.sns.utils.Topic[] getTopicsForTerm(String queryTerm, int start, int maxResults,
             String plugId, int[] totalSize, String lang, boolean expired) throws Exception {
-        HashMap<String, String> associationTypes = new HashMap<String, String>();
+        Map associationTypes = new HashMap();
         de.ingrid.iplug.sns.utils.Topic[] result = new de.ingrid.iplug.sns.utils.Topic[0];
 
         Topic topic = getTopic(queryTerm, THESAURUS_DESCRIPTOR, start, totalSize, lang);
@@ -118,7 +119,7 @@ public class SNSController {
      */
     public synchronized de.ingrid.iplug.sns.utils.Topic[] getTopicsForTopic(String topicId, int maxResults,
             String plugId, int[] totalSize, boolean expired) throws Exception {
-        HashMap<String, String> associationTypes = new HashMap<String, String>();
+        Map associationTypes = new HashMap();
         Topic topic = new Topic();
         topic.setId(topicId);
         Topic[] associatedTopics = getAssociatedTopics(topic, fTypeFilters, associationTypes, totalSize, expired);
@@ -211,20 +212,20 @@ public class SNSController {
      * @return an array of detailed topics, we ignoring all topics of typ synonymType
      */
     private DetailedTopic[] toDetailedTopicArray(Topic[] topics, String plugId, String lang, boolean expired) {
-        final List<DetailedTopic> returnList = new ArrayList<DetailedTopic>();
-        for (Topic topic : topics) {
-            if (!topic.getInstanceOf()[0].getTopicRef().getHref().endsWith(SYNONYM_TYPE)) {
+        final List returnList = new ArrayList();
+        for (int i=0;i<topics.length;i++) {
+            if (!topics[i].getInstanceOf()[0].getTopicRef().getHref().endsWith(SYNONYM_TYPE)) {
                 if (!expired) {
-                    Date expiredDate = getExpiredDate(topic);
+                    Date expiredDate = getExpiredDate(topics[i]);
                     if ((null != expiredDate) && expiredDate.before(new Date())) {
                         continue;
                     }
                 }
-                returnList.add(buildDetailedTopicFromTopic(topic, plugId, lang));
+                returnList.add(buildDetailedTopicFromTopic(topics[i], plugId, lang));
             }
         }
 
-        return returnList.toArray(new DetailedTopic[returnList.size()]);
+        return (DetailedTopic[]) returnList.toArray(new DetailedTopic[returnList.size()]);
     }
 
     /**
@@ -272,8 +273,8 @@ public class SNSController {
 
     private void pushDefinitions(DetailedTopic metaData, Topic topic, String lang) {
         Occurrence[] occurrences = topic.getOccurrence();
-        ArrayList<String> titles = new ArrayList<String>();
-        ArrayList<String> definitions = new ArrayList<String>();
+        List titles = new ArrayList();
+        List definitions = new ArrayList();
 
         String type = null;
         if (occurrences != null) {
@@ -294,14 +295,14 @@ public class SNSController {
             }
         }
 
-        metaData.setDefinitions(definitions.toArray(new String[definitions.size()]));
-        metaData.setDefinitionTitles(titles.toArray(new String[titles.size()]));
+        metaData.setDefinitions((String[]) definitions.toArray(new String[definitions.size()]));
+        metaData.setDefinitionTitles((String[]) titles.toArray(new String[titles.size()]));
     }
 
     private void pushSamples(DetailedTopic metaData, Topic topic, String lang) {
         Occurrence[] occurrences = topic.getOccurrence();
-        ArrayList<String> titles = new ArrayList<String>();
-        ArrayList<String> samples = new ArrayList<String>();
+        List titles = new ArrayList();
+        List samples = new ArrayList();
 
         String type = null;
         if (occurrences != null) {
@@ -322,8 +323,8 @@ public class SNSController {
             }
         }
 
-        metaData.setSamples(samples.toArray(new String[samples.size()]));
-        metaData.setSampleTitles(titles.toArray(new String[titles.size()]));
+        metaData.setSamples((String[]) samples.toArray(new String[samples.size()]));
+        metaData.setSampleTitles((String[]) titles.toArray(new String[titles.size()]));
     }
 
     /**
@@ -414,8 +415,8 @@ public class SNSController {
      * @throws Exception
      */
     private Topic[] getAssociatedTopics(Topic baseTopic, String[] typePattern,
-            HashMap<String, String> associationTypes, int[] totalSize, boolean expired) throws Exception {
-        ArrayList<Topic> resultList = new ArrayList<Topic>();
+            Map associationTypes, int[] totalSize, boolean expired) throws Exception {
+        List resultList = new ArrayList();
 
         final TopicMapFragment mapFragment = this.fServiceClient.getPSI(baseTopic.getId(), 1, null);
         final Topic[] topics = mapFragment.getTopicMap().getTopic();
@@ -458,7 +459,7 @@ public class SNSController {
                 }
             }
 
-            return resultList.toArray(new Topic[resultList.size()]);
+            return (Topic[]) resultList.toArray(new Topic[resultList.size()]);
         }
 
         return null;
@@ -529,8 +530,8 @@ public class SNSController {
      * @throws Exception
      */
     private de.ingrid.iplug.sns.utils.Topic[] copyToTopicArray(Topic[] topics,
-            HashMap<String, String> associationTypes, int maxResults, String plugId, String lang) throws Exception {
-        ArrayList<de.ingrid.iplug.sns.utils.Topic> ingridTopics = new ArrayList<de.ingrid.iplug.sns.utils.Topic>();
+            Map associationTypes, int maxResults, String plugId, String lang) throws Exception {
+        List ingridTopics = new ArrayList();
 
         if (null != topics) {
             int count = Math.min(maxResults, topics.length);
@@ -539,14 +540,14 @@ public class SNSController {
                 if (!topicId.equals("_Interface0")) {
                     String associationType = "";
                     if ((null != associationTypes) && (associationTypes.containsKey(topicId))) {
-                        associationType = associationTypes.get(topicId);
+                        associationType = (String) associationTypes.get(topicId);
                     }
                     ingridTopics.add(buildTopicFromTopic(topics[i], plugId, associationType, lang));
                 }
             }
         }
 
-        return ingridTopics.toArray(new de.ingrid.iplug.sns.utils.Topic[ingridTopics.size()]);
+        return (de.ingrid.iplug.sns.utils.Topic[]) ingridTopics.toArray(new de.ingrid.iplug.sns.utils.Topic[ingridTopics.size()]);
     }
 
     /**
@@ -810,15 +811,15 @@ public class SNSController {
             }
             Topic[] topics = mapFragment.getTopicMap().getTopic();
             if (!expired) {
-                ArrayList<Topic> expiredTopics = new ArrayList<Topic>();
-                for (Topic topic : topics) {
-                    Date expiredDate = getExpiredDate(topic);
+                List expiredTopics = new ArrayList();
+                for (int i = 0;i<topics.length;i++) {
+                    Date expiredDate = getExpiredDate(topics[i]);
                     if ((null != expiredDate) && expiredDate.before(new Date())) {
                         continue;
                     }
-                    expiredTopics.add(topic);
+                    expiredTopics.add(topics[i]);
                 }
-                topics = expiredTopics.toArray(new Topic[expiredTopics.size()]);
+                topics = (Topic[]) expiredTopics.toArray(new Topic[expiredTopics.size()]);
             }
             result = copyToTopicArray(topics, null, length, plugId, "bla");
         }
@@ -852,13 +853,13 @@ public class SNSController {
         Date result = null;
         Occurrence[] occurrences = topic.getOccurrence();
         if (null != occurrences) {
-            for (Occurrence occurrence : occurrences) {
-                final InstanceOf instanceOf = occurrence.getInstanceOf();
+            for (int i =0;i<occurrences.length;i++) {
+                final InstanceOf instanceOf = occurrences[i].getInstanceOf();
                 if (instanceOf != null) {
                     final String type = instanceOf.getTopicRef().getHref();
                     if (type.endsWith("expiredOcc")) {
                         try {
-                            result = expiredDateParser.parse(occurrence.getResourceData().get_value());
+                            result = expiredDateParser.parse(occurrences[i].getResourceData().get_value());
                         } catch (ParseException e) {
                             log.error("Not expected date format in sns expiredOcc.", e);
                         }

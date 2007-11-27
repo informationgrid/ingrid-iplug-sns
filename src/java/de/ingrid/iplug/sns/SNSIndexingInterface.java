@@ -8,6 +8,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -35,13 +36,13 @@ public class SNSIndexingInterface {
 
     private Topic[] fTopics = new Topic[0];
 
-    private ArrayList<Temporal> fTemporal = new ArrayList<Temporal>();
+    private List fTemporal = new ArrayList();
 
-    private ArrayList<Wgs84Box> fWgs84Box = new ArrayList<Wgs84Box>();
+    private List fWgs84Box = new ArrayList();
 
     private String fLanguage;
 
-    private ArrayList<String> fTopicIds = new ArrayList<String>();
+    private List fTopicIds = new ArrayList();
 
     /**
      * Interface for SN service connection handling.
@@ -158,13 +159,13 @@ public class SNSIndexingInterface {
     }
 
     private String[] getBasenames(Topic[] topics) {
-        ArrayList<String> result = new ArrayList<String>();
+        List result = new ArrayList();
 
         for (int i = 0; i < topics.length; i++) {
             result.add(topics[i].getBaseName(0).getBaseNameString().get_value());
         }
 
-        return result.toArray(new String[result.size()]);
+        return (String[]) result.toArray(new String[result.size()]);
     }
 
     private void getReferences() throws Exception, ParseException {
@@ -264,7 +265,7 @@ public class SNSIndexingInterface {
             getReferences();
         }
 
-        return this.fTopicIds.toArray(new String[this.fTopicIds.size()]);
+        return (String[]) this.fTopicIds.toArray(new String[this.fTopicIds.size()]);
     }
 
     /**
@@ -281,7 +282,7 @@ public class SNSIndexingInterface {
             getReferences();
         }
 
-        return this.fTemporal.toArray(new Temporal[this.fTemporal.size()]);
+        return (Temporal[]) this.fTemporal.toArray(new Temporal[this.fTemporal.size()]);
     }
 
     /**
@@ -296,6 +297,6 @@ public class SNSIndexingInterface {
             getReferences();
         }
 
-        return this.fWgs84Box.toArray(new Wgs84Box[this.fWgs84Box.size()]);
+        return (Wgs84Box[]) this.fWgs84Box.toArray(new Wgs84Box[this.fWgs84Box.size()]);
     }
 }
