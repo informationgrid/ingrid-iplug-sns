@@ -182,6 +182,14 @@
         </dependency>
 	  </dependencies>
     <build>
+        <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.4</source>
+                    <target>1.4</target>
+                </configuration>
+            </plugin>
         <sourceDirectory>src/java</sourceDirectory>
         <unitTestSourceDirectory>src/test</unitTestSourceDirectory>
         <unitTest>
