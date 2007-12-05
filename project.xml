@@ -108,7 +108,7 @@
 	    <version>1.4</version>
         <type>jar</type>
         <url>http://ibiblio.org/maven</url>
-      </dependency>		
+      </dependency>
       <dependency>
         <groupId>xerces</groupId>
         <artifactId>xerces</artifactId>
