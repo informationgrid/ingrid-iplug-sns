@@ -221,6 +221,7 @@ public class SnsPlug implements IPlug {
         this.fLanguage = (String) plugDescription.get("language");
         this.fServiceUrl = (String) plugDescription.get("serviceUrl");
         this.fMaximalAnalyzedWord = plugDescription.getInt("maxWordAnalyzing");
+        String nativeKeyPrefix = (String) plugDescription.get("nativeKeyPrefix");
 
         if ((this.fServiceUrl == null) || (this.fServiceUrl.trim().equals(""))) {
             this.fServiceUrl = "http://www.semantic-network.de/service-xtm-2.0/xtm/soap";
@@ -228,7 +229,10 @@ public class SnsPlug implements IPlug {
 
         SNSClient snsClient = new SNSClient(this.fUserName, this.fPassWord, this.fLanguage, new URL(this.fServiceUrl));
         snsClient.setTimeout(180000);
-        this.fSnsController = new SNSController(snsClient);
+        if (null == nativeKeyPrefix) {
+            nativeKeyPrefix = "ags:";
+        }
+        this.fSnsController = new SNSController(snsClient, nativeKeyPrefix);
     }
 
     /**

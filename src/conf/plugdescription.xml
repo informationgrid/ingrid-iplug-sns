@@ -78,4 +78,6 @@
     <list>
         <string>bu_uba</string>
     </list>
+    <string>nativeKeyPrefix</string>
+    <string>ags:</string>
 </de.ingrid.utils.PlugDescription>

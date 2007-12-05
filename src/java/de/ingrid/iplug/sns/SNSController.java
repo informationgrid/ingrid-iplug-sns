@@ -23,6 +23,7 @@ import com.slb.taxi.webservice.xtm.stubs.xtm.Topic;
 
 import de.ingrid.iplug.sns.utils.DetailedTopic;
 import de.ingrid.utils.IngridHit;
+import de.ingrid.utils.tool.SNSUtil;
 
 /**
  * A API to access the main SNS WebService functionality
@@ -57,13 +58,17 @@ public class SNSController {
     private static final String[] fAdministrativeTypes = new String[] { "communityType", "districtType", "quarterType",
             "stateType", "nationType" };
 
+    private String fNativeKeyPrefix;
+
     /**
      * Constructor for SNS controller.
      * 
      * @param client
+     * @param nativeKeyPrefix
      */
-    public SNSController(SNSClient client) {
+    public SNSController(SNSClient client, String nativeKeyPrefix) {
         this.fServiceClient = client;
+        this.fNativeKeyPrefix = nativeKeyPrefix;
     }
 
     /**
@@ -213,7 +218,7 @@ public class SNSController {
      */
     private DetailedTopic[] toDetailedTopicArray(Topic[] topics, String plugId, String lang, boolean expired) {
         final List returnList = new ArrayList();
-        for (int i=0;i<topics.length;i++) {
+        for (int i = 0; i < topics.length; i++) {
             if (!topics[i].getInstanceOf()[0].getTopicRef().getHref().endsWith(SYNONYM_TYPE)) {
                 if (!expired) {
                     Date expiredDate = getExpiredDate(topics[i]);
@@ -252,7 +257,7 @@ public class SNSController {
         }
 
         String summary = title + ' ' + topic.getInstanceOf()[0].getTopicRef().getHref();
-        DetailedTopic metaData = new DetailedTopic(plugId, topicId.hashCode(), topicId, title, summary);
+        DetailedTopic metaData = new DetailedTopic(plugId, topicId.hashCode(), topicId, title, summary, null);
         InstanceOf[] instanceOfs = topic.getInstanceOf();
         for (int i = 0; i < instanceOfs.length; i++) {
             String href = instanceOfs[i].getTopicRef().getHref();
@@ -263,6 +268,11 @@ public class SNSController {
         pushSamples(metaData, topic, lang);
         pushOccurensie(DetailedTopic.DESCRIPTION_OCC, topic, metaData, lang);
         pushOccurensie(DetailedTopic.ASSOCIATED_OCC, topic, metaData, lang);
+        pushOccurensie(de.ingrid.iplug.sns.utils.Topic.NATIVEKEY_OCC, topic, metaData, lang);
+        String topicNativeKey = metaData.getTopicNativeKey();
+        if (null != topicNativeKey) {
+            metaData.setTopicNativeKey(SNSUtil.transformSpacialReference(this.fNativeKeyPrefix, topicNativeKey));
+        }
 
         if (containsTypes(fAdministrativeTypes, topic.getInstanceOf()[0].getTopicRef().getHref())) {
             metaData.setAdministrativeID(topic.getId());
@@ -359,7 +369,8 @@ public class SNSController {
         }
     }
 
-    private synchronized void pushOccurensie(String occType, Topic topic, DetailedTopic detailedTopic, String lang) {
+    private synchronized void pushOccurensie(String occType, Topic topic,
+            de.ingrid.iplug.sns.utils.Topic detailedTopic, String lang) {
         Occurrence[] occurrences = topic.getOccurrence();
         String type = null;
         if (occurrences != null) {
@@ -385,7 +396,7 @@ public class SNSController {
      * @param plugId
      * @param associationType
      * @param lang
-     * @return a ingrid topic from a Topic
+     * @return A ingrid topic from a Topic.
      */
     private synchronized de.ingrid.iplug.sns.utils.Topic buildTopicFromTopic(Topic topic, String plugId,
             String associationType, String lang) {
@@ -403,7 +414,14 @@ public class SNSController {
 
         String summary = title + ' ' + topic.getInstanceOf()[0].getTopicRef().getHref();
         String topicId = topic.getId();
-        return new de.ingrid.iplug.sns.utils.Topic(plugId, topicId.hashCode(), topicId, title, summary, associationType);
+        de.ingrid.iplug.sns.utils.Topic result = new de.ingrid.iplug.sns.utils.Topic(plugId, topicId.hashCode(),
+                topicId, title, summary, associationType);
+        pushOccurensie(de.ingrid.iplug.sns.utils.Topic.NATIVEKEY_OCC, topic, result, lang);
+        String topicNativeKey = result.getTopicNativeKey();
+        if (null != topicNativeKey) {
+            result.setTopicNativeKey(SNSUtil.transformSpacialReference(this.fNativeKeyPrefix, topicNativeKey));
+        }
+        return result;
     }
 
     /**
@@ -414,8 +432,8 @@ public class SNSController {
      * @return Topic array of associated topics filter by the given patterns
      * @throws Exception
      */
-    private Topic[] getAssociatedTopics(Topic baseTopic, String[] typePattern,
-            Map associationTypes, int[] totalSize, boolean expired) throws Exception {
+    private Topic[] getAssociatedTopics(Topic baseTopic, String[] typePattern, Map associationTypes, int[] totalSize,
+            boolean expired) throws Exception {
         List resultList = new ArrayList();
 
         final TopicMapFragment mapFragment = this.fServiceClient.getPSI(baseTopic.getId(), 1, null);
@@ -529,8 +547,8 @@ public class SNSController {
      * @return An array of Topic with the given length.
      * @throws Exception
      */
-    private de.ingrid.iplug.sns.utils.Topic[] copyToTopicArray(Topic[] topics,
-            Map associationTypes, int maxResults, String plugId, String lang) throws Exception {
+    private de.ingrid.iplug.sns.utils.Topic[] copyToTopicArray(Topic[] topics, Map associationTypes, int maxResults,
+            String plugId, String lang) throws Exception {
         List ingridTopics = new ArrayList();
 
         if (null != topics) {
@@ -547,7 +565,8 @@ public class SNSController {
             }
         }
 
-        return (de.ingrid.iplug.sns.utils.Topic[]) ingridTopics.toArray(new de.ingrid.iplug.sns.utils.Topic[ingridTopics.size()]);
+        return (de.ingrid.iplug.sns.utils.Topic[]) ingridTopics
+                .toArray(new de.ingrid.iplug.sns.utils.Topic[ingridTopics.size()]);
     }
 
     /**
@@ -796,7 +815,7 @@ public class SNSController {
      *            The plugId as string.
      * @param totalSize
      *            Has the total size of the query set after the call.
-     * @param expired 
+     * @param expired
      * @return A topic array from similar location topics.
      * @throws Exception
      */
@@ -812,7 +831,7 @@ public class SNSController {
             Topic[] topics = mapFragment.getTopicMap().getTopic();
             if (!expired) {
                 List expiredTopics = new ArrayList();
-                for (int i = 0;i<topics.length;i++) {
+                for (int i = 0; i < topics.length; i++) {
                     Date expiredDate = getExpiredDate(topics[i]);
                     if ((null != expiredDate) && expiredDate.before(new Date())) {
                         continue;
@@ -853,7 +872,7 @@ public class SNSController {
         Date result = null;
         Occurrence[] occurrences = topic.getOccurrence();
         if (null != occurrences) {
-            for (int i =0;i<occurrences.length;i++) {
+            for (int i = 0; i < occurrences.length; i++) {
                 final InstanceOf instanceOf = occurrences[i].getInstanceOf();
                 if (instanceOf != null) {
                     final String type = instanceOf.getTopicRef().getHref();

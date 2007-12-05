@@ -73,6 +73,9 @@ public class SNSIndexingInterface {
         this.fSNSClient.setTimeout(timeout);
     }
 
+    /**
+     * @param prefix
+     */
     public void setGemeindeKennzifferPrefix(String prefix) {
         this.fGemeindeKennzifferPrefix = prefix;
     }

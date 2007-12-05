@@ -52,7 +52,7 @@ public class SNSControllerTest extends TestCase {
      * @throws Exception
      */
     public void testTopicsForTerm() throws Exception {
-        SNSController controller = new SNSController(fClient);
+        SNSController controller = new SNSController(fClient, "ags:");
         Topic[] topicsForTerm = controller.getTopicsForTerm("Wasser", 0, 1000, "aId", new int[1], "de", false);
         assertTrue(topicsForTerm.length > 0);
         for (int i = 0; i < topicsForTerm.length; i++) {
@@ -67,7 +67,7 @@ public class SNSControllerTest extends TestCase {
      * @throws Exception
      */
     public void testGetAssociatedTopics() throws Exception {
-        SNSController controller = new SNSController(fClient);
+        SNSController controller = new SNSController(fClient, "ags:");
         Topic[] topicsForTerm = controller.getTopicsForTopic("Wasser", 23, "aId", new int[1], false);
         assertNull(topicsForTerm);
         topicsForTerm = controller.getTopicsForTopic(VALID_TOPIC_ID, 23, "aId", new int[1], false);
@@ -84,7 +84,7 @@ public class SNSControllerTest extends TestCase {
      * @throws Exception
      */
     public void testGetDocumentRelatedTopics() throws Exception {
-        SNSController controller = new SNSController(fClient);
+        SNSController controller = new SNSController(fClient, "ags:");
         String text = "Tschernobyl liegt in Halle gefunden";
         DetailedTopic[] topics = controller.getTopicsForText(text, 100, "aPlugId", "de", new int[1], false);
         assertNotNull(topics);
@@ -100,7 +100,7 @@ public class SNSControllerTest extends TestCase {
      * @throws Exception
      */
     public void testGetDetails() throws Exception {
-        SNSController controller = new SNSController(fClient);
+        SNSController controller = new SNSController(fClient, "ags:");
         Topic topic = new Topic();
         topic.setTopicID("t47098a_10220d1bc3e_4ee1");
 
@@ -142,18 +142,20 @@ public class SNSControllerTest extends TestCase {
         bla = (String) dt.get(DetailedTopic.DESCRIPTION_OCC);
         System.out.println(bla);
     }
-    
+
     /**
      * @throws Exception
      */
     public void testGetAssociatedTopicsExpired() throws Exception {
-        SNSController controller = new SNSController(fClient);
+        SNSController controller = new SNSController(fClient, "ags:");
         int[] totalSize = new int[1];
-        Topic[] topicsForTopic = controller.getTopicSimilarLocationsFromTopic("GEMEINDE0325300005", 1000, "aId", totalSize, false);
+        Topic[] topicsForTopic = controller.getTopicSimilarLocationsFromTopic("GEMEINDE0325300005", 1000, "aId",
+                totalSize, false);
         assertNotNull(topicsForTopic);
         assertEquals(9, topicsForTopic.length);
 
-        topicsForTopic = controller.getTopicSimilarLocationsFromTopic("GEMEINDE0325300005", 1000, "aId", totalSize, true);
+        topicsForTopic = controller.getTopicSimilarLocationsFromTopic("GEMEINDE0325300005", 1000, "aId", totalSize,
+                true);
         assertNotNull(topicsForTopic);
         assertEquals(17, topicsForTopic.length);
     }
