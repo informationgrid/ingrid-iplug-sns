@@ -1,41 +1,81 @@
 <de.ingrid.utils.PlugDescription>
-    <int>19</int>
-    <string>personPhone</string>
-    <string>0345 5 222 702</string>
-    <string>personName</string>
-    <string>Frank</string>
-    <string>proxyServiceUrl</string>
-    <string>socket://localhost:8478</string>
+    <int>27</int>
+    <string>dataType</string>
+    <list>
+        <string>sns</string>
+    </list>
+    <string>IPLUG_ADMIN_PASSWORD</string>
+    <string>admin</string>
     <string>personTitle</string>
-    <string></string>
-    <string>connection</string>
-    <string></string>
+    <string>Dr.</string>
     <string>workingDirectory</string>
-    <string>./</string>
-    <string>iPlugClass</string>
-    <string>de.ingrid.iplug.sns.SnsPlug</string>
-    <string>plugId</string>
-    <string>myID-dsc</string>
-    <string>dataSourceDescription</string>
-    <string>das ist die LDB Wasser</string>
+    <string>/opt/ingrid/start-ingrid-iplug-sns-1.1.0-SNAPSHOT/.</string>
     <string>personSureName</string>
-    <string>Henze</string>
+    <string>Ruther</string>
+    <string>dataSourceDescription</string>
+    <string></string>
+    <string>IPLUG_ADMIN_GUI_URL</string>
+    <string>http://213.144.28.209/ingrid-admin-sns</string>
     <string>dataSourceName</string>
-    <string>Wasser Datenbank</string>
-    <string>organisationAbbr</string>
-    <string>eB</string>
-    <string>personMail</string>
-    <string>fh@media-style.com</string>
-    <string>organisation</string>
-    <string>Meine Behrde</string>
-    <string>password</string>
-    <string>m3d1asyl3</string>
-    <string>plugId</string>
-    <string>aPlugId</string>
+    <string>SNS</string>
+    <string>partner</string>
+    <list>
+        <string>bund</string>
+    </list>
+    <string>IPLUG_ADMIN_GUI_PORT</string>
+    <int>8082</int>
     <string>username</string>
     <string>ms</string>
+    <string>personMail</string>
+    <string>maria@kst.de</string>
+    <string>organisation</string>
+    <string>Umweltbundesamt</string>
+    <string>ranking</string>
+    <list>
+        <string>off</string>
+    </list>
+    <string>personPhone</string>
+    <string>123456789</string>
+    <string>password</string>
+    <string>m3d1asyl3</string>
+    <string>personName</string>
+    <string>Maria</string>
     <string>maxWordAnalyzing</string>
-    <int>100</int>
+    <int>1000</int>
+    <string>proxyServiceUrl</string>
+    <string>/torwald-group:torwald-iplug-sns</string>
+    <string>fields</string>
+    <list>
+        <string>lang</string>
+        <string>t0</string>
+        <string>t1</string>
+        <string>t2</string>
+        <string>eventtype</string>
+        <string>filter</string>
+        <string>lang</string>
+        <string>t0</string>
+        <string>t1</string>
+        <string>t2</string>
+        <string>eventtype</string>
+        <string>filter</string>
+        <string>expired</string>
+    </list>
     <string>language</string>
     <string>de</string>
+    <string>serviceUrl</string>
+    <string>http://minerva-cgn.sema.de/service-xtm-2.0/xtm/soap</string>
+    <string>organisationAbbr</string>
+    <string>bu_uba</string>
+    <string>busUrls</string>
+    <list>
+        <string>/torwald-group:torwald-ibus</string>
+    </list>
+    <string>md5Hash</string>
+    <string>/kug-group:sns</string>
+    <string>iPlugClass</string>
+    <string>de.ingrid.iplug.sns.SnsPlug</string>
+    <string>provider</string>
+    <list>
+        <string>bu_uba</string>
+    </list>
 </de.ingrid.utils.PlugDescription>

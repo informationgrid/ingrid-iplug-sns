@@ -44,6 +44,8 @@ public class SNSIndexingInterface {
 
     private List fTopicIds = new ArrayList();
 
+    private String fGemeindeKennzifferPrefix = "ags:";
+
     /**
      * Interface for SN service connection handling.
      * 
@@ -69,6 +71,10 @@ public class SNSIndexingInterface {
      */
     public void setTimeout(final int timeout) {
         this.fSNSClient.setTimeout(timeout);
+    }
+
+    public void setGemeindeKennzifferPrefix(String prefix) {
+        this.fGemeindeKennzifferPrefix = prefix;
     }
 
     /**
@@ -127,7 +133,8 @@ public class SNSIndexingInterface {
     /**
      * All buzzwords to the given URL. You must call this method first to get results from
      * <code>getReferencesToTime</code> and <code>getReferencesToSpace</code>.
-     * @param url 
+     * 
+     * @param url
      *            The url to analyze.
      * @param maxToAnalyzeWords
      *            The first <code>maxToAnalyzeWords</code> words of the document that should be analyzed.
@@ -176,7 +183,7 @@ public class SNSIndexingInterface {
                     final String baseName = this.fTopics[i].getBaseName(0).getBaseNameString().get_value();
                     this.fTopicIds.add(this.fTopics[i].getId());
                     final Temporal temporal = new Temporal();
-                    final Wgs84Box wgs84Box = new Wgs84Box(baseName, 0, 0 ,0, 0, "");
+                    final Wgs84Box wgs84Box = new Wgs84Box(baseName, 0, 0, 0, 0, "");
                     boolean wgs84BoxSet = false;
                     for (int k = 0; k < occ.length; k++) {
                         final ResourceData data = occ[k].getResourceData();
@@ -212,7 +219,8 @@ public class SNSIndexingInterface {
                                     wgs84BoxSet = true;
                                 }
                             } else if (topicRef.endsWith("nativeKeyOcc")) {
-                                final String gemeindekennziffer = SNSUtil.transformSpacialReference(data.get_value());
+                                final String gemeindekennziffer = SNSUtil.transformSpacialReference(
+                                        this.fGemeindeKennzifferPrefix, data.get_value());
                                 wgs84Box.setGemeindekennziffer(gemeindekennziffer);
                                 wgs84BoxSet = true;
                             }
