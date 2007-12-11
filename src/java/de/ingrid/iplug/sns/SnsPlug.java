@@ -126,6 +126,15 @@ public class SnsPlug implements IPlug {
                                 toDate, start, length, this.fPlugId, totalSize, lang);
                     }
                     break;
+                case Topic.TOPIC_HIERACHY:
+                    final String associationName = (String) query.get("association");
+                    final long depth = Long.valueOf((String) query.get("depth")).longValue();
+                    final String direction = (String) query.get("direction");
+                    final boolean includeSiblings = Boolean.valueOf((String) query.get("includeSiblings"))
+                            .booleanValue();
+                    hitsTemp = this.fSnsController.getTopicHierachy(totalSize, associationName, depth, direction,
+                            includeSiblings, lang, getSearchTerm(query), expired, this.fPlugId);
+                    break;
                 default:
                     log.error("Unknown topic request type.");
                     break;
@@ -223,11 +232,13 @@ public class SnsPlug implements IPlug {
         this.fMaximalAnalyzedWord = plugDescription.getInt("maxWordAnalyzing");
         String nativeKeyPrefix = (String) plugDescription.get("nativeKeyPrefix");
 
+        SNSClient snsClient = null;
         if ((this.fServiceUrl == null) || (this.fServiceUrl.trim().equals(""))) {
-            this.fServiceUrl = "http://www.semantic-network.de/service-xtm-2.0/xtm/soap";
+            snsClient = new SNSClient(this.fUserName, this.fPassWord, this.fLanguage);
+        } else {
+            snsClient = new SNSClient(this.fUserName, this.fPassWord, this.fLanguage, new URL(this.fServiceUrl));
         }
 
-        SNSClient snsClient = new SNSClient(this.fUserName, this.fPassWord, this.fLanguage, new URL(this.fServiceUrl));
         snsClient.setTimeout(180000);
         if (null == nativeKeyPrefix) {
             nativeKeyPrefix = "ags:";

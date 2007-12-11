@@ -422,13 +422,38 @@ public class SnsPlugTest extends TestCase {
         query.addField(new FieldQuery(true, false, "lang", "en"));
         query.putInt(Topic.REQUEST_TYPE, Topic.SIMILARTERMS_FROM_TOPIC);
         IngridHits hits = plug.search(query, 0, 600);
-        assertEquals(145, hits.length());
+        assertEquals(28, hits.length());
         IngridHit[] hitsArray = hits.getHits();
         assertNotNull(hitsArray);
-        assertTrue(hitsArray.length > 100);
+        assertEquals(28, hitsArray.length);
         for (int i = 0; i < hitsArray.length; i++) {
             Topic hit = (Topic) hitsArray[i];
             System.out.println(hit.getTopicName() + " -- " + hit.getTopicID() + " -- " + hit.getSummary());
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testGETHIERACHY() throws Exception {
+        SnsPlug plug = new SnsPlug(fPlugDescription);
+        String q = "uba_thes_40282";
+        IngridQuery query = QueryStringParser.parse(q);
+        query.addField(new FieldQuery(true, false, "datatype", IDataTypes.SNS));
+        query.addField(new FieldQuery(true, false, "lang", "de"));
+        query.put("includeSiblings", "false");
+        query.put("association", "narrowerTermAssoc");
+        query.put("depth", "10000");
+        query.put("direction", "up");
+        query.putInt(Topic.REQUEST_TYPE, Topic.TOPIC_HIERACHY);
+        IngridHits hits = plug.search(query, 0, 600);
+        assertEquals(2, hits.length());
+        IngridHit[] hitsArray = hits.getHits();
+        assertNotNull(hitsArray);
+        assertEquals(2, hitsArray.length);
+        for (int i = 0; i < hitsArray.length; i++) {
+            Topic hit = (Topic) hitsArray[i];
+            System.out.println(hit.getTopicAssoc());
         }
     }
 }

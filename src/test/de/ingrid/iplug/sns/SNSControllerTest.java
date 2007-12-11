@@ -6,6 +6,9 @@
 
 package de.ingrid.iplug.sns;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import junit.framework.TestCase;
 import de.ingrid.iplug.sns.utils.DetailedTopic;
 import de.ingrid.iplug.sns.utils.Topic;
@@ -158,5 +161,46 @@ public class SNSControllerTest extends TestCase {
                 true);
         assertNotNull(topicsForTopic);
         assertEquals(17, topicsForTopic.length);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testGetHierachy() throws Exception {
+        SNSController controller = new SNSController(fClient, "ags:");
+
+        String topicID = "uba_thes_40282";
+        int[] totalSize = new int[1];
+        Topic[] topicsForTopic = controller.getTopicHierachy(totalSize, "narrowerTermAssoc", 1000, "down", false, "de",
+                topicID, false, "pid");
+        assertNotNull(topicsForTopic);
+        assertEquals(406, topicsForTopic.length);
+        for (int i = 0; i < topicsForTopic.length; i++) {
+            System.out.println("ti:" + topicsForTopic[i].getTopicID());
+            System.out.println("tn:" + topicsForTopic[i].getTopicName());
+            System.out.println("ta:" + topicsForTopic[i].getTopicAssoc());
+            System.out.println("tk:" + topicsForTopic[i].getTopicNativeKey());
+            System.out.println("tt:" + topicsForTopic[i].getTitle());
+            System.out.println("ts:" + topicsForTopic[i].getSummary());
+            System.out.println("---");
+        }
+        topicsForTopic = controller.getTopicHierachy(totalSize, "narrowerTermAssoc", 1000, "up", false, "de", topicID,
+                false, "pid");
+        assertNotNull(topicsForTopic);
+        assertEquals(2, topicsForTopic.length);
+        List resultList = new ArrayList();
+        for (int i = 0; i < topicsForTopic.length; i++) {
+            resultList.add(topicsForTopic[i].getTopicAssoc());
+            resultList.add(topicsForTopic[i].getTopicName());
+            resultList.add(topicsForTopic[i].getTopicID());
+        }
+        assertTrue(resultList.contains("Atmosphäre und Klima"));
+        assertTrue(resultList.contains("Luft"));
+        assertTrue(resultList
+                .contains("http://www.semantic-network.de/xmlns/XTM/2005/2.0/sns-classes_2.0.xtm#widerTermMember"));
+        assertTrue(resultList
+                .contains("http://www.semantic-network.de/xmlns/XTM/2005/2.0/sns-classes_2.0.xtm#narrowerTermMember"));
+        assertTrue(resultList.contains("uba_thes_49251"));
+        assertTrue(resultList.contains("uba_thes_40282"));
     }
 }

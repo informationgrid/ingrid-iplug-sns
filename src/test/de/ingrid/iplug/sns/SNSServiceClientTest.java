@@ -11,6 +11,7 @@ import junit.framework.TestCase;
 import com.slb.taxi.webservice.xtm.stubs.FieldsType;
 import com.slb.taxi.webservice.xtm.stubs.SearchType;
 import com.slb.taxi.webservice.xtm.stubs.TopicMapFragment;
+import com.slb.taxi.webservice.xtm.stubs.xtm.Topic;
 
 /**
  * created on 21.07.2005
@@ -148,5 +149,29 @@ public class SNSServiceClientTest extends TestCase {
         TopicMapFragment fragment = adapter.findEvents("query", true, SearchType.contains, new String[] { "/event/" },
                 FieldsType.allfields, 0, "1976-08-31", "de", 10);
         assertNotNull(fragment);
+    }
+
+    /**
+     * @throws Exception
+     * 
+     */
+    public void testGetHierachy() throws Exception {
+        String topicID = "uba_thes_40282";
+        try {
+            TopicMapFragment hierachy = adapter.getHierachy("narrowerTermAssoc", 200, "down", true, "de", topicID);
+            assertNotNull(hierachy);
+            Topic[] topics = hierachy.getTopicMap().getTopic();
+            assertEquals(190, topics.length);
+        } catch (Exception e) {
+            fail("No exception should be thrown: " + e.getMessage());
+        }
+        try {
+            TopicMapFragment hierachy = adapter.getHierachy("narrowerTermAssoc", 200, "up", false, "de", topicID);
+            assertNotNull(hierachy);
+            Topic[] topics = hierachy.getTopicMap().getTopic();
+            assertEquals(2, topics.length);
+        } catch (Exception e) {
+            fail("No exception should be thrown: " + e.getMessage());
+        }
     }
 }

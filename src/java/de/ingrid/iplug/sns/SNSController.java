@@ -19,6 +19,7 @@ import com.slb.taxi.webservice.xtm.stubs.xtm.BaseName;
 import com.slb.taxi.webservice.xtm.stubs.xtm.InstanceOf;
 import com.slb.taxi.webservice.xtm.stubs.xtm.Member;
 import com.slb.taxi.webservice.xtm.stubs.xtm.Occurrence;
+import com.slb.taxi.webservice.xtm.stubs.xtm.Scope;
 import com.slb.taxi.webservice.xtm.stubs.xtm.Topic;
 
 import de.ingrid.iplug.sns.utils.DetailedTopic;
@@ -405,21 +406,26 @@ public class SNSController {
         String title = baseNames[0].getBaseNameString().get_value();
 
         for (int i = 0; i < baseNames.length; i++) {
-            final String href = baseNames[i].getScope().getTopicRef()[0].getHref();
-            if (href.endsWith('#' + lang)) {
-                title = baseNames[i].getBaseNameString().get_value();
-                break;
+            final Scope scope = baseNames[i].getScope();
+            if (scope != null) {
+                final String href = scope.getTopicRef()[0].getHref();
+                if (href.endsWith('#' + lang)) {
+                    title = baseNames[i].getBaseNameString().get_value();
+                    break;
+                }
             }
         }
 
         String summary = title + ' ' + topic.getInstanceOf()[0].getTopicRef().getHref();
         String topicId = topic.getId();
         de.ingrid.iplug.sns.utils.Topic result = new de.ingrid.iplug.sns.utils.Topic(plugId, topicId.hashCode(),
-                topicId, title, summary, associationType);
+                topicId, title, summary, associationType, null);
         pushOccurensie(de.ingrid.iplug.sns.utils.Topic.NATIVEKEY_OCC, topic, result, lang);
         String topicNativeKey = result.getTopicNativeKey();
         if (null != topicNativeKey) {
             result.setTopicNativeKey(SNSUtil.transformSpacialReference(this.fNativeKeyPrefix, topicNativeKey));
+        } else {
+            result.setTopicNativeKey(topicId);
         }
         return result;
     }
@@ -887,5 +893,61 @@ public class SNSController {
             }
         }
         return result;
+    }
+
+    /**
+     * @param totalSize
+     * @param associationName
+     * @param depth
+     * @param direction
+     * @param includeSiblings
+     * @param lang
+     * @param root
+     * @param expired
+     * @param plugId
+     * @return
+     * @throws Exception
+     */
+    public de.ingrid.iplug.sns.utils.Topic[] getTopicHierachy(int[] totalSize, String associationName, long depth,
+            String direction, boolean includeSiblings, String lang, String root, boolean expired, String plugId)
+            throws Exception {
+        List resultList = new ArrayList();
+
+        final TopicMapFragment mapFragment = fServiceClient.getHierachy(associationName, depth, direction,
+                includeSiblings, lang, root);
+        final Topic[] topics = mapFragment.getTopicMap().getTopic();
+        if (null != mapFragment.getListExcerpt()) {
+            if (null != mapFragment.getListExcerpt().getTotalSize()) {
+                totalSize[0] = mapFragment.getListExcerpt().getTotalSize().intValue();
+            }
+        }
+        final Association[] associations = mapFragment.getTopicMap().getAssociation();
+        // iterate through associations to find the correct association types
+        if (associations != null) {
+            for (int i = 0; i < associations.length; i++) {
+                final Association association = associations[i];
+                // association members are the basetopic and it association
+                final Member[] members = association.getMember();
+                for (int j = 0; j < members.length; j++) {
+                    final Member member = members[j];
+                    // here is only the topic id available
+                    final String topicId = member.getTopicRef()[0].getHref();
+                    final String assocMember = member.getRoleSpec().getTopicRef().getHref();
+                    final Topic topicById = getTopicById(topics, topicId);
+                    if (topicById != null) {
+                        if (!expired) {
+                            Date expiredDate = getExpiredDate(topicById);
+                            if ((null != expiredDate) && expiredDate.before(new Date())) {
+                                continue;
+                            }
+                        }
+                        resultList.add(buildTopicFromTopic(topicById, plugId, assocMember, lang));
+                    }
+                }
+            }
+        }
+
+        return (de.ingrid.iplug.sns.utils.Topic[]) resultList.toArray(new de.ingrid.iplug.sns.utils.Topic[resultList
+                .size()]);
     }
 }

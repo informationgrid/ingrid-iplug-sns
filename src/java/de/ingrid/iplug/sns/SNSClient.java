@@ -14,6 +14,7 @@ import com.slb.taxi.webservice.xtm.stubs.AutoClassify;
 import com.slb.taxi.webservice.xtm.stubs.FieldsType;
 import com.slb.taxi.webservice.xtm.stubs.FindEvents;
 import com.slb.taxi.webservice.xtm.stubs.FindTopics;
+import com.slb.taxi.webservice.xtm.stubs.GetHierarchy;
 import com.slb.taxi.webservice.xtm.stubs.GetPSI;
 import com.slb.taxi.webservice.xtm.stubs.GetSimilarTerms;
 import com.slb.taxi.webservice.xtm.stubs.GetTypes;
@@ -208,7 +209,8 @@ public class SNSClient {
     /**
      * Sends a autoClassify request by using the underlying webservice client.<br>
      * All parameters will passed to a _autoClassify request object.
-     * @param url 
+     * 
+     * @param url
      *            The url to analyze.
      * @param analyzeMaxWords
      *            The maximal number of words to analyze for a document.
@@ -387,6 +389,39 @@ public class SNSClient {
         anniversary.setRefDate(date);
 
         return this.fXtmSoapPortType.anniversaryOp(anniversary);
+    }
+
+    /**
+     * Request to get a hierachical notion.
+     * 
+     * @param association
+     *            Name of association to map hierachy. For now only "narrowerTermAssoc" is supported.
+     * @param depth
+     *            Returned hierachy depth.
+     * @param direction
+     *            Direction of hierachy. "up" and "down" are supported.
+     * @param includeSiblings
+     *            Get all siblings of the topics even if they aren't in the hierachy.
+     * @param lang
+     *            Language of the request.
+     * @param root
+     *            Topic id of the start notion.
+     * @return The requestet hierachical notion.
+     * @throws RemoteException
+     */
+    public TopicMapFragment getHierachy(String association, long depth, String direction, boolean includeSiblings,
+            String lang, String root) throws RemoteException {
+        GetHierarchy hierarchy = new GetHierarchy();
+        hierarchy.setAssociation(association);
+        hierarchy.setDepth(BigInteger.valueOf(depth));
+        hierarchy.setDirection(direction);
+        hierarchy.setIncludeSiblings(Boolean.valueOf(includeSiblings));
+        hierarchy.setLang(lang);
+        hierarchy.setRoot(root);
+        hierarchy.setUser(this.fUserName);
+        hierarchy.setPassword(this.fPassword);
+
+        return this.fXtmSoapPortType.getHierarchyOp(hierarchy);
     }
 
     /**
