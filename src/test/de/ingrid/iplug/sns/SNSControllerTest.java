@@ -171,36 +171,42 @@ public class SNSControllerTest extends TestCase {
 
         String topicID = "uba_thes_40282";
         int[] totalSize = new int[1];
-        Topic[] topicsForTopic = controller.getTopicHierachy(totalSize, "narrowerTermAssoc", 1000, "down", false, "de",
+        Topic[] topicsHierachy = controller.getTopicHierachy(totalSize, "narrowerTermAssoc", 1000, "down", false, "de",
                 topicID, false, "pid");
-        assertNotNull(topicsForTopic);
-        assertEquals(406, topicsForTopic.length);
-        for (int i = 0; i < topicsForTopic.length; i++) {
-            System.out.println("ti:" + topicsForTopic[i].getTopicID());
-            System.out.println("tn:" + topicsForTopic[i].getTopicName());
-            System.out.println("ta:" + topicsForTopic[i].getTopicAssoc());
-            System.out.println("tk:" + topicsForTopic[i].getTopicNativeKey());
-            System.out.println("tt:" + topicsForTopic[i].getTitle());
-            System.out.println("ts:" + topicsForTopic[i].getSummary());
-            System.out.println("---");
-        }
-        topicsForTopic = controller.getTopicHierachy(totalSize, "narrowerTermAssoc", 1000, "up", false, "de", topicID,
+        assertNotNull(topicsHierachy);
+        assertEquals(1, topicsHierachy.length);
+        printHierachy(topicsHierachy[0].getSuccessors(), 0);
+
+        topicsHierachy = controller.getTopicHierachy(totalSize, "narrowerTermAssoc", 1000, "up", false, "de", topicID,
                 false, "pid");
-        assertNotNull(topicsForTopic);
-        assertEquals(2, topicsForTopic.length);
+        assertNotNull(topicsHierachy);
+        assertEquals(1, topicsHierachy.length);
         List resultList = new ArrayList();
-        for (int i = 0; i < topicsForTopic.length; i++) {
-            resultList.add(topicsForTopic[i].getTopicAssoc());
-            resultList.add(topicsForTopic[i].getTopicName());
-            resultList.add(topicsForTopic[i].getTopicID());
-        }
+        resultList.add(topicsHierachy[0].getTopicID());
+        resultList.add(topicsHierachy[0].getTopicName());
+        fill(topicsHierachy[0].getSuccessors(), resultList);
+
         assertTrue(resultList.contains("Atmosphäre und Klima"));
         assertTrue(resultList.contains("Luft"));
-        assertTrue(resultList
-                .contains("http://www.semantic-network.de/xmlns/XTM/2005/2.0/sns-classes_2.0.xtm#widerTermMember"));
-        assertTrue(resultList
-                .contains("http://www.semantic-network.de/xmlns/XTM/2005/2.0/sns-classes_2.0.xtm#narrowerTermMember"));
         assertTrue(resultList.contains("uba_thes_49251"));
         assertTrue(resultList.contains("uba_thes_40282"));
+    }
+
+    private void printHierachy(List successors, int tab) {
+        for (int i = 0; i < successors.size(); i++) {
+            for (int j = 0; j < tab; j++) {
+                System.out.print(' ');
+            }
+            System.out.println("ti:" + ((Topic) successors.get(i)).getTopicID());
+            printHierachy(((Topic) successors.get(i)).getSuccessors(), tab + 1);
+        }
+    }
+
+    private void fill(List topicsHierachy, List resultList) {
+        for (int i = 0; i < topicsHierachy.size(); i++) {
+            resultList.add(((Topic) topicsHierachy.get(i)).getTopicID());
+            resultList.add(((Topic) topicsHierachy.get(i)).getTopicName());
+            fill(((Topic) topicsHierachy.get(i)).getSuccessors(), resultList);
+        }
     }
 }

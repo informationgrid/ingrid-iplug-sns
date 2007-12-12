@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -911,8 +912,6 @@ public class SNSController {
     public de.ingrid.iplug.sns.utils.Topic[] getTopicHierachy(int[] totalSize, String associationName, long depth,
             String direction, boolean includeSiblings, String lang, String root, boolean expired, String plugId)
             throws Exception {
-        List resultList = new ArrayList();
-
         final TopicMapFragment mapFragment = fServiceClient.getHierachy(associationName, depth, direction,
                 includeSiblings, lang, root);
         final Topic[] topics = mapFragment.getTopicMap().getTopic();
@@ -923,8 +922,11 @@ public class SNSController {
         }
         final Association[] associations = mapFragment.getTopicMap().getAssociation();
         // iterate through associations to find the correct association types
+        Map topicMap = new ConcurrentHashMap();
         if (associations != null) {
             for (int i = 0; i < associations.length; i++) {
+                Topic predecessor = null;
+                Topic successor = null;
                 final Association association = associations[i];
                 // association members are the basetopic and it association
                 final Member[] members = association.getMember();
@@ -941,13 +943,43 @@ public class SNSController {
                                 continue;
                             }
                         }
-                        resultList.add(buildTopicFromTopic(topicById, plugId, assocMember, lang));
                     }
+                    if ("down".equals(direction)) {
+                        if (assocMember.endsWith("#narrowerTermMember")) {
+                            successor = topicById;
+                        }
+                        if (assocMember.endsWith("#widerTermMember")) {
+                            predecessor = topicById;
+                        }
+                    } else {
+                        if (assocMember.endsWith("#narrowerTermMember")) {
+                            predecessor = topicById;
+                        }
+                        if (assocMember.endsWith("#widerTermMember")) {
+                            successor = topicById;
+                        }
+                    }
+                }
+                if ((null != predecessor) && (null != successor)) {
+                    de.ingrid.iplug.sns.utils.Topic preTopic = null;
+                    if (topicMap.containsKey(predecessor.getId())) {
+                        preTopic = (de.ingrid.iplug.sns.utils.Topic) topicMap.get(predecessor.getId());
+                    } else {
+                        preTopic = buildTopicFromTopic(predecessor, plugId, "", lang);
+                        topicMap.put(predecessor.getId(), preTopic);
+                    }
+                    de.ingrid.iplug.sns.utils.Topic sucTopic = null;
+                    if (topicMap.containsKey(successor.getId())) {
+                        sucTopic = (de.ingrid.iplug.sns.utils.Topic) topicMap.get(successor.getId());
+                    } else {
+                        sucTopic = buildTopicFromTopic(successor, plugId, "", lang);
+                        topicMap.put(successor.getId(), sucTopic);
+                    }
+                    preTopic.addSuccessor(sucTopic);
                 }
             }
         }
 
-        return (de.ingrid.iplug.sns.utils.Topic[]) resultList.toArray(new de.ingrid.iplug.sns.utils.Topic[resultList
-                .size()]);
+        return new de.ingrid.iplug.sns.utils.Topic[] { (de.ingrid.iplug.sns.utils.Topic) topicMap.get(root) };
     }
 }
