@@ -7,7 +7,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -922,7 +921,7 @@ public class SNSController {
         }
         final Association[] associations = mapFragment.getTopicMap().getAssociation();
         // iterate through associations to find the correct association types
-        Map topicMap = new ConcurrentHashMap();
+        Map topicMap = new HashMap();
         if (associations != null) {
             for (int i = 0; i < associations.length; i++) {
                 Topic predecessor = null;
