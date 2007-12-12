@@ -921,7 +921,6 @@ public class SNSController {
         }
         final Association[] associations = mapFragment.getTopicMap().getAssociation();
         // iterate through associations to find the correct association types
-        boolean firstTime = true;
         Map topicMap = new HashMap();
         if (associations != null) {
             for (int i = 0; i < associations.length; i++) {
@@ -976,9 +975,16 @@ public class SNSController {
                         topicMap.put(successor.getId(), sucTopic);
                     }
                     preTopic.addSuccessor(sucTopic);
-                    if (firstTime) {
-                        root = preTopic.getTopicID();
-                        firstTime = false;
+                    if ("toplevel".equals(root) &&
+                            predecessor.getInstanceOf(0).getTopicRef().getHref().endsWith("#topTermType")) {
+                        de.ingrid.iplug.sns.utils.Topic topic = null;
+                        if (topicMap.containsKey(root)) {
+                            topic = (de.ingrid.iplug.sns.utils.Topic) topicMap.get(root);
+                        } else {
+                            topic = new de.ingrid.iplug.sns.utils.Topic(plugId, -1, root, null, null, null, null);
+                            topicMap.put(root, sucTopic);
+                        }
+                        topic.addSuccessor(preTopic);
                     }
                 }
             }

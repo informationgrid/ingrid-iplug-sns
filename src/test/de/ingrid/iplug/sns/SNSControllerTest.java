@@ -179,7 +179,7 @@ public class SNSControllerTest extends TestCase {
         printHierachy(topicsHierachy[0].getSuccessors(), 1);
 
         topicID = "uba_thes_40282";
-        topicsHierachy = controller.getTopicHierachy(totalSize, "narrowerTermAssoc", 1000, "up", false, "de", topicID,
+        topicsHierachy = controller.getTopicHierachy(totalSize, "narrowerTermAssoc", 5, "up", false, "de", topicID,
                 false, "pid");
         assertNotNull(topicsHierachy);
         assertEquals(1, topicsHierachy.length);
@@ -199,7 +199,7 @@ public class SNSControllerTest extends TestCase {
             for (int j = 0; j < tab; j++) {
                 System.out.print(' ');
             }
-            System.out.println("ti:" + ((Topic) successors.get(i)).getTopicID());
+            System.out.println(((Topic) successors.get(i)).getTopicID());
             printHierachy(((Topic) successors.get(i)).getSuccessors(), tab + 1);
         }
     }

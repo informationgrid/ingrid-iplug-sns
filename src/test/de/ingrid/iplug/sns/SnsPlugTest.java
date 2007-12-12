@@ -434,23 +434,23 @@ public class SnsPlugTest extends TestCase {
      */
     public void testGETHIERACHY() throws Exception {
         SnsPlug plug = new SnsPlug(fPlugDescription);
-        String q = "uba_thes_40282";
+        String q = "toplevel";
         IngridQuery query = QueryStringParser.parse(q);
         query.addField(new FieldQuery(true, false, "datatype", IDataTypes.SNS));
         query.addField(new FieldQuery(true, false, "lang", "de"));
         query.put("includeSiblings", "false");
         query.put("association", "narrowerTermAssoc");
-        query.put("depth", "10000");
-        query.put("direction", "up");
+        query.put("depth", "2");
+        query.put("direction", "down");
         query.putInt(Topic.REQUEST_TYPE, Topic.TOPIC_HIERACHY);
         IngridHits hits = plug.search(query, 0, 600);
-        assertEquals(2, hits.length());
+        assertEquals(1, hits.length());
         IngridHit[] hitsArray = hits.getHits();
         assertNotNull(hitsArray);
-        assertEquals(2, hitsArray.length);
+        assertEquals(1, hitsArray.length);
         for (int i = 0; i < hitsArray.length; i++) {
             Topic hit = (Topic) hitsArray[i];
-            System.out.println(hit.getTopicAssoc());
+            System.out.println(hit.size() + " : " + hit.getSuccessors());
         }
     }
 }
