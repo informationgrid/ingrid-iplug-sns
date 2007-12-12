@@ -169,14 +169,16 @@ public class SNSControllerTest extends TestCase {
     public void testGetHierachy() throws Exception {
         SNSController controller = new SNSController(fClient, "ags:");
 
-        String topicID = "uba_thes_40282";
+        String topicID = "toplevel";
         int[] totalSize = new int[1];
-        Topic[] topicsHierachy = controller.getTopicHierachy(totalSize, "narrowerTermAssoc", 1000, "down", false, "de",
+        Topic[] topicsHierachy = controller.getTopicHierachy(totalSize, "narrowerTermAssoc", 2, "down", false, "de",
                 topicID, false, "pid");
         assertNotNull(topicsHierachy);
         assertEquals(1, topicsHierachy.length);
-        printHierachy(topicsHierachy[0].getSuccessors(), 0);
+        System.out.println(topicsHierachy[0].getTopicID());
+        printHierachy(topicsHierachy[0].getSuccessors(), 1);
 
+        topicID = "uba_thes_40282";
         topicsHierachy = controller.getTopicHierachy(totalSize, "narrowerTermAssoc", 1000, "up", false, "de", topicID,
                 false, "pid");
         assertNotNull(topicsHierachy);

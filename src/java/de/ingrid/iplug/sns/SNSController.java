@@ -921,6 +921,7 @@ public class SNSController {
         }
         final Association[] associations = mapFragment.getTopicMap().getAssociation();
         // iterate through associations to find the correct association types
+        boolean firstTime = true;
         Map topicMap = new HashMap();
         if (associations != null) {
             for (int i = 0; i < associations.length; i++) {
@@ -975,6 +976,10 @@ public class SNSController {
                         topicMap.put(successor.getId(), sucTopic);
                     }
                     preTopic.addSuccessor(sucTopic);
+                    if (firstTime) {
+                        root = preTopic.getTopicID();
+                        firstTime = false;
+                    }
                 }
             }
         }
