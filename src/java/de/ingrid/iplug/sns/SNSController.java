@@ -404,13 +404,14 @@ public class SNSController {
         BaseName[] baseNames = topic.getBaseName();
         // Set a default if for the selected language nothing exists.
         String title = baseNames[0].getBaseNameString().get_value();
-
+        String topicLang = "en";
         for (int i = 0; i < baseNames.length; i++) {
             final Scope scope = baseNames[i].getScope();
             if (scope != null) {
                 final String href = scope.getTopicRef()[0].getHref();
                 if (href.endsWith('#' + lang)) {
                     title = baseNames[i].getBaseNameString().get_value();
+                    topicLang = lang;
                     break;
                 }
             }
@@ -427,6 +428,7 @@ public class SNSController {
         } else {
             result.setTopicNativeKey(topicId);
         }
+        result.setLanguage(topicLang);
         return result;
     }
 

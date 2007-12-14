@@ -6,6 +6,8 @@
 
 package de.ingrid.iplug.sns;
 
+import java.util.List;
+
 import junit.framework.TestCase;
 import de.ingrid.iplug.sns.utils.DetailedTopic;
 import de.ingrid.iplug.sns.utils.Topic;
@@ -440,7 +442,7 @@ public class SnsPlugTest extends TestCase {
         query.addField(new FieldQuery(true, false, "lang", "de"));
         query.put("includeSiblings", "false");
         query.put("association", "narrowerTermAssoc");
-        query.put("depth", "2");
+        query.put("depth", "1");
         query.put("direction", "down");
         query.putInt(Topic.REQUEST_TYPE, Topic.TOPIC_HIERACHY);
         IngridHits hits = plug.search(query, 0, 600);
@@ -450,7 +452,17 @@ public class SnsPlugTest extends TestCase {
         assertEquals(1, hitsArray.length);
         for (int i = 0; i < hitsArray.length; i++) {
             Topic hit = (Topic) hitsArray[i];
-            System.out.println(hit.size() + " : " + hit.getSuccessors());
+            System.out.println(" " + hit.getTopicID() + " : " + hit.getLanguage());
+            final List successors = hit.getSuccessors();
+            for (int j = 0; j < successors.size(); j++) {
+                System.out.println("  " + ((Topic) successors.get(j)).getTopicID() + " : " +
+                        ((Topic) successors.get(j)).getLanguage());
+                final List successors2 = ((Topic) successors.get(j)).getSuccessors();
+                for (int k = 0; k < successors2.size(); k++) {
+                    System.out.println("   " + ((Topic) successors2.get(k)).getTopicID() + " : " +
+                            ((Topic) successors2.get(k)).getLanguage());
+                }
+            }
         }
     }
 }
