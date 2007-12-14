@@ -46,6 +46,7 @@
     <string>/torwald-group:torwald-iplug-sns</string>
     <string>fields</string>
     <list>
+        <string>sns_request_type</string>
         <string>filter</string>
         <string>lang</string>
         <string>t0</string>
