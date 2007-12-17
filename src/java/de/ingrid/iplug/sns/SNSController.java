@@ -557,22 +557,26 @@ public class SNSController {
      */
     private de.ingrid.iplug.sns.utils.Topic[] copyToTopicArray(Topic[] topics, Map associationTypes, int maxResults,
             String plugId, String lang) throws Exception {
-        List ingridTopics = new ArrayList();
+        final List ingridTopics = new ArrayList();
+        final List duplicateList = new ArrayList();
 
         if (null != topics) {
             int count = Math.min(maxResults, topics.length);
             for (int i = 0; i < count; i++) {
-                String topicId = topics[i].getId();
-                if (!topicId.equals("_Interface0")) {
-                    String associationType = "";
-                    if ((null != associationTypes) && (associationTypes.containsKey(topicId))) {
-                        associationType = (String) associationTypes.get(topicId);
+                final String topicId = topics[i].getId();
+                if (!duplicateList.contains(topicId)) {
+                    if (!topicId.startsWith("_Interface")) {
+                        String associationType = "";
+                        if ((null != associationTypes) && (associationTypes.containsKey(topicId))) {
+                            associationType = (String) associationTypes.get(topicId);
+                        }
+                        ingridTopics.add(buildTopicFromTopic(topics[i], plugId, associationType, lang));
                     }
-                    ingridTopics.add(buildTopicFromTopic(topics[i], plugId, associationType, lang));
+                    duplicateList.add(topicId);
                 }
             }
         }
-
+        duplicateList.clear();
         return (de.ingrid.iplug.sns.utils.Topic[]) ingridTopics
                 .toArray(new de.ingrid.iplug.sns.utils.Topic[ingridTopics.size()]);
     }

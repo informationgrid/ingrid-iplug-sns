@@ -194,6 +194,20 @@ public class SNSControllerTest extends TestCase {
         assertTrue(resultList.contains("uba_thes_40282"));
     }
 
+    /**
+     * @throws Exception
+     */
+    public void testGetSimilarTerms() throws Exception {
+        SNSController controller = new SNSController(fClient, "ags:");
+        int[] totalSize = new int[1];
+        Topic[] topicsForTopic = controller.getSimilarTermsFromTopic("Abfall", 200, "pid", totalSize, "de");
+        assertNotNull(topicsForTopic);
+        assertEquals(18, topicsForTopic.length);
+        for (int i = 0; i < topicsForTopic.length; i++) {
+            System.out.println(topicsForTopic[i]);
+        }
+    }
+
     private void printHierachy(List successors, int tab) {
         for (int i = 0; i < successors.size(); i++) {
             for (int j = 0; j < tab; j++) {
