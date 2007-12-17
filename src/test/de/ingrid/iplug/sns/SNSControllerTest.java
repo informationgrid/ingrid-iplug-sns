@@ -202,10 +202,23 @@ public class SNSControllerTest extends TestCase {
         int[] totalSize = new int[1];
         Topic[] topicsForTopic = controller.getSimilarTermsFromTopic("Abfall", 200, "pid", totalSize, "de");
         assertNotNull(topicsForTopic);
-        assertEquals(18, topicsForTopic.length);
+        assertEquals(23, topicsForTopic.length);
         for (int i = 0; i < topicsForTopic.length; i++) {
             System.out.println(topicsForTopic[i]);
         }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testGetTopicFromTextNoNativeKey() throws Exception {
+        SNSController controller = new SNSController(fClient, "ags:");
+        String text = "Wesertal";
+        DetailedTopic[] topics = controller.getTopicsForText(text, 100, "aPlugId", "de", new int[1], false);
+        assertNotNull(topics);
+        assertEquals(2, topics.length);
+        assertEquals("NATURRAUM583", topics[0].getTopicNativeKey());
+        assertEquals("NATURRAUM620", topics[1].getTopicNativeKey());
     }
 
     private void printHierachy(List successors, int tab) {

@@ -273,6 +273,8 @@ public class SNSController {
         String topicNativeKey = metaData.getTopicNativeKey();
         if (null != topicNativeKey) {
             metaData.setTopicNativeKey(SNSUtil.transformSpacialReference(this.fNativeKeyPrefix, topicNativeKey));
+        } else {
+            metaData.setTopicNativeKey(topicId);
         }
 
         if (containsTypes(fAdministrativeTypes, topic.getInstanceOf()[0].getTopicRef().getHref())) {
