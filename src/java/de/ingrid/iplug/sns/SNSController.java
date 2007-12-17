@@ -427,7 +427,7 @@ public class SNSController {
         String topicNativeKey = result.getTopicNativeKey();
         if (null != topicNativeKey) {
             String ags = SNSUtil.transformSpacialReference(this.fNativeKeyPrefix, topicNativeKey);
-            if (ags.contains("lawa:")) {
+            if (ags.startsWith("lawa:")) {
                 ags = SNSUtil.transformSpacialReference("lawa:", topicNativeKey);
             }
             result.setTopicNativeKey(ags);
