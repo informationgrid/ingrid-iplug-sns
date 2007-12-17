@@ -222,8 +222,11 @@ public class SNSIndexingInterface {
                                     wgs84BoxSet = true;
                                 }
                             } else if (topicRef.endsWith("nativeKeyOcc")) {
-                                final String gemeindekennziffer = SNSUtil.transformSpacialReference(
+                                String gemeindekennziffer = SNSUtil.transformSpacialReference(
                                         this.fGemeindeKennzifferPrefix, data.get_value());
+                                if (gemeindekennziffer.startsWith("lawa:")) {
+                                    gemeindekennziffer = SNSUtil.transformSpacialReference("lawa:", data.get_value());
+                                }
                                 wgs84Box.setGemeindekennziffer(gemeindekennziffer);
                                 wgs84BoxSet = true;
                             }
