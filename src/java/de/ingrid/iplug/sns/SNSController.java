@@ -426,7 +426,11 @@ public class SNSController {
         pushOccurensie(de.ingrid.iplug.sns.utils.Topic.NATIVEKEY_OCC, topic, result, lang);
         String topicNativeKey = result.getTopicNativeKey();
         if (null != topicNativeKey) {
-            result.setTopicNativeKey(SNSUtil.transformSpacialReference(this.fNativeKeyPrefix, topicNativeKey));
+            String ags = SNSUtil.transformSpacialReference(this.fNativeKeyPrefix, topicNativeKey);
+            if (ags.contains("lawa:")) {
+                ags = SNSUtil.transformSpacialReference("lawa:", topicNativeKey);
+            }
+            result.setTopicNativeKey(ags);
         } else {
             result.setTopicNativeKey(topicId);
         }

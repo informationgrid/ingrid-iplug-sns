@@ -221,6 +221,20 @@ public class SNSControllerTest extends TestCase {
         assertEquals("NATURRAUM620", topics[1].getTopicNativeKey());
     }
 
+    /**
+     * @throws Exception
+     */
+    public void testGetSimilarLocationsFromTopicNativeKeyHasLawaPrefix() throws Exception {
+        SNSController controller = new SNSController(fClient, "ags:");
+        String text = "NATURRAUM583";
+        Topic[] topics = controller.getTopicSimilarLocationsFromTopic(text, 100, "aPlugId", new int[1], false);
+        assertNotNull(topics);
+        assertEquals(90, topics.length);
+        for (int i = 0; i < topics.length; i++) {
+            assertTrue("Does contain 'lawa:'.", !topics[i].getTopicNativeKey().contains("lawa:"));
+        }
+    }
+
     private void printHierachy(List successors, int tab) {
         for (int i = 0; i < successors.size(); i++) {
             for (int j = 0; j < tab; j++) {
