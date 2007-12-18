@@ -202,10 +202,10 @@ public class SNSControllerTest extends TestCase {
         int[] totalSize = new int[1];
         Topic[] topicsForTopic = controller.getSimilarTermsFromTopic("Abfall", 200, "pid", totalSize, "de");
         assertNotNull(topicsForTopic);
-        assertEquals(23, topicsForTopic.length);
-        for (int i = 0; i < topicsForTopic.length; i++) {
-            System.out.println(topicsForTopic[i]);
-        }
+        assertEquals(24, topicsForTopic.length);
+        // for (int i = 0; i < topicsForTopic.length; i++) {
+        // System.out.println(topicsForTopic[i].getTopicID());
+        // }
     }
 
     /**
@@ -231,7 +231,7 @@ public class SNSControllerTest extends TestCase {
         assertNotNull(topics);
         assertEquals(90, topics.length);
         for (int i = 0; i < topics.length; i++) {
-            assertTrue("Does contain 'lawa:'.", !topics[i].getTopicNativeKey().contains("lawa:"));
+            assertTrue("Does contain 'lawa:'.", !topics[i].getTopicNativeKey().startsWith("lawa:"));
         }
     }
 
