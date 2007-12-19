@@ -62,7 +62,7 @@
     <string>language</string>
     <string>de</string>
     <string>serviceUrl</string>
-    <string>http://minerva-cgn.sema.de/service-xtm-2.0/xtm/soap</string>
+    <string>http://www.semantic-network.de/service-xtm-2.0/xtm/soap</string>
     <string>organisationAbbr</string>
     <string>bu_uba</string>
     <string>busUrls</string>
