@@ -174,4 +174,24 @@ public class SNSServiceClientTest extends TestCase {
             fail("No exception should be thrown: " + e.getMessage());
         }
     }
+
+    public void testGetHierachyIncludeSiblings() throws Exception {
+        String topicID = "uba_thes_27118";
+        try {
+            TopicMapFragment hierachy = adapter.getHierachy("narrowerTermAssoc", 200, "up", true, "de", topicID);
+            assertNotNull(hierachy);
+            Topic[] topics = hierachy.getTopicMap().getTopic();
+            assertEquals(88, topics.length);
+        } catch (Exception e) {
+            fail("No exception should be thrown: " + e.getMessage());
+        }
+        try {
+            TopicMapFragment hierachy = adapter.getHierachy("narrowerTermAssoc", 200, "up", false, "de", topicID);
+            assertNotNull(hierachy);
+            Topic[] topics = hierachy.getTopicMap().getTopic();
+            assertEquals(6, topics.length);
+        } catch (Exception e) {
+            fail("No exception should be thrown: " + e.getMessage());
+        }
+    }
 }
