@@ -194,6 +194,19 @@ public class SNSControllerTest extends TestCase {
         assertTrue(resultList.contains("uba_thes_40282"));
     }
 
+    public void testGetHierachyIncludeSiblings() throws Exception {
+        SNSController controller = new SNSController(fClient, "ags:");
+
+        String topicID = "uba_thes_27118";
+        int[] totalSize = new int[1];
+        Topic[] topicsHierachy = controller.getTopicHierachy(totalSize, "narrowerTermAssoc", 200, "up", true, "de",
+                topicID, false, "pid");
+        assertNotNull(topicsHierachy);
+        assertEquals(1, topicsHierachy.length);
+        System.out.println(topicsHierachy[0].getTopicID());
+        printHierachy(topicsHierachy[0].getSuccessors(), 1);
+    }
+
     /**
      * @throws Exception
      */
