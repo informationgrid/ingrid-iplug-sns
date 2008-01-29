@@ -91,7 +91,7 @@ public class SNSControllerTest extends TestCase {
         String text = "Tschernobyl liegt in Halle gefunden";
         DetailedTopic[] topics = controller.getTopicsForText(text, 100, "aPlugId", "de", new int[1], false);
         assertNotNull(topics);
-        assertEquals(8, topics.length);
+        assertEquals(10, topics.length);
 
         text = "yyy xxx zzz";
         topics = controller.getTopicsForText(text, 100, "aPlugId", "de", new int[1], false);
@@ -176,7 +176,7 @@ public class SNSControllerTest extends TestCase {
         assertNotNull(topicsHierachy);
         assertEquals(1, topicsHierachy.length);
         System.out.println(topicsHierachy[0].getTopicID());
-        printHierachy(topicsHierachy[0].getSuccessors(), 1);
+        // printHierachy(topicsHierachy[0].getSuccessors(), 1);
 
         topicID = "uba_thes_40282";
         topicsHierachy = controller.getTopicHierachy(totalSize, "narrowerTermAssoc", 5, "up", false, "de", topicID,
@@ -202,9 +202,7 @@ public class SNSControllerTest extends TestCase {
         Topic[] topicsHierachy = controller.getTopicHierachy(totalSize, "narrowerTermAssoc", 200, "up", true, "de",
                 topicID, false, "pid");
         assertNotNull(topicsHierachy);
-        assertEquals(1, topicsHierachy.length);
-        System.out.println(topicsHierachy[0].getTopicID());
-        printHierachy(topicsHierachy[0].getSuccessors(), 1);
+        assertEquals(83, topicsHierachy.length);
     }
 
     /**

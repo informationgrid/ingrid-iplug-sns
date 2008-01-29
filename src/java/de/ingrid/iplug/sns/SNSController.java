@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -934,6 +935,7 @@ public class SNSController {
         final Association[] associations = mapFragment.getTopicMap().getAssociation();
         // iterate through associations to find the correct association types
         Map topicMap = new HashMap();
+        List successorMap = new ArrayList();
         if (associations != null) {
             for (int i = 0; i < associations.length; i++) {
                 Topic predecessor = null;
@@ -986,6 +988,7 @@ public class SNSController {
                         sucTopic = buildTopicFromTopic(successor, plugId, "", lang);
                         topicMap.put(successor.getId(), sucTopic);
                     }
+                    successorMap.add(sucTopic);
                     preTopic.addSuccessor(sucTopic);
                     if ("toplevel".equals(root) &&
                             predecessor.getInstanceOf(0).getTopicRef().getHref().endsWith("#topTermType")) {
@@ -997,11 +1000,27 @@ public class SNSController {
                             topicMap.put(root, sucTopic);
                         }
                         topic.addSuccessor(preTopic);
+                        successorMap.add(preTopic);
                     }
                 }
             }
         }
 
-        return new de.ingrid.iplug.sns.utils.Topic[] { (de.ingrid.iplug.sns.utils.Topic) topicMap.get(root) };
+        de.ingrid.iplug.sns.utils.Topic[] result;
+        if (!includeSiblings) {
+            result = new de.ingrid.iplug.sns.utils.Topic[] { (de.ingrid.iplug.sns.utils.Topic) topicMap.get(root) };
+        } else {
+            List rootList = new ArrayList();
+            for (Iterator iterator = topicMap.values().iterator(); iterator.hasNext();) {
+                de.ingrid.iplug.sns.utils.Topic topicValue = (de.ingrid.iplug.sns.utils.Topic) iterator.next();
+                if (!successorMap.contains(topicValue)) {
+                    rootList.add(topicValue);
+                }
+
+            }
+            result = new de.ingrid.iplug.sns.utils.Topic[rootList.size()];
+            result = (de.ingrid.iplug.sns.utils.Topic[]) rootList.toArray(result);
+        }
+        return result;
     }
 }
