@@ -89,15 +89,16 @@ public class SNSController {
      * @param lang
      *            Is used to specify the preferred language for requests.
      * @param expired
+     * @param includeUse
      * @return an array of assiciated topics or null in case the term itself is not found as topic
      * @throws Exception
      */
     public synchronized de.ingrid.iplug.sns.utils.Topic[] getTopicsForTerm(String queryTerm, int start, int maxResults,
-            String plugId, int[] totalSize, String lang, boolean expired) throws Exception {
+            String plugId, int[] totalSize, String lang, boolean expired, boolean includeUse) throws Exception {
         Map associationTypes = new HashMap();
         de.ingrid.iplug.sns.utils.Topic[] result = new de.ingrid.iplug.sns.utils.Topic[0];
 
-        Topic topic = getTopic(queryTerm, THESAURUS_DESCRIPTOR, start, totalSize, lang);
+        Topic topic = getTopic(queryTerm, THESAURUS_DESCRIPTOR, start, totalSize, lang, includeUse);
         if (topic != null) {
             Topic[] associatedTopics = getAssociatedTopics(topic, fTypeFilters, associationTypes, totalSize, expired);
             de.ingrid.iplug.sns.utils.Topic[] topics = copyToTopicArray(associatedTopics, associationTypes, maxResults,
@@ -519,14 +520,15 @@ public class SNSController {
      * @param offSet
      * @param totalSize
      * @param lang
+     * @param includeUse
      * @return just one matching topic, in case more topics match or no topic match we return null
      * @throws Exception
      */
-    private Topic getTopic(String queryTerm, String topicType, long offSet, int[] totalSize, String lang)
-            throws Exception {
+    private Topic getTopic(String queryTerm, String topicType, long offSet, int[] totalSize, String lang,
+            boolean includeUse) throws Exception {
         // changed from FieldsType.captors to FieldTypes.names
         TopicMapFragment mapFragment = this.fServiceClient.findTopics(queryTerm, topicType, SearchType.exact,
-                FieldsType.names, offSet, lang);
+                FieldsType.names, offSet, lang, includeUse);
         if (null != mapFragment) {
             totalSize[0] = mapFragment.getListExcerpt().getTotalSize().intValue();
             Topic[] topics = mapFragment.getTopicMap().getTopic();

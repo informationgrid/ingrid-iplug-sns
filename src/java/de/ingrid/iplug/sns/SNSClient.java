@@ -100,13 +100,14 @@ public class SNSClient {
      *            Defines the number of topics to skip.
      * @param lang
      *            Is used to specify the preferred language for requests.
+     * @param includeUse
      * @return The response object.
      * @throws Exception
      * @see SearchType
      * @see FieldsType
      */
     public synchronized TopicMapFragment findTopics(String queryTerm, String path, SearchType searchType,
-            FieldsType fieldsType, long offset, String lang) throws Exception {
+            FieldsType fieldsType, long offset, String lang, boolean includeUse) throws Exception {
         if (queryTerm == null) {
             throw new IllegalArgumentException("QueryTerm can not be null");
         }
@@ -122,6 +123,11 @@ public class SNSClient {
         topicRequest.setFields(fieldsType);
         topicRequest.setOffset(BigInteger.valueOf(offset));
         topicRequest.setQueryTerm(queryTerm);
+        if (includeUse) {
+            topicRequest.setIncludeUse("true");
+        } else {
+            topicRequest.setIncludeUse("false");
+        }
 
         return this.fXtmSoapPortType.findTopicsOp(topicRequest);
     }

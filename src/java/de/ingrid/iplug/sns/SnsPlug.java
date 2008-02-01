@@ -76,6 +76,7 @@ public class SnsPlug implements IPlug {
 
             final String lang = getQueryLang(query);
             final boolean expired = getExpiredField(query);
+            final boolean includeUse = getIncludeUseField(query);
             int[] totalSize = new int[1];
             totalSize[0] = 0;
 
@@ -85,7 +86,7 @@ public class SnsPlug implements IPlug {
                 switch (type) {
                 case Topic.TOPIC_FROM_TERM:
                     hitsTemp = this.fSnsController.getTopicsForTerm(getSearchTerm(query), start, Integer.MAX_VALUE,
-                            this.fPlugId, totalSize, lang, expired);
+                            this.fPlugId, totalSize, lang, expired, includeUse);
                     break;
                 case Topic.TOPIC_FROM_TEXT:
                     filter = (String) query.get("filter");
@@ -172,6 +173,20 @@ public class SnsPlug implements IPlug {
             }
         }
         return new IngridHits(this.fPlugId, 0, new IngridHit[0], true);
+    }
+
+    private boolean getIncludeUseField(IngridQuery query) {
+        boolean result = false;
+
+        FieldQuery[] qFields = query.getFields();
+        for (int i = 0; i < qFields.length; i++) {
+            final String fieldName = qFields[i].getFieldName();
+            if (fieldName.equals("includeUse")) {
+                result = Boolean.valueOf(qFields[i].getFieldValue()).booleanValue();
+            }
+        }
+
+        return result;
     }
 
     private int getRequestType(final IngridQuery query) {
