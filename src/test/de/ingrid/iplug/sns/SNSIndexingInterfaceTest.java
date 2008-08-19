@@ -56,7 +56,7 @@ public class SNSIndexingInterfaceTest extends TestCase {
      * @throws Exception
      */
     public void testGetReferencesToSpaceBundesland() throws Exception {
-        this.fSnsInterface.getBuzzwords("Sachsen", 1000, true);
+        this.fSnsInterface.getBuzzwords("Sachsen", 1000, false);
 
         final Wgs84Box[] result = this.fSnsInterface.getReferencesToSpace();
         assertNotNull(result);

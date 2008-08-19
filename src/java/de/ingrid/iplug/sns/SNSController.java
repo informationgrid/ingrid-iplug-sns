@@ -160,7 +160,7 @@ public class SNSController {
     public DetailedTopic[] getTopicsForText(String documentText, int maxToAnalyzeWords, String filter, String plugId,
             String lang, int[] totalSize, boolean expired) throws Exception {
         final TopicMapFragment mapFragment = this.fServiceClient.autoClassify(documentText, maxToAnalyzeWords, filter,
-                true, lang);
+                false, lang);
         final Topic[] topics = mapFragment.getTopicMap().getTopic();
         if (null != mapFragment.getListExcerpt()) {
             totalSize[0] = mapFragment.getListExcerpt().getTotalSize().intValue();
@@ -195,7 +195,7 @@ public class SNSController {
     public DetailedTopic[] getTopicsForURL(String url, int maxToAnalyzeWords, String filter, String plugId,
             String lang, int[] totalSize, boolean expired) throws Exception {
         final TopicMapFragment mapFragment = this.fServiceClient.autoClassifyToUrl(url, maxToAnalyzeWords, filter,
-                true, lang);
+                false, lang);
         final Topic[] topics = mapFragment.getTopicMap().getTopic();
         if (null != mapFragment.getListExcerpt()) {
             totalSize[0] = mapFragment.getListExcerpt().getTotalSize().intValue();

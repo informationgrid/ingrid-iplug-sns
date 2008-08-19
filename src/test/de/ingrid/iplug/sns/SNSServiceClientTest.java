@@ -99,22 +99,22 @@ public class SNSServiceClientTest extends TestCase {
         String document = null;
         int maxWords = -1;
         try {
-            adapter.autoClassify(document, maxWords, null, true, "de");
+            adapter.autoClassify(document, maxWords, null, false, "de");
             fail("Should throw an exception");
         } catch (Exception e) {
             assertTrue(e instanceof IllegalArgumentException);
         }
         document = "Die Ozonschicht ist sehr dünn";
         try {
-            adapter.autoClassify(document, maxWords, null, true, "de");
+            adapter.autoClassify(document, maxWords, null, false, "de");
             fail("Should throw an exception");
         } catch (Exception e) {
             assertTrue(e instanceof IllegalArgumentException);
         }
         maxWords = 0;
-        assertNotNull(adapter.autoClassify(document, maxWords, null, true, "de"));
+        assertNotNull(adapter.autoClassify(document, maxWords, null, false, "de"));
         maxWords = Integer.MAX_VALUE;
-        assertNotNull(adapter.autoClassify(document, maxWords, null, true, "de"));
+        assertNotNull(adapter.autoClassify(document, maxWords, null, false, "de"));
     }
 
     /**
