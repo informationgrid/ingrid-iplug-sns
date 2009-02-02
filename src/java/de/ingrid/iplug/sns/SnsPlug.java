@@ -17,6 +17,8 @@ import de.ingrid.utils.IngridHit;
 import de.ingrid.utils.IngridHitDetail;
 import de.ingrid.utils.IngridHits;
 import de.ingrid.utils.PlugDescription;
+import de.ingrid.utils.processor.ProcessorPipe;
+import de.ingrid.utils.processor.ProcessorPipeFactory;
 import de.ingrid.utils.query.FieldQuery;
 import de.ingrid.utils.query.IngridQuery;
 import de.ingrid.utils.query.TermQuery;
@@ -43,6 +45,8 @@ public class SnsPlug implements IPlug {
 
     private String fServiceUrl;
 
+	private ProcessorPipe _processorPipe = new ProcessorPipe();
+
     private static final long serialVersionUID = SnsPlug.class.getName().hashCode();
 
     /**
@@ -66,11 +70,15 @@ public class SnsPlug implements IPlug {
     /**
      * @see de.ingrid.utils.IPlug#search(de.ingrid.utils.query.IngridQuery, int, int)
      */
-    public IngridHits search(IngridQuery query, int start, int length) {
+    public IngridHits search(IngridQuery query, int start, int length)
+			throws Exception {
         if (log.isDebugEnabled()) {
             log.debug("incomming query : " + query.toString());
         }
 
+        IngridHits ret = new IngridHits(this.fPlugId, 0, new IngridHit[0], true);
+        _processorPipe.preProcess(query);
+        
         if (containsSNSDataType(query.getDataTypes())) {
             int type = getRequestType(query);
 
@@ -163,7 +171,8 @@ public class SnsPlug implements IPlug {
                 if ((0 == totalSize[0]) && (hits.length > 0)) {
                     totalSize[0] = hits.length;
                 }
-                return new IngridHits(this.fPlugId, totalSize[0], finalHits, false);
+                ret = new IngridHits(this.fPlugId, totalSize[0], finalHits,
+						false);
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
             }
@@ -172,7 +181,9 @@ public class SnsPlug implements IPlug {
                 log.error("not correct or unsetted datatype");
             }
         }
-        return new IngridHits(this.fPlugId, 0, new IngridHit[0], true);
+        
+        _processorPipe.postProcess(query, ret.getHits());
+		return ret;
     }
 
     private boolean getIncludeUseField(IngridQuery query) {
@@ -259,6 +270,9 @@ public class SnsPlug implements IPlug {
             nativeKeyPrefix = "ags:";
         }
         this.fSnsController = new SNSController(snsClient, nativeKeyPrefix);
+		ProcessorPipeFactory processorPipeFactory = new ProcessorPipeFactory(
+				plugDescription);
+        _processorPipe = processorPipeFactory.getProcessorPipe();
     }
 
     /**
