@@ -6,7 +6,7 @@
 
 package de.ingrid.iplug.sns;
 
-import java.util.List;
+import java.util.Set;
 
 import junit.framework.TestCase;
 import de.ingrid.iplug.sns.utils.DetailedTopic;
@@ -431,38 +431,40 @@ public class SnsPlugTest extends TestCase {
         }
     }
 
-    /**
-     * @throws Exception
-     */
-    public void testGETHIERACHY() throws Exception {
-        SnsPlug plug = new SnsPlug(fPlugDescription);
-        String q = "toplevel";
-        IngridQuery query = QueryStringParser.parse(q);
-        query.addField(new FieldQuery(true, false, "datatype", IDataTypes.SNS));
-        query.addField(new FieldQuery(true, false, "lang", "de"));
-        query.put("includeSiblings", "false");
-        query.put("association", "narrowerTermAssoc");
-        query.put("depth", "1");
-        query.put("direction", "down");
-        query.putInt(Topic.REQUEST_TYPE, Topic.TOPIC_HIERACHY);
-        IngridHits hits = plug.search(query, 0, 600);
-        assertEquals(1, hits.length());
-        IngridHit[] hitsArray = hits.getHits();
-        assertNotNull(hitsArray);
-        assertEquals(1, hitsArray.length);
-        for (int i = 0; i < hitsArray.length; i++) {
-            Topic hit = (Topic) hitsArray[i];
-            System.out.println(" " + hit.getTopicID() + " : " + hit.getLanguage());
-            final List successors = hit.getSuccessors();
-            for (int j = 0; j < successors.size(); j++) {
-                System.out.println("  " + ((Topic) successors.get(j)).getTopicID() + " : " +
-                        ((Topic) successors.get(j)).getLanguage());
-                final List successors2 = ((Topic) successors.get(j)).getSuccessors();
-                for (int k = 0; k < successors2.size(); k++) {
-                    System.out.println("   " + ((Topic) successors2.get(k)).getTopicID() + " : " +
-                            ((Topic) successors2.get(k)).getLanguage());
-                }
-            }
-        }
-    }
+	/**
+	 * @throws Exception
+	 */
+	public void testGETHIERACHY() throws Exception {
+		SnsPlug plug = new SnsPlug(fPlugDescription);
+		String q = "toplevel";
+		IngridQuery query = QueryStringParser.parse(q);
+		query.addField(new FieldQuery(true, false, "datatype", IDataTypes.SNS));
+		query.addField(new FieldQuery(true, false, "lang", "de"));
+		query.put("includeSiblings", "false");
+		query.put("association", "narrowerTermAssoc");
+		query.put("depth", "1");
+		query.put("direction", "down");
+		query.putInt(Topic.REQUEST_TYPE, Topic.TOPIC_HIERACHY);
+		IngridHits hits = plug.search(query, 0, 600);
+		assertEquals(1, hits.length());
+		IngridHit[] hitsArray = hits.getHits();
+		assertNotNull(hitsArray);
+		assertEquals(1, hitsArray.length);
+		for (int i = 0; i < hitsArray.length; i++) {
+			Topic hit = (Topic) hitsArray[i];
+			System.out.println(" " + hit.getTopicID() + " : "
+					+ hit.getLanguage());
+			final Set<Topic> successors = hit.getSuccessors();
+			for (Topic topic : successors) {
+				System.out.println(topic.getTopicID() + ":"
+						+ topic.getLanguage());
+				final Set<Topic> successors2 = topic
+						.getSuccessors();
+				for (Topic topic2 : successors2) {
+					System.out.println(topic2.getTopicID() + ":"
+							+ topic2.getLanguage());
+				}
+			}
+		}
+	}
 }

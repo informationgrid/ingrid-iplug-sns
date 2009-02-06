@@ -8,6 +8,7 @@ package de.ingrid.iplug.sns;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import junit.framework.TestCase;
 import de.ingrid.iplug.sns.utils.DetailedTopic;
@@ -246,21 +247,23 @@ public class SNSControllerTest extends TestCase {
         }
     }
 
-    private void printHierachy(List successors, int tab) {
-        for (int i = 0; i < successors.size(); i++) {
-            for (int j = 0; j < tab; j++) {
-                System.out.print(' ');
-            }
-            System.out.println(((Topic) successors.get(i)).getTopicID());
-            printHierachy(((Topic) successors.get(i)).getSuccessors(), tab + 1);
-        }
-    }
+    private void printHierachy(Set successors, int tab) {
+		for (Object object : successors) {
+			for (int j = 0; j < tab; j++) {
+				System.out.print(' ');
+			}
+			Topic topic = (Topic) object;
+			System.out.println(topic.getTopicID());
+			printHierachy(topic.getSuccessors(), tab + 1);
+		}
+	}
 
-    private void fill(List topicsHierachy, List resultList) {
-        for (int i = 0; i < topicsHierachy.size(); i++) {
-            resultList.add(((Topic) topicsHierachy.get(i)).getTopicID());
-            resultList.add(((Topic) topicsHierachy.get(i)).getTopicName());
-            fill(((Topic) topicsHierachy.get(i)).getSuccessors(), resultList);
-        }
+    private void fill(Set topicsHierachy, List resultList) {
+    	for (Object object : topicsHierachy) {
+			Topic topic = (Topic) object;
+			resultList.add(topic.getTopicID());
+			resultList.add(topic.getTopicName());
+			fill(topic.getSuccessors(), resultList);
+		}
     }
 }
