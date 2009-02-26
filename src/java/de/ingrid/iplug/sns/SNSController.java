@@ -271,6 +271,7 @@ public class SNSController {
         pushSamples(metaData, topic, lang);
         pushOccurensie(DetailedTopic.DESCRIPTION_OCC, topic, metaData, lang);
         pushOccurensie(DetailedTopic.ASSOCIATED_OCC, topic, metaData, lang);
+        pushOccurensie(DetailedTopic.GEMET_OCC, topic, metaData, lang);
         pushOccurensie(de.ingrid.iplug.sns.utils.Topic.NATIVEKEY_OCC, topic, metaData, lang);
         String topicNativeKey = metaData.getTopicNativeKey();
         if (null != topicNativeKey) {
@@ -426,6 +427,7 @@ public class SNSController {
         de.ingrid.iplug.sns.utils.Topic result = new de.ingrid.iplug.sns.utils.Topic(plugId, topicId.hashCode(),
                 topicId, title, summary, associationType, null);
         pushOccurensie(de.ingrid.iplug.sns.utils.Topic.NATIVEKEY_OCC, topic, result, lang);
+        pushOccurensie(DetailedTopic.GEMET_OCC, topic, result, lang);
         String topicNativeKey = result.getTopicNativeKey();
         if (null != topicNativeKey) {
             String ags = SNSUtil.transformSpacialReference(this.fNativeKeyPrefix, topicNativeKey);
