@@ -172,7 +172,7 @@ public class SNSControllerTest extends TestCase {
 
         String topicID = "toplevel";
         int[] totalSize = new int[1];
-        Topic[] topicsHierachy = controller.getTopicHierachy(totalSize, "narrowerTermAssoc", 2, "down", false, "de",
+        Topic[] topicsHierachy = controller.getTopicHierachy(totalSize, "narrowerTermAssoc", 1, "down", false, "de",
                 topicID, false, "pid");
         assertNotNull(topicsHierachy);
         assertEquals(1, topicsHierachy.length);
@@ -189,7 +189,7 @@ public class SNSControllerTest extends TestCase {
         resultList.add(topicsHierachy[0].getTopicName());
         fill(topicsHierachy[0].getSuccessors(), resultList);
 
-        assertTrue(resultList.contains("Atmosphäre und Klima"));
+        assertTrue(resultList.contains("Atmosph\u00E4re und Klima"));
         assertTrue(resultList.contains("Luft"));
         assertTrue(resultList.contains("uba_thes_49251"));
         assertTrue(resultList.contains("uba_thes_40282"));

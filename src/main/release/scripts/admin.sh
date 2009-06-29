@@ -10,15 +10,26 @@
 #   INGRID_OPTS      addtional java runtime options
 #
 
+# resolve links - $0 may be a softlink
 THIS="$0"
+while [ -h "$THIS" ]; do
+  ls=`ls -ld "$THIS"`
+  link=`expr "$ls" : '.*-> \(.*\)$'`
+  if expr "$link" : '.*/.*' > /dev/null; then
+    THIS="$link"
+  else
+    THIS=`dirname "$THIS"`/"$link"
+  fi
+done
 
 # some directories
 THIS_DIR=`dirname "$THIS"`
 INGRID_HOME=`cd "$THIS_DIR" ; pwd`
 
 # first sync libs
-echo '... syncronize libs from repository'
-rsync -av --update --existing $INGRID_HOME/../repository/ $INGRID_HOME/lib/
+#echo '... syncronize libs from repository'
+#rsync -av --update --existing $INGRID_HOME/../repository/ $INGRID_HOME/lib/
+
 
 # some Java parameters
 if [ "$INGRID_JAVA_HOME" != "" ]; then
@@ -55,12 +66,14 @@ IFS=
 for f in $INGRID_HOME/lib/*.jar; do
   CLASSPATH=${CLASSPATH}:$f;
 done
+# add the step2 files to the classpath
+CLASSPATH=${CLASSPATH}:$INGRID_HOME/webapp/step2/WEB-INF/classes
 
 # restore ordinary behaviour
 unset IFS
 
 
-CLASS=de.ingrid.iplug.PlugServer
+CLASS=de.ingrid.iplug.AdminServer
 
 
 # cygwin path translation
@@ -69,6 +82,4 @@ if expr `uname` : 'CYGWIN*' > /dev/null; then
 fi
 
 # run it
-#exec "$JAVA" $JAVA_HEAP_MAX $INGRID_OPTS -classpath "$CLASSPATH" $CLASS "$@"
-#exec "$JAVA" $JAVA_HEAP_MAX $INGRID_OPTS -classpath "$CLASSPATH" $CLASS 8475 8476 localhost 11112
-exec "$JAVA" $JAVA_HEAP_MAX $INGRID_OPTS -classpath "$CLASSPATH" $CLASS --descriptor conf/communication.properties
+exec "$JAVA" $JAVA_HEAP_MAX $INGRID_OPTS -classpath "$CLASSPATH" $CLASS 8082 webapp

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<assembly>
+  <id>bin</id>
+  <formats>
+    <format>tar.gz</format>
+    <!--<format>dir</format>-->
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>src/main/release/conf</directory>
+      <outputDirectory>conf</outputDirectory>
+    </fileSet>
+    <fileSet>
+      <directory>src/main/release/scripts</directory>
+      <outputDirectory>/</outputDirectory>
+    </fileSet>
+  </fileSets>
+  <dependencySets>
+    <dependencySet>
+      <outputDirectory>lib</outputDirectory>
+      <unpack>false</unpack>
+      <scope>runtime</scope>
+      <excludes>
+        <exclude>javax.activation:activation</exclude>
+        <exclude>javax.mail:mail:jar</exclude>
+        <exclude>maven:maven-javacc-plugin</exclude>
+        <exclude>nekohtml:nekohtml</exclude>
+        <exclude>quartz:quartz:jar</exclude>
+        <exclude>ingrid:ingrid-iplug-admin-step1-webservice</exclude>
+      </excludes>
+    </dependencySet>
+    <dependencySet>
+      <outputDirectory>webapp/step1</outputDirectory>
+      <unpack>true</unpack>
+      <includes>
+        <include>ingrid:ingrid-iplug-admin-step1-webservice</include>
+      </includes>
+    </dependencySet>
+  </dependencySets>
+</assembly>
