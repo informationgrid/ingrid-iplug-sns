@@ -5,6 +5,12 @@
     <author email="joachim@wemove.com">Joachim Müller</author>
   </properties>
   <body>
+    <release version="1.4.0" date="2009-07-03" description="Umstellung">
+      <action type="update">
+        Umstellung auf Maven 2
+      </action>
+    </release>
+    
     <release version="1.3" date="2009-04-02" description="Release InGrid2.0">
       <action type="add">
         Provider werden jetzt in der Adminoberfläche aktualisiert und korrekt angezeigt
