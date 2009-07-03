@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<document>
+  <properties>
+    <title>Changes Ingrid iPlug SNS</title>
+    <author email="joachim@wemove.com">Joachim Müller</author>
+  </properties>
+  <body>
+    <release version="1.3" date="2009-04-02" description="Release InGrid2.0">
+      <action type="add">
+        Provider werden jetzt in der Adminoberfläche aktualisiert und korrekt angezeigt
+      </action>
+      <action type="add">
+        add ingrid-authentication to dependencies
+      </action>
+      <action type="add" issue="INGRID-1607">
+        iPlug sendet Version und Release Datum an iBus. Diese wird in der iBus Admin UI dargestellt.
+      </action>
+      <action type="update">
+        Parameter ignoreCase bei autoclassify Methoden jetzt immer auf "false" statt "true"
+      </action>
+    </release>
+      
+    <release version="1.1.3" date="2007-10-12" description="Release">
+      <action type="update">
+        Umstellung auf SNS Version 2.1
+      </action>
+      <action type="fix">
+        Erhoehung der Zuverlaessigkeit bei Reconnects
+      </action>
+    </release>
+    
+    <release version="1.1.2" date="2007-10-10" description="Fix-Release">
+      <action type="fix">
+        Beachte Proxies, die kein EOF senden
+      </action>
+      <action type="fix">
+        Behebe erneute Anmeldung nach Herunterfahren
+      </action>
+    </release>
+    
+    <release version="1.1.1" date="2007-08-31" description="Fix-Release">
+      <action type="update">
+        Verbesserung der Kommunikationskomponente. 
+      </action>
+      <action type="add">
+        ProxyUser und ProxyPassword werden jetzt über Konfigurationsdatei gesetzt.
+      </action>
+      <action type="update">
+        Eine Http-Proxy Verbindung kann auch ohne Username und Password aufgebaut werden.
+      </action>
+    </release>
+    
+    <release version="1.1.0" date="2007-08-01" description="Initial-Release">
+      <action type="update">
+        Austausch JXTA-Kommunikation gegen TCP/IP-Kommunikation
+      </action>
+    </release>
+  </body>
+</document>
