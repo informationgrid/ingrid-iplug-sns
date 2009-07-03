@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE installer PUBLIC "-//tp23 //DTD Ant Installer Config//EN" "http://antinstaller.sf.net/dtd/antinstall-config-0.8.dtd">
+<installer
+			ui			="swing,text"
+			verbose		="true"
+			debug		="true"
+			lookAndFeel	="org.tp23.jgoodies.plaf.plastic.PlasticXPLookAndFeel"
+			name		="iPlug-SNS Installation"
+			windowIcon	="/resources/icons/logoIcon.gif"
+			defaultImageResource="/resources/makewavesdawn.png"
+			minJavaVersion		="1.6">
+			
+	<!--  The target "extract" must be called first, so it is defined on the first page -->
+	<page
+			type		="input"
+			name		="intro"
+			displayText	="Willkommen zur iPlug-SNS Installation"
+			target		="extract">
+			<comment displayText="" bold="true" explanatoryText="Dieser Assistent hilft Ihnen bei der Installation sowie Konfiguration des iPlugs."/>
+	</page>
+
+	<page
+			type		="input"
+			name		="iPlugOptions"
+			displayText	="Einstellungen fuer den iBus"
+			>
+			
+			<text property="clientName" displayText="Client ID:" defaultValue="/ingrid-group:iplug-'Ihr-Name'"/>
+			
+			<comment displayText="" explanatoryText="Der Client-ID muss eindeutig sein, da es sonst zu Kommunikationsproblemen zum iBus fuehren kann."/>
+	</page>
+	
+	<page
+			type		="input"
+			name		="iBusOptions"
+			displayText	="Einstellungen fuer den iBus"
+			target		="ibus">
+			
+			<text property="serverName" displayText="Server ID:" defaultValue="/ingrid-group:ibus-'Ihr-Name'"/>
+			<text property="serverIp"   displayText="Server IP:"   defaultValue="127.0.0.1"/>
+			<text property="serverPort" displayText="Server Port:" defaultValue="8081"/>
+			
+			<comment displayText="" explanatoryText="Die Server-IP ist die Adresse des Rechners, auf dem der iBus ueber dem Server-Port angesprochen werden kann."/>
+	</page>
+	
+	<!--  type="input" shows a list of editable options for the installer -->
+	<page
+			type		="input"
+			name		="properties"
+			displayText	="Benoetigte Installationsoptionen">
+		<directory
+				property		="installDir"
+				defaultValue	="/usr/local/${project.artifactId}-${project.version}"
+				defaultValueWin	="${env.ProgramFiles}\${project.artifactId}-${project.version}"
+				displayText		="Installationsverzeichnis"
+				create			="true"/>
+		<!--
+		<target
+			target		="startIPlug"
+			displayText = ""
+			explanatoryText	="Start des iPlugs nach der Installation"
+			defaultValue="false">
+		</target>
+		-->
+	</page>
+
+	<page
+			type		="progress"
+			name		="progress"
+			displayText	="Installationsfortschritt"
+			showTargets	="true"
+			target		="startIPlug">
+	</page>
+</installer>
+
+

@@ -1,0 +1,53 @@
+<project name="PortalU Installation">
+    <description>
+        iPlug-SNS Installation Script
+    </description>
+	<!-- set global properties for this build -->
+	<property name="iPlugName" 			value="${project.artifactId}-${project.version}"/>
+	<property name="xml-communication" 	value="${installDir}/conf/communication.xml"/>
+	
+	<target name="extract" description="Extract all files to the installation directory.">
+		<unzip src="${antinstaller.jar}" dest="${installDir}">
+			<patternset>
+				<include name="${iPlugName}/**/*.*"/>
+			</patternset>
+		</unzip>
+		
+		<move toDir="${installDir}">
+			<fileset dir="${installDir}/${iPlugName}"/>
+		</move>
+	</target>
+	
+	<target name="ibus" description="Set configuration correctly for the iBus.">
+		<echo>Schreibe iBus Konfiguration in communication.xml</echo>
+		<xmlproperty file="${xml-communication}" prefix="plugXML"/>
+		<replace file="${xml-communication}" token="${plugXML.communication.client(name)}" 								value="${clientName}"/>
+		<replace file="${xml-communication}" token="${plugXML.communication.client.connections.server(name)}" 			value="${serverName}"/>
+		<replace file="${xml-communication}" token="${plugXML.communication.client.connections.server.socket(ip)}" 		value="${serverIp}"/>
+		<replace file="${xml-communication}" token="${plugXML.communication.client.connections.server.socket(port)}" 	value="${serverPort}"/>		
+	</target>
+	
+	<target name="startIPlug">
+		<echo>
+=================
+Weiteres Vorgehen
+=================
+
+		</echo>
+		<echo>
+Gehen Sie ins Verzeichnis: ${installDir} und
+rufen sie von der Kommandozeile folgendes auf
+"sh admin.sh", um im Webbrowser das iPlug unter
+der folgenden Adresse "http://localhost:8082/step1"
+zu konfigurieren. Anstelle von localhost koennen Sie
+auch die IP-Adresse des Computers eingeben!
+
+Danach beenden Sie den Prozess wieder (Strg+C) und
+rufen "sh start.sh start" auf, um das iPlug zu starten.
+
+Bevor das iPlug benutzt werden kann, muss es in der iBus-
+Administration (im Portal) eingeschaltet werden.
+		</echo>
+	</target>
+	
+</project>

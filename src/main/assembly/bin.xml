@@ -1,40 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <assembly>
-  <id>bin</id>
+  <id>installer</id>
   <formats>
-    <format>tar.gz</format>
-    <!--<format>dir</format>-->
+    <format>jar</format>
   </formats>
   <includeBaseDirectory>false</includeBaseDirectory>
   <fileSets>
     <fileSet>
       <directory>src/main/release/conf</directory>
-      <outputDirectory>conf</outputDirectory>
+      <outputDirectory>${project.artifactId}-${project.version}/conf</outputDirectory>
     </fileSet>
     <fileSet>
       <directory>src/main/release/scripts</directory>
+      <outputDirectory>${project.artifactId}-${project.version}/</outputDirectory>
+    </fileSet>
+    <fileSet>
+      <directory>src/main/release/ant-installer</directory>
       <outputDirectory>/</outputDirectory>
+      <filtered>true</filtered>
+    </fileSet>
+    <fileSet>
+      <directory>target/installer</directory>
+      <outputDirectory>/</outputDirectory>
+    </fileSet>
+    <fileSet>
+      <directory>target/site</directory>
+      <outputDirectory>${project.artifactId}-${project.version}/doc</outputDirectory>
     </fileSet>
   </fileSets>
   <dependencySets>
     <dependencySet>
-      <outputDirectory>lib</outputDirectory>
+      <outputDirectory>${project.artifactId}-${project.version}/lib</outputDirectory>
       <unpack>false</unpack>
       <scope>runtime</scope>
       <excludes>
-        <exclude>javax.activation:activation</exclude>
-        <exclude>javax.mail:mail:jar</exclude>
-        <exclude>maven:maven-javacc-plugin</exclude>
-        <exclude>nekohtml:nekohtml</exclude>
-        <exclude>quartz:quartz:jar</exclude>
-        <exclude>ingrid:ingrid-iplug-admin-step1-webservice</exclude>
+        <exclude>de.ingrid:ingrid-iplug-admin-step1-webservice</exclude>
       </excludes>
     </dependencySet>
     <dependencySet>
-      <outputDirectory>webapp/step1</outputDirectory>
+      <outputDirectory>${project.artifactId}-${project.version}/webapp/step1</outputDirectory>
       <unpack>true</unpack>
       <includes>
-        <include>ingrid:ingrid-iplug-admin-step1-webservice</include>
+        <include>de.ingrid:ingrid-iplug-admin-step1-webservice</include>
       </includes>
     </dependencySet>
   </dependencySets>

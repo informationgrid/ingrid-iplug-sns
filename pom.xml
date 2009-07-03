@@ -1,8 +1,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
-    <artifactId>ingrid-base-pom</artifactId>
+    <artifactId>ingrid-releases-pom</artifactId>
     <groupId>de.ingrid</groupId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>de.ingrid</groupId>
@@ -16,7 +16,7 @@
   </scm>
   <dependencies>
     <dependency>
-      <groupId>ingrid</groupId>
+      <groupId>de.ingrid</groupId>
       <artifactId>ingrid-iplug-admin-step1-webservice</artifactId>
       <type>war</type>
     </dependency>
@@ -29,16 +29,22 @@
       <artifactId>ingrid-iplug</artifactId>
       <exclusions>
         <exclusion>
+          <groupId>quartz</groupId>
+          <artifactId>quartz</artifactId>
+        </exclusion>
+        <exclusion>
           <groupId>commons-betwixt</groupId>
           <artifactId>commons-betwixt</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
     <dependency>
+      <groupId>axis</groupId>
+      <artifactId>axis</artifactId>
+    </dependency>
+    <dependency>
       <groupId>uba</groupId>
-        <artifactId>xtmStubs</artifactId>
-        <version>3.0.0.1</version>
-      <type>jar</type>
+      <artifactId>xtmStubs</artifactId>
     </dependency>
     <dependency>
       <groupId>commons-collections</groupId>
@@ -95,17 +101,6 @@
     </dependency>
   </dependencies>
   <repositories>
-    <!--<repository>
-      <id>com.bluesunrise.m2</id>
-      <name>Maven2 BlueSunrise</name>
-      <url>http://www.bluesunrise.com/maven2</url>
-    </repository>-->
-    <repository>
-      <id>de.ingrid.m1</id>
-      <name>Maven1 Repo InGrid</name>
-      <url>http://harrison.its-technidata.de/ingrid/maven</url>
-      <layout>legacy</layout>
-    </repository>
     <repository>
       <id>de.ingrid.m2</id>
       <name>Maven2 Repo InGrid</name>
@@ -115,16 +110,6 @@
   <build>
     <finalName>${project.artifactId}-${project.version}</finalName>
     <plugins>
-      <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <version>2.1</version>
-        <configuration>
-          <appendAssemblyId>false</appendAssemblyId>
-          <descriptors>
-            <descriptor>src/main/assembly/bin.xml</descriptor>
-          </descriptors>
-        </configuration>
-      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
