@@ -34,6 +34,7 @@
       <unpack>false</unpack>
       <scope>runtime</scope>
       <excludes>
+        <exclude>de.ingrid:ingrid-installer</exclude>
         <exclude>de.ingrid:ingrid-iplug-admin-step1-webservice</exclude>
       </excludes>
     </dependencySet>

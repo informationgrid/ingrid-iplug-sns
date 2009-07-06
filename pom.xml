@@ -2,7 +2,7 @@
   <parent>
     <artifactId>ingrid-releases-pom</artifactId>
     <groupId>de.ingrid</groupId>
-    <version>1.0.0</version>
+    <version>1.0.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>de.ingrid</groupId>
@@ -21,6 +21,10 @@
       <type>war</type>
     </dependency>
     <dependency>
+      <groupId>axis</groupId>
+      <artifactId>axis</artifactId>
+    </dependency>
+    <dependency>
       <groupId>de.ingrid</groupId>
       <artifactId>ingrid-utils</artifactId>
     </dependency>
@@ -37,10 +41,6 @@
           <artifactId>commons-betwixt</artifactId>
         </exclusion>
       </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>axis</groupId>
-      <artifactId>axis</artifactId>
     </dependency>
     <dependency>
       <groupId>uba</groupId>
@@ -117,14 +117,9 @@
         <configuration>
           <archive>
             <manifestEntries>
-              <Implementation-Version>${version}</Implementation-Version>
-              <Implementation-Build>${buildNumber}</Implementation-Build>
-              <Build-Timestamp>${timestamp}</Build-Timestamp>
               <!--  
                 one of these: 
-                
                 IPLUG_SE, IPLUG_DSC, IPLUG_SNS, IPLUG_TAMINO, IPLUG_FPN, IPLUG_G2K, IPLUG_CSW, IPLUG_CSW_DSC, OTHER
-                
                 see ingrid-utils:de.ingrid.utils.metadata.IPlugType
               -->
               <iPlug-Type>IPLUG_SNS</iPlug-Type>
