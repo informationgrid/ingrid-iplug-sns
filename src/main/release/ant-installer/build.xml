@@ -47,6 +47,10 @@ rufen "sh start.sh start" auf, um das iPlug zu starten.
 
 Bevor das iPlug benutzt werden kann, muss es in der iBus-
 Administration (im Portal) eingeschaltet werden.
+
+Weitere Informationen entnehmen Sie bitte dem
+Online-Handbuch unter 
+http://www.kst.portalu.de/wiki/index.php/InGrid_Installation.
 		</echo>
 	</target>
 	
