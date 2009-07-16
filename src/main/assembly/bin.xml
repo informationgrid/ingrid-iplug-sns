@@ -8,11 +8,11 @@
   <fileSets>
     <fileSet>
       <directory>src/main/release/conf</directory>
-      <outputDirectory>${project.artifactId}-${project.version}/conf</outputDirectory>
+      <outputDirectory>${project.build.finalName}/conf</outputDirectory>
     </fileSet>
     <fileSet>
       <directory>src/main/release/scripts</directory>
-      <outputDirectory>${project.artifactId}-${project.version}/</outputDirectory>
+      <outputDirectory>${project.build.finalName}/</outputDirectory>
     </fileSet>
     <fileSet>
       <directory>src/main/release/ant-installer</directory>
@@ -25,24 +25,24 @@
     </fileSet>
     <fileSet>
       <directory>target/site</directory>
-      <outputDirectory>${project.artifactId}-${project.version}/doc</outputDirectory>
+      <outputDirectory>${project.build.finalName}/doc</outputDirectory>
     </fileSet>
   </fileSets>
   <dependencySets>
     <dependencySet>
-      <outputDirectory>${project.artifactId}-${project.version}/lib</outputDirectory>
+      <outputDirectory>${project.build.finalName}/lib</outputDirectory>
       <unpack>false</unpack>
       <scope>runtime</scope>
       <excludes>
         <exclude>de.ingrid:ingrid-installer</exclude>
-        <exclude>de.ingrid:ingrid-iplug-admin-step1-webservice</exclude>
+        <exclude>de.ingrid:ingrid-iplug-admin-step1-sns</exclude>
       </excludes>
     </dependencySet>
     <dependencySet>
-      <outputDirectory>${project.artifactId}-${project.version}/webapp/step1</outputDirectory>
+      <outputDirectory>${project.build.finalName}/webapp/step1</outputDirectory>
       <unpack>true</unpack>
       <includes>
-        <include>de.ingrid:ingrid-iplug-admin-step1-webservice</include>
+        <include>de.ingrid:ingrid-iplug-admin-step1-sns</include>
       </includes>
     </dependencySet>
   </dependencySets>

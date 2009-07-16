@@ -17,7 +17,7 @@
   <dependencies>
     <dependency>
       <groupId>de.ingrid</groupId>
-      <artifactId>ingrid-iplug-admin-step1-webservice</artifactId>
+      <artifactId>ingrid-iplug-admin-step1-sns</artifactId>
       <type>war</type>
     </dependency>
     <dependency>

@@ -21,7 +21,7 @@
 	<target name="ibus" description="Set configuration correctly for the iBus.">
 		<echo>Schreibe iBus Konfiguration in communication.xml</echo>
 		<xmlproperty file="${xml-communication}" prefix="plugXML"/>
-		<replace file="${xml-communication}" token="${plugXML.communication.client(name)}" 								value="${clientName}"/>
+		<replace file="${xml-communication}" token="${plugXML.communication.client(name)}" 								value="${clientName}-admin"/>
 		<replace file="${xml-communication}" token="${plugXML.communication.client.connections.server(name)}" 			value="${serverName}"/>
 		<replace file="${xml-communication}" token="${plugXML.communication.client.connections.server.socket(ip)}" 		value="${serverIp}"/>
 		<replace file="${xml-communication}" token="${plugXML.communication.client.connections.server.socket(port)}" 	value="${serverPort}"/>		
@@ -35,12 +35,15 @@ Weiteres Vorgehen
 
 		</echo>
 		<echo>
-Gehen Sie ins Verzeichnis: ${installDir} und
-rufen sie von der Kommandozeile folgendes auf
+Gehen Sie ins Verzeichnis:
+${installDir}
+und rufen sie von der Kommandozeile folgendes auf
 "sh admin.sh", um im Webbrowser das iPlug unter
 der folgenden Adresse "http://localhost:8082/step1"
 zu konfigurieren. Anstelle von localhost koennen Sie
 auch die IP-Adresse des Computers eingeben!
+Bitte lesen Sie bzgl. der Administration die Kapitel unter
+"http://www.kst.portalu.de/wiki/index.php/Allgemeines_zu_den_iPlugs".
 
 Danach beenden Sie den Prozess wieder (Strg+C) und
 rufen "sh start.sh start" auf, um das iPlug zu starten.
