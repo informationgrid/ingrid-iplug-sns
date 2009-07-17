@@ -5,6 +5,15 @@
     <author email="joachim@wemove.com">Joachim Müller</author>
   </properties>
   <body>
+    <release version="1.4.1" date="2009-07-17" description="Release Maven2 + Installer">
+      <action type="update">
+        Installationsassistent und Maven2 Kompatibilität
+      </action>
+      <action type="fix">
+        fixed admin webapp (now admin-step1-sns instead of -webservice)
+      </action>
+    </release>
+
     <release version="1.4.0" date="2009-07-03" description="Umstellung">
       <action type="update">
         Umstellung auf Maven 2
