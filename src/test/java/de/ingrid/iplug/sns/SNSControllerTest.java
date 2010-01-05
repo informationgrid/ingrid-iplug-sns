@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Set;
 
 import junit.framework.TestCase;
+import de.ingrid.external.sns.SNSClient;
 import de.ingrid.iplug.sns.utils.DetailedTopic;
 import de.ingrid.iplug.sns.utils.Topic;
 
@@ -170,6 +171,7 @@ public class SNSControllerTest extends TestCase {
     public void testGetHierachy() throws Exception {
         SNSController controller = new SNSController(fClient, "ags:");
 
+        // toplevel
         String topicID = "toplevel";
         int[] totalSize = new int[1];
         Topic[] topicsHierachy = controller.getTopicHierachy(totalSize, "narrowerTermAssoc", 1, "down", false, "de",
@@ -179,12 +181,13 @@ public class SNSControllerTest extends TestCase {
         System.out.println(topicsHierachy[0].getTopicID());
         // printHierachy(topicsHierachy[0].getSuccessors(), 1);
 
+        // up
         topicID = "uba_thes_40282";
         topicsHierachy = controller.getTopicHierachy(totalSize, "narrowerTermAssoc", 5, "up", false, "de", topicID,
                 false, "pid");
         assertNotNull(topicsHierachy);
         assertEquals(1, topicsHierachy.length);
-        List resultList = new ArrayList();
+        List<String> resultList = new ArrayList<String>();
         resultList.add(topicsHierachy[0].getTopicID());
         resultList.add(topicsHierachy[0].getTopicName());
         fill(topicsHierachy[0].getSuccessors(), resultList);
@@ -193,17 +196,66 @@ public class SNSControllerTest extends TestCase {
         assertTrue(resultList.contains("Luft"));
         assertTrue(resultList.contains("uba_thes_49251"));
         assertTrue(resultList.contains("uba_thes_40282"));
+
+        // top node up
+        topicID = "uba_thes_49251";
+        topicsHierachy = controller.getTopicHierachy(totalSize, "narrowerTermAssoc", 5, "up", false, "de", topicID,
+                false, "pid");
+        assertNotNull(topicsHierachy);
+        assertEquals(1, topicsHierachy.length);
+        // return value is null !!!?
+        assertNull(topicsHierachy[0]);
+
+        // down
+        topicID = "uba_thes_49251";
+        topicsHierachy = controller.getTopicHierachy(totalSize, "narrowerTermAssoc", 2, "down", false, "de", topicID,
+                false, "pid");
+        assertNotNull(topicsHierachy);
+        assertEquals(1, topicsHierachy.length);
+        resultList = new ArrayList<String>();
+        resultList.add(topicsHierachy[0].getTopicID());
+        resultList.add(topicsHierachy[0].getTopicName());
+        fill(topicsHierachy[0].getSuccessors(), resultList);
+
+        assertTrue(resultList.contains("Atmosph\u00E4re und Klima"));
+        assertTrue(resultList.contains("Luft"));
+        assertTrue(resultList.contains("uba_thes_49251"));
+        assertTrue(resultList.contains("uba_thes_40282"));
+
+        // leaf down
+        topicID = "uba_thes_40787"; // Kleinmenge
+        topicsHierachy = controller.getTopicHierachy(totalSize, "narrowerTermAssoc", 2, "down", false, "de", topicID,
+                false, "pid");
+        assertNotNull(topicsHierachy);
+        assertEquals(1, topicsHierachy.length);
+        // return value is null !!!?
+        assertNull(topicsHierachy[0]);
     }
 
     public void testGetHierachyIncludeSiblings() throws Exception {
         SNSController controller = new SNSController(fClient, "ags:");
 
-        String topicID = "uba_thes_27118";
+		// PATH OF SUB TERM in german
+		// NOTICE: has 2 paths to top !
+		// 1. uba_thes_13093 / uba_thes_47403 / uba_thes_47404 / uba_thes_49276
+		// 2. uba_thes_13093 / uba_thes_13133 / uba_thes_49268
+		String topicID = "uba_thes_13093"; // Immissionsdaten
+//        String topicID = "uba_thes_27118";
         int[] totalSize = new int[1];
         Topic[] topicsHierachy = controller.getTopicHierachy(totalSize, "narrowerTermAssoc", 200, "up", true, "de",
                 topicID, false, "pid");
         assertNotNull(topicsHierachy);
-        assertEquals(83, topicsHierachy.length);
+        // NOT VALID ANYMORE ! NEVER ADD SIBLINGS ! 
+//        assertEquals(83, topicsHierachy.length);
+        assertEquals(1, topicsHierachy.length);
+        assertEquals(2, topicsHierachy[0].getSuccessors().size());
+        List<String> resultList = new ArrayList<String>();
+        fill(topicsHierachy[0].getSuccessors(), resultList);
+
+        assertTrue(resultList.contains("Messergebnis"));
+        assertTrue(resultList.contains("Immissionssituation"));
+        assertTrue(resultList.contains("uba_thes_47403"));
+        assertTrue(resultList.contains("uba_thes_13133"));
     }
 
     /**
@@ -258,9 +310,8 @@ public class SNSControllerTest extends TestCase {
 		}
 	}
 
-    private void fill(Set topicsHierachy, List resultList) {
-    	for (Object object : topicsHierachy) {
-			Topic topic = (Topic) object;
+    private void fill(Set<Topic> topicsHierachy, List<String> resultList) {
+    	for (Topic topic : topicsHierachy) {
 			resultList.add(topic.getTopicID());
 			resultList.add(topic.getTopicName());
 			fill(topic.getSuccessors(), resultList);

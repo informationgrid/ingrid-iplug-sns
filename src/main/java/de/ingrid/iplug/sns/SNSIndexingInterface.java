@@ -17,6 +17,7 @@ import com.slb.taxi.webservice.xtm.stubs.xtm.Occurrence;
 import com.slb.taxi.webservice.xtm.stubs.xtm.ResourceData;
 import com.slb.taxi.webservice.xtm.stubs.xtm.Topic;
 
+import de.ingrid.external.sns.SNSClient;
 import de.ingrid.utils.tool.SNSUtil;
 
 /**

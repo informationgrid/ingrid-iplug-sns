@@ -13,6 +13,8 @@ import com.slb.taxi.webservice.xtm.stubs.SearchType;
 import com.slb.taxi.webservice.xtm.stubs.TopicMapFragment;
 import com.slb.taxi.webservice.xtm.stubs.xtm.Topic;
 
+import de.ingrid.external.sns.SNSClient;
+
 /**
  * created on 21.07.2005
  * 

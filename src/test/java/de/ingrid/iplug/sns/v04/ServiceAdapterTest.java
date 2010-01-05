@@ -7,7 +7,7 @@
 package de.ingrid.iplug.sns.v04;
 
 import junit.framework.TestCase;
-import de.ingrid.iplug.sns.SNSClient;
+import de.ingrid.external.sns.SNSClient;
 import de.ingrid.iplug.sns.SNSControllerTest;
 import de.ingrid.iplug.sns.SNSServiceClientTest;
 

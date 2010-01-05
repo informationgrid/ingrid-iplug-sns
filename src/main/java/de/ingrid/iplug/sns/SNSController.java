@@ -5,8 +5,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -23,9 +23,17 @@ import com.slb.taxi.webservice.xtm.stubs.xtm.Occurrence;
 import com.slb.taxi.webservice.xtm.stubs.xtm.Scope;
 import com.slb.taxi.webservice.xtm.stubs.xtm.Topic;
 
+import de.ingrid.external.FullClassifyService;
+import de.ingrid.external.GazetteerService;
+import de.ingrid.external.ThesaurusService;
+import de.ingrid.external.om.Term;
+import de.ingrid.external.om.TreeTerm;
+import de.ingrid.external.om.Term.TermType;
+import de.ingrid.external.sns.SNSClient;
 import de.ingrid.iplug.sns.utils.DetailedTopic;
 import de.ingrid.utils.IngridHit;
 import de.ingrid.utils.tool.SNSUtil;
+import de.ingrid.utils.tool.SpringUtil;
 
 /**
  * A API to access the main SNS WebService functionality
@@ -54,6 +62,13 @@ public class SNSController {
 
     private SNSClient fServiceClient;
 
+    private final Class<ThesaurusService> _thesaurusService = null;
+    private ThesaurusService thesaurusService;
+    private final Class<GazetteerService> _gazetteerService = null;
+    private GazetteerService gazetteerService;
+    private final Class<FullClassifyService> _fullClassifyService = null;
+    private FullClassifyService fullClassifyService;
+
     private static final String[] fTypeFilters = new String[] { "narrowerTermAssoc", "synonymAssoc",
             "relatedTermsAssoc" };
 
@@ -71,6 +86,11 @@ public class SNSController {
     public SNSController(SNSClient client, String nativeKeyPrefix) {
         this.fServiceClient = client;
         this.fNativeKeyPrefix = nativeKeyPrefix;
+
+        SpringUtil springUtil = new SpringUtil("spring/external-services.xml");
+        this.thesaurusService = springUtil.getBean("thesaurusService", _thesaurusService);
+        this.gazetteerService = springUtil.getBean("gazetteerService", _gazetteerService);
+        this.fullClassifyService = springUtil.getBean("fullClassifyService", _fullClassifyService);
     }
 
     /**
@@ -440,6 +460,75 @@ public class SNSController {
         }
         result.setLanguage(topicLang);
         return result;
+    }
+
+    /**
+     * @return A ingrid topic from a Term.
+     */
+    private de.ingrid.iplug.sns.utils.Topic buildTopicFromTerm(Term term, String plugId, String lang) {
+        String title = term.getName();
+        String summary = title + ' ' + getTypeFromTerm(term);
+        String topicId = term.getId();
+        String associationType = "";
+        de.ingrid.iplug.sns.utils.Topic result = new de.ingrid.iplug.sns.utils.Topic(plugId, topicId.hashCode(),
+                topicId, title, summary, associationType, null);
+        // if GEMET adapt data
+        if (term.getAlternateId() != null) {
+        	String gemetOcc = term.getAlternateId() + "@" + term.getName();
+            result.put(DetailedTopic.GEMET_OCC, gemetOcc);
+            // UMTHES name in AlternateName !
+            if (term.getAlternateName() != null) {
+                result.setTopicName(term.getAlternateName());            	
+            }
+        }
+        result.setLanguage(lang);
+        return result;
+    }
+
+    /**
+     * Also adds children OR parents as successors to ingrid topic !
+     * @param addParentsAsSuccessors true = the parents of the passed term are added
+     * 		as successors to the topic (recursively)</br>
+     * 		false = the children of passed term are added as successors
+     * @return A ingrid topic from a TreeTerm. Also sets up successors in topic !
+     */
+    private de.ingrid.iplug.sns.utils.Topic buildTopicFromTreeTerm(TreeTerm term, String plugId, String lang,
+    		boolean addParentsAsSuccessors) {
+    	de.ingrid.iplug.sns.utils.Topic resultTopic = buildTopicFromTerm(term, plugId, lang);
+    	
+    	// add children or parents as successors dependent from flag
+    	List<TreeTerm> successorTerms = term.getChildren();
+    	if (addParentsAsSuccessors) {
+    		successorTerms = term.getParents();
+    	}
+
+    	if (successorTerms != null) {
+        	for (TreeTerm successorTerm : successorTerms) {
+        		de.ingrid.iplug.sns.utils.Topic successorTopic =
+        			buildTopicFromTreeTerm(successorTerm, plugId, lang, addParentsAsSuccessors);
+        		resultTopic.addSuccessor(successorTopic);
+        	}
+    	}
+    	
+    	return resultTopic;
+    }
+
+    private static String getTypeFromTerm(Term term) {
+    	// first check whether we have a tree term ! Only then we can determine whether top node !
+		if (TreeTerm.class.isAssignableFrom(term.getClass())) {
+	    	if (((TreeTerm)term).getParents() == null) {
+	    		return "#topTermType";
+	    	}    	
+		}
+
+    	TermType termType = term.getType();
+    	if (termType == TermType.NODE_LABEL) 
+			return "#nodeLabelType";
+		if (termType == TermType.DESCRIPTOR) 
+			return "#descriptorType";
+		if (termType == TermType.NON_DESCRIPTOR) 
+			return "#nonDescriptorType";
+		return "#topTermType";
     }
 
     /**
@@ -912,119 +1001,78 @@ public class SNSController {
         return result;
     }
 
-    /**
-     * @param totalSize
-     * @param associationName
-     * @param depth
-     * @param direction
-     * @param includeSiblings
-     * @param lang
-     * @param root
-     * @param expired
-     * @param plugId
-     * @return
+    /** Calls thesaurusService dependent from passed direction and map results to ingrid Topics.
+     * Never includesSiblings ! Never filters expired topics !
+     * @param totalSize ignored
+     * @param associationName ignored
+     * @param depth ignored
+     * @param direction "down" -> thesaurusService.getHierarchyNextLevel(...), depth 2</br>
+     * 		"up" -> thesaurusService.getHierarchyPathToTop(...), depth 0 (to top)</br>
+     * @param includeSiblings ignored, always false
+     * @param lang the language (e.g. "de")
+     * @param root id of root topic (start topic)
+     * @param expired ignored, always false (no filtering of expired topics)
+     * @param plugId the plug id needed for setup of Topics
+     * @return structure of ingrid topics
      * @throws Exception
      */
     public de.ingrid.iplug.sns.utils.Topic[] getTopicHierachy(int[] totalSize, String associationName, long depth,
             String direction, boolean includeSiblings, String lang, String root, boolean expired, String plugId)
             throws Exception {
-        final TopicMapFragment mapFragment = fServiceClient.getHierachy(associationName, depth, direction,
-                includeSiblings, lang, root);
-        final Topic[] topics = mapFragment.getTopicMap().getTopic();
-        if (null != mapFragment.getListExcerpt()) {
-            if (null != mapFragment.getListExcerpt().getTotalSize()) {
-                totalSize[0] = mapFragment.getListExcerpt().getTotalSize().intValue();
-            }
-        }
-        final Association[] associations = mapFragment.getTopicMap().getAssociation();
-        // iterate through associations to find the correct association types
-        Map topicMap = new HashMap();
-        List successorMap = new ArrayList();
-        if (associations != null) {
-            for (int i = 0; i < associations.length; i++) {
-                Topic predecessor = null;
-                Topic successor = null;
-                final Association association = associations[i];
-                // association members are the basetopic and it association
-                final Member[] members = association.getMember();
-                for (int j = 0; j < members.length; j++) {
-                    final Member member = members[j];
-                    // here is only the topic id available
-                    final String topicId = member.getTopicRef()[0].getHref();
-                    final String assocMember = member.getRoleSpec().getTopicRef().getHref();
-                    final Topic topicById = getTopicById(topics, topicId);
-                    if (topicById != null) {
-                        if (!expired) {
-                            Date expiredDate = getExpiredDate(topicById);
-                            if ((null != expiredDate) && expiredDate.before(new Date())) {
-                                continue;
-                            }
-                        }
-                    }
-                    if ("down".equals(direction)) {
-                        if (assocMember.endsWith("#narrowerTermMember")) {
-                            successor = topicById;
-                        }
-                        if (assocMember.endsWith("#widerTermMember")) {
-                            predecessor = topicById;
-                        }
-                    } else {
-                        if (assocMember.endsWith("#narrowerTermMember")) {
-                            predecessor = topicById;
-                        }
-                        if (assocMember.endsWith("#widerTermMember")) {
-                            successor = topicById;
-                        }
-                    }
-                }
-                if ((null != predecessor) && (null != successor)) {
-                    de.ingrid.iplug.sns.utils.Topic preTopic = null;
-                    if (topicMap.containsKey(predecessor.getId())) {
-                        preTopic = (de.ingrid.iplug.sns.utils.Topic) topicMap.get(predecessor.getId());
-                    } else {
-                        preTopic = buildTopicFromTopic(predecessor, plugId, "", lang);
-                        topicMap.put(predecessor.getId(), preTopic);
-                    }
-                    de.ingrid.iplug.sns.utils.Topic sucTopic = null;
-                    if (topicMap.containsKey(successor.getId())) {
-                        sucTopic = (de.ingrid.iplug.sns.utils.Topic) topicMap.get(successor.getId());
-                    } else {
-                        sucTopic = buildTopicFromTopic(successor, plugId, "", lang);
-                        topicMap.put(successor.getId(), sucTopic);
-                    }
-                    successorMap.add(sucTopic);
-                    preTopic.addSuccessor(sucTopic);
-                    if ("toplevel".equals(root) &&
-                            predecessor.getInstanceOf(0).getTopicRef().getHref().endsWith("#topTermType")) {
-                        de.ingrid.iplug.sns.utils.Topic topic = null;
-                        if (topicMap.containsKey(root)) {
-                            topic = (de.ingrid.iplug.sns.utils.Topic) topicMap.get(root);
-                        } else {
-                            topic = new de.ingrid.iplug.sns.utils.Topic(plugId, -1, root, null, null, null, null);
-                            topicMap.put(root, sucTopic);
-                        }
-                        topic.addSuccessor(preTopic);
-                        successorMap.add(preTopic);
-                    }
-                }
-            }
-        }
+    	List<de.ingrid.iplug.sns.utils.Topic> resultList = new ArrayList<de.ingrid.iplug.sns.utils.Topic>();
 
-        de.ingrid.iplug.sns.utils.Topic[] result;
-        if (!includeSiblings) {
-            result = new de.ingrid.iplug.sns.utils.Topic[] { (de.ingrid.iplug.sns.utils.Topic) topicMap.get(root) };
+    	if ("down".equals(direction)) {
+    		String topicId = root;
+            if ("toplevel".equals(root)) {
+            	topicId = null;
+            }
+
+    		// never with siblings, always depth 2 !
+            if (log.isDebugEnabled()) {
+                log.debug("calling API thesaurusService.getHierarchyNextLevel: " + topicId + " " + lang);
+            }
+        	TreeTerm[] childTerms = thesaurusService.getHierarchyNextLevel(topicId, new Locale(lang));
+        	
+        	// set up root topic encapsulating children
+    		// NOTICE: default is null ! If no children ! Evaluated in Test.
+        	de.ingrid.iplug.sns.utils.Topic rootTopic = null;
+        	if (topicId == null) {
+        		// toplevel nodes, we create dummy parent
+        		rootTopic = new de.ingrid.iplug.sns.utils.Topic(plugId, -1, root, null, null, null, null);
+        	} else {
+        		// start node is existing topic
+        		if (childTerms.length > 0) {
+        			// there are children ! Every child encapsulates its parent (root).
+        			rootTopic = buildTopicFromTerm(childTerms[0].getParents().get(0), plugId, lang);
+        		}
+        	}
+        	resultList.add(rootTopic);
+        	
+        	// set up children structure
+        	for (TreeTerm childTerm : childTerms) {
+        		de.ingrid.iplug.sns.utils.Topic childTopic = buildTopicFromTreeTerm(childTerm, plugId, lang, false);
+        		rootTopic.addSuccessor(childTopic);
+        	}
+        	
         } else {
-            List rootList = new ArrayList();
-            for (Iterator iterator = topicMap.values().iterator(); iterator.hasNext();) {
-                de.ingrid.iplug.sns.utils.Topic topicValue = (de.ingrid.iplug.sns.utils.Topic) iterator.next();
-                if (!successorMap.contains(topicValue)) {
-                    rootList.add(topicValue);
-                }
 
+    		// never with siblings !
+            if (log.isDebugEnabled()) {
+                log.debug("calling API thesaurusService.getHierarchyNextLevel: " + root + " " + lang);
             }
-            result = new de.ingrid.iplug.sns.utils.Topic[rootList.size()];
-            result = (de.ingrid.iplug.sns.utils.Topic[]) rootList.toArray(result);
+        	TreeTerm startTerm = thesaurusService.getHierarchyPathToTop(root, new Locale(lang));
+
+        	// set up root topic encapsulating parents as successors
+    		// NOTICE: default is null ! If no parents ! Evaluated in Test.
+        	de.ingrid.iplug.sns.utils.Topic rootTopic = null;
+    		// start node is existing topic
+    		if (startTerm.getParents() != null) {
+    			// we have parents ! build topic structure with parents as successors !
+    			rootTopic = buildTopicFromTreeTerm(startTerm, plugId, lang, true);
+    		}
+        	resultList.add(rootTopic);
         }
-        return result;
+
+        return resultList.toArray(new de.ingrid.iplug.sns.utils.Topic[resultList.size()]);
     }
 }

@@ -11,6 +11,7 @@ import java.net.URL;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import de.ingrid.external.sns.SNSClient;
 import de.ingrid.iplug.sns.utils.Topic;
 import de.ingrid.utils.IPlug;
 import de.ingrid.utils.IngridHit;
