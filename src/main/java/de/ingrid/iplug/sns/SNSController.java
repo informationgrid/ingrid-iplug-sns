@@ -682,6 +682,30 @@ public class SNSController {
     }
 
     /**
+     * @return ingrid Topics from Terms.
+     */
+    private de.ingrid.iplug.sns.utils.Topic[] copyToTopicArray(Term[] terms, int maxResults,
+            String plugId, String lang) throws Exception {
+        final List<de.ingrid.iplug.sns.utils.Topic> ingridTopics =
+        	new ArrayList<de.ingrid.iplug.sns.utils.Topic>();
+        final List<String> duplicateList = new ArrayList<String>();
+
+        if (null != terms) {
+            int count = Math.min(maxResults, terms.length);
+            for (int i = 0; i < count; i++) {
+                final String topicId = terms[i].getId();
+                if (!duplicateList.contains(topicId)) {
+                	ingridTopics.add(buildTopicFromTerm(terms[i], plugId, lang));
+                    duplicateList.add(topicId);
+                }
+            }
+        }
+        duplicateList.clear();
+        return (de.ingrid.iplug.sns.utils.Topic[]) ingridTopics
+                .toArray(new de.ingrid.iplug.sns.utils.Topic[ingridTopics.size()]);
+    }
+
+    /**
      * Search for a given date events of an requested event type.
      * 
      * @param searchTerm
@@ -754,19 +778,12 @@ public class SNSController {
         return getSimilarTermsFromTopic(new String[] { searchTerm }, length, plugId, totalSize, lang);
     }
 
-    /**
-     * Returns all similar terms to an array of terms.
-     * 
-     * @param searchTerm
-     *            The given search term.
-     * @param length
-     *            Number of elements that should be retrieved.
-     * @param plugId
-     *            The plugId as String.
-     * @param totalSize
-     *            The total size of the query set after the call.
-     * @param lang
-     *            Is used to specify the preferred language for requests.
+    /** Calls thesaurusService.getSimilarTermsFromNames !
+     * @param searchTerm The given search term(s)
+     * @param length Number of elements that should be retrieved.
+     * @param plugId The plugId as String.
+     * @param totalSize IGNORED
+     * @param lang Is used to specify the preferred language for requests.
      * @return Topics to similar terms.
      * @throws Exception
      */
@@ -774,15 +791,13 @@ public class SNSController {
             int[] totalSize, String lang) throws Exception {
         de.ingrid.iplug.sns.utils.Topic[] result = new de.ingrid.iplug.sns.utils.Topic[0];
 
-        TopicMapFragment topicMapFragment = this.fServiceClient.getSimilarTerms(true, searchTerm, lang);
-        Topic[] topic = topicMapFragment.getTopicMap().getTopic();
-        if (null != topicMapFragment.getListExcerpt()) {
-            totalSize[0] = topicMapFragment.getListExcerpt().getTotalSize().intValue();
+        if (log.isDebugEnabled()) {
+            log.debug("calling API thesaurusService.getSimilarTermsFromNames: " + searchTerm + "... " + lang);
         }
+    	Term[] terms = thesaurusService.getSimilarTermsFromNames(searchTerm, true, new Locale(lang));
 
-        if (topic != null) {
-            de.ingrid.iplug.sns.utils.Topic[] topics = copyToTopicArray(topic, null, length, plugId, lang);
-            result = topics;
+        if (terms != null) {
+        	result = copyToTopicArray(terms, length, plugId, lang);
         }
 
         return result;
@@ -1003,15 +1018,15 @@ public class SNSController {
 
     /** Calls thesaurusService dependent from passed direction and map results to ingrid Topics.
      * Never includesSiblings ! Never filters expired topics !
-     * @param totalSize ignored
-     * @param associationName ignored
-     * @param depth ignored
+     * @param totalSize IGNORED
+     * @param associationName IGNORED
+     * @param depth IGNORED
      * @param direction "down" -> thesaurusService.getHierarchyNextLevel(...), depth 2</br>
      * 		"up" -> thesaurusService.getHierarchyPathToTop(...), depth 0 (to top)</br>
-     * @param includeSiblings ignored, always false
+     * @param includeSiblings IGNORED, always false
      * @param lang the language (e.g. "de")
      * @param root id of root topic (start topic)
-     * @param expired ignored, always false (no filtering of expired topics)
+     * @param expired IGNORED, always false (no filtering of expired topics)
      * @param plugId the plug id needed for setup of Topics
      * @return structure of ingrid topics
      * @throws Exception
