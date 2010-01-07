@@ -8,7 +8,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -37,13 +39,13 @@ public class SNSIndexingInterface {
 
     private Topic[] fTopics = new Topic[0];
 
-    private List fTemporal = new ArrayList();
+    private List<Temporal> fTemporal = new ArrayList<Temporal>();
 
-    private List fWgs84Box = new ArrayList();
+    private List<Wgs84Box> fWgs84Box = new ArrayList<Wgs84Box>();
 
     private String fLanguage;
 
-    private List fTopicIds = new ArrayList();
+    private List<String> fTopicIds = new ArrayList<String>();
 
     private String fGemeindeKennzifferPrefix = "ags:";
 
@@ -88,7 +90,8 @@ public class SNSIndexingInterface {
      * @param text
      *            The document to analyze.
      * @param maxToAnalyzeWords
-     *            The first <code>maxToAnalyzeWords</code> words of the document that should be analyzed.
+     *            The first <code>maxToAnalyzeWords</code> words of the document that should be
+     *            analyzed.
      * @param ignoreCase
      *            Set to true ignore case of the document.
      * @return A string array filled with all buzzwords.
@@ -106,7 +109,8 @@ public class SNSIndexingInterface {
      * @param text
      *            The document to analyze.
      * @param maxToAnalyzeWords
-     *            The first <code>maxToAnalyzeWords</code> words of the document that should be analyzed.
+     *            The first <code>maxToAnalyzeWords</code> words of the document that should be
+     *            analyzed.
      * @param ignoreCase
      *            Set to true ignore case of the document.
      * @param language
@@ -115,12 +119,10 @@ public class SNSIndexingInterface {
      * @throws Exception
      *             If we cannot connect to the sns server.
      */
-    public String[] getBuzzwords(final String text, final int maxToAnalyzeWords, boolean ignoreCase, String language)
-            throws Exception {
+    public String[] getBuzzwords(final String text, final int maxToAnalyzeWords, boolean ignoreCase, String language) throws Exception {
         String[] result = new String[0];
 
-        final TopicMapFragment mapFragment = this.fSNSClient.autoClassify(text, maxToAnalyzeWords, null, ignoreCase,
-                language);
+        final TopicMapFragment mapFragment = this.fSNSClient.autoClassify(text, maxToAnalyzeWords, null, ignoreCase, language);
         this.fTopics = mapFragment.getTopicMap().getTopic();
 
         this.fTopicIds.clear();
@@ -141,7 +143,8 @@ public class SNSIndexingInterface {
      * @param url
      *            The url to analyze.
      * @param maxToAnalyzeWords
-     *            The first <code>maxToAnalyzeWords</code> words of the document that should be analyzed.
+     *            The first <code>maxToAnalyzeWords</code> words of the document that should be
+     *            analyzed.
      * @param ignoreCase
      *            Set to true ignore case of the document.
      * @param language
@@ -150,12 +153,10 @@ public class SNSIndexingInterface {
      * @throws Exception
      *             If we cannot connect to the sns server.
      */
-    public String[] getBuzzwordsToUrl(final String url, final int maxToAnalyzeWords, boolean ignoreCase, String language)
-            throws Exception {
+    public String[] getBuzzwordsToUrl(final String url, final int maxToAnalyzeWords, boolean ignoreCase, String language) throws Exception {
         String[] result = new String[0];
 
-        final TopicMapFragment mapFragment = this.fSNSClient.autoClassifyToUrl(url, maxToAnalyzeWords, null,
-                ignoreCase, language);
+        final TopicMapFragment mapFragment = this.fSNSClient.autoClassifyToUrl(url, maxToAnalyzeWords, null, ignoreCase, language);
         this.fTopics = mapFragment.getTopicMap().getTopic();
 
         this.fTopicIds.clear();
@@ -170,13 +171,13 @@ public class SNSIndexingInterface {
     }
 
     private String[] getBasenames(Topic[] topics) {
-        List result = new ArrayList();
+        List<String> result = new ArrayList<String>();
 
         for (int i = 0; i < topics.length; i++) {
             result.add(topics[i].getBaseName(0).getBaseNameString().get_value());
         }
 
-        return (String[]) result.toArray(new String[result.size()]);
+        return result.toArray(new String[result.size()]);
     }
 
     private void getReferences() throws Exception, ParseException {
@@ -223,8 +224,7 @@ public class SNSIndexingInterface {
                                     wgs84BoxSet = true;
                                 }
                             } else if (topicRef.endsWith("nativeKeyOcc")) {
-                                String gemeindekennziffer = SNSUtil.transformSpacialReference(
-                                        this.fGemeindeKennzifferPrefix, data.get_value());
+                                String gemeindekennziffer = SNSUtil.transformSpacialReference(this.fGemeindeKennzifferPrefix, data.get_value());
                                 if (gemeindekennziffer.startsWith("lawa:")) {
                                     gemeindekennziffer = SNSUtil.transformSpacialReference("lawa:", data.get_value());
                                 }
@@ -313,5 +313,23 @@ public class SNSIndexingInterface {
         }
 
         return (Wgs84Box[]) this.fWgs84Box.toArray(new Wgs84Box[this.fWgs84Box.size()]);
+    }
+
+    /**
+     * The method searches all topics of type <b>location</b> and provides the baseNames. The topics
+     * came from the document that was analyzed by a previous
+     * {@linkplain #getBuzzwords(String, int, boolean)} call.
+     * 
+     * @return A set of locations. It is empty, if no location topics are available.
+     */
+    public Set<String> getLocations() {
+        Set<String> ret = new LinkedHashSet<String>();
+        TopicTypClassifier topicClassifier = new TopicTypClassifier();
+        List<Topic> locationTopics = topicClassifier.getLocationTopics(this.fTopics);
+
+        for (Topic locationTopic : locationTopics) {
+            ret.add(locationTopic.getBaseName(0).getBaseNameString().get_value());
+        }
+        return ret;
     }
 }

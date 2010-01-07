@@ -4,6 +4,8 @@
 
 package de.ingrid.iplug.sns;
 
+import java.util.Set;
+
 import junit.framework.TestCase;
 
 /**
@@ -50,6 +52,35 @@ public class SNSIndexingInterfaceTest extends TestCase {
             System.out.println("y2:" + result[i].getY2());
             System.out.println(result[i].getGemeindekennziffer());
         }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testGetLocations() throws Exception {
+        this.fSnsInterface.getBuzzwords("Gronau Borken", 1000, false);
+
+        Set<String> locations = fSnsInterface.getLocations();
+        for (String location : locations) {
+            System.out.println("location (de): " + location);
+        }
+        assertTrue(locations.size() > 0);
+
+        this.fSnsInterface.getBuzzwords("Gronau Borken", 1000, false, "en");
+
+        locations = fSnsInterface.getLocations();
+        for (String location : locations) {
+            System.out.println("location (en): " + location);
+        }
+        assertTrue(locations.size() > 0);
+
+        this.fSnsInterface.getBuzzwords("Helgoland", 1000, false);
+
+        locations = fSnsInterface.getLocations();
+        for (String location : locations) {
+            System.out.println("location Helgoland: " + location);
+        }
+        assertTrue(locations.size() > 0);
     }
 
     /**
