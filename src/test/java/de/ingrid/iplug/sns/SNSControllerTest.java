@@ -107,6 +107,7 @@ public class SNSControllerTest extends TestCase {
     public void testGetDetails() throws Exception {
         SNSController controller = new SNSController(fClient, "ags:");
         Topic topic = new Topic();
+        // #legalType (EVENT)
         topic.setTopicID("t47098a_10220d1bc3e_4ee1");
 
         DetailedTopic dt = controller.getTopicDetail(topic, "de");
@@ -146,6 +147,36 @@ public class SNSControllerTest extends TestCase {
         System.out.println("Des:");
         bla = (String) dt.get(DetailedTopic.DESCRIPTION_OCC);
         System.out.println(bla);
+
+        // #descriptorType (THESA) Waldschaden
+        topic.setTopicID("uba_thes_27061");
+
+        dt = controller.getTopicDetail(topic, "de");
+        assertNotNull(dt);
+
+        // ALWAYS empty definitions cause using ThesaurusService API
+        array = dt.getDefinitions();
+        assertEquals(0, array.length);
+
+        // ALWAYS empty definitionTitles cause using ThesaurusService API
+        array = dt.getDefinitionTitles();
+        assertEquals(0, array.length);
+
+        // ALWAYS empty samples cause using ThesaurusService API
+        array = dt.getSamples();
+        assertEquals(0, array.length);
+
+        // ALWAYS empty sampleTitles cause using ThesaurusService API
+        array = dt.getSampleTitles();
+        assertEquals(0, array.length);
+
+        // NO associations cause using ThesaurusService API
+        bla = (String) dt.get(DetailedTopic.ASSOCIATED_OCC);
+        assertNull(bla);
+
+        // NO descriptionOcc cause using ThesaurusService API
+        bla = (String) dt.get(DetailedTopic.DESCRIPTION_OCC);
+        assertNull(bla);
     }
 
     /**

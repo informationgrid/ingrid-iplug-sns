@@ -997,14 +997,14 @@ public class SNSController {
     }
 
     /**
-     * Get detailed information for a hit.
-     * 
-     * @param hit
-     *            The hit, for which further information should received.
-     * @param filter
-     *            Topic type as search criterion (only root paths may be used).
-     * @param lang
-     *            Is used to specify the preferred language for requests.
+     * Get detailed information for a hit.</br>
+     * Calls thesaurusService</br>
+     * <ul><li>getTerm()
+     * </ul>
+     * or direct getPSI() dependent from passed filter.
+     * @param hit The hit, for which further information should received.
+     * @param filter Topic type as search criterion (only root paths may be used).
+     * @param lang Is used to specify the preferred language for requests.
      * @return A detailed topic to a filter.
      * @throws Exception
      */
@@ -1013,16 +1013,34 @@ public class SNSController {
         String topicID = topic.getTopicID();
         DetailedTopic result = null;
 
-        TopicMapFragment mapFragment = this.fServiceClient.getPSI(topicID, 0, filter);
-        if (null != mapFragment) {
-            Topic[] topics = mapFragment.getTopicMap().getTopic();
+    	// TERMS
+    	if ("/thesa".equals(filter)) {
+            if (log.isDebugEnabled()) {
+                log.debug("     !!!!!!!!!! calling API thesaurusService.getTerm");
+            }
+        	Term term = thesaurusService.getTerm(topicID, new Locale(lang));
 
-            for (int i = 0; i < topics.length; i++) {
-                if (topics[i].getId().equals(topicID)) {
-                    result = buildDetailedTopicFromTopic(topics[0], hit.getPlugId(), lang);
+            if (term != null) {
+            	result = buildDetailedTopicFromTerm(term, hit.getPlugId(), lang);
+            }
+    		
+       	// LOCATIONS
+//    	} else if ("/location".equals(filter)) {
+
+    	} else  {
+    		// IS THIS EVER CALLED FOR ANOTHER TOPIC TYPE ? Event ? All Topics (filter null) ? Then this is executed.
+    		// 
+            TopicMapFragment mapFragment = this.fServiceClient.getPSI(topicID, 0, filter);
+            if (null != mapFragment) {
+                Topic[] topics = mapFragment.getTopicMap().getTopic();
+
+                for (int i = 0; i < topics.length; i++) {
+                    if (topics[i].getId().equals(topicID)) {
+                        result = buildDetailedTopicFromTopic(topics[0], hit.getPlugId(), lang);
+                    }
                 }
             }
-        }
+    	}
 
         return result;
     }
