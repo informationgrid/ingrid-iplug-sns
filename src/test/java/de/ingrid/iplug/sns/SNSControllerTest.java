@@ -275,6 +275,45 @@ public class SNSControllerTest extends TestCase {
     /**
      * @throws Exception
      */
+    public void testGetTopicFromText() throws Exception {
+    	// test terms
+        SNSController controller = new SNSController(fClient, "ags:");
+        String text = "Waldsterben Wesertal Explosion";
+        int[] totalSize = new int[1];
+        DetailedTopic[] topics = controller.getTopicsForText(text, 100, "/thesa", "aPlugId", "de", totalSize, false);        
+        assertEquals(2, totalSize[0]);
+        assertNotNull(topics);
+        assertEquals(2, topics.length);
+        assertEquals("Waldschaden", topics[0].getTitle());
+        assertEquals("Explosion", topics[1].getTitle());
+
+    	// test locations
+        topics = controller.getTopicsForText(text, 100, "/location", "aPlugId", "de", totalSize, false);
+        assertEquals(2, totalSize[0]);
+        assertNotNull(topics);
+        assertEquals(2, topics.length);
+        assertEquals("NATURRAUM583", topics[0].getTopicNativeKey());
+        assertEquals("NATURRAUM620", topics[1].getTopicNativeKey());
+
+    	// test events
+        topics = controller.getTopicsForText(text, 100, "/event", "aPlugId", "de", totalSize, false);
+        assertEquals(2, totalSize[0]);
+        assertNotNull(topics);
+        assertEquals(2, topics.length);
+        assertEquals("Explosion im Stickstoffwerk Oppau", topics[0].getTitle());
+        assertEquals("Kyschtym-Unfall von Majak", topics[1].getTitle());
+
+    	// test ALL TOPICS
+        topics = controller.getTopicsForText(text, 100, null, "aPlugId", "de", totalSize, false);
+        assertEquals(6, totalSize[0]);
+        assertNotNull(topics);
+        assertEquals(6, topics.length);
+    }
+
+
+    /**
+     * @throws Exception
+     */
     public void testGetTopicFromTextNoNativeKey() throws Exception {
         SNSController controller = new SNSController(fClient, "ags:");
         String text = "Wesertal";

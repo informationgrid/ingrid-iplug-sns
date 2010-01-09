@@ -48,6 +48,8 @@ public class SNSController {
 
     private static Log log = LogFactory.getLog(SNSController.class);
 
+    private static final String SNS_INSTANCE_OF_URL = "http://www.semantic-network.de/xmlns/XTM/2005/2.0/sns-classes_2.0.xtm";
+    
     private static final String TEMPORAL_TOOccurrence = "temporalToOcc";
 
     private static final String TEMPORAL_FROMOccurrence = "temporalFromOcc";
@@ -159,14 +161,12 @@ public class SNSController {
     }
 
     /**
-     * For a given text an array of detailed topics will returned.
+     * For a given text an array of detailed topics will be returned (synchronized version). NO FILTER (all topic types !).
      * 
-     * @param documentText
+     * @param searchTerm
      *            The given text to analyze.
      * @param maxToAnalyzeWords
      *            Analyze only the first maxToAnalyzeWords words of the document in the body.
-     * @param filter
-     *            Topic type as search criterion (only root paths may be used).
      * @param plugId
      *            The plugId as String.
      * @param lang
@@ -174,21 +174,62 @@ public class SNSController {
      * @param totalSize
      *            The quantity of the found topics altogether.
      * @param expired
+     * @return Array of detailed topics for the given text.
+     * @throws Exception
+     */
+    public synchronized DetailedTopic[] getTopicsForText(String searchTerm, int maxToAnalyzeWords, String plugId,
+            String lang, int[] totalSize, boolean expired) throws Exception {
+        return getTopicsForText(searchTerm, maxToAnalyzeWords, null, plugId, lang, totalSize, expired);
+    }
+
+    /** For a given text an array of detailed topics will be returned.</br>
+     * Calls thesaurusService</br>
+     * <ul><li>getTermsFromText()
+     * </ul>
+     * or direct autoClassify() dependent from passed filter.
+     * @param documentText The given text to analyze.
+     * @param maxToAnalyzeWords Analyze only the first maxToAnalyzeWords words of the document in the body.
+     * @param filter Topic type as search criterion (only root paths may be used).
+     * @param plugId The plugId as String.
+     * @param lang Is used to specify the preferred language for requests.
+     * @param totalSize The quantity of the found topics altogether.
+     * @param expired filter expired topics ? IGNORED when calling ThesaurusService API, no filtering there !
      * @return array of detailed topics for the given text
      * @throws Exception
      */
     public DetailedTopic[] getTopicsForText(String documentText, int maxToAnalyzeWords, String filter, String plugId,
             String lang, int[] totalSize, boolean expired) throws Exception {
-        final TopicMapFragment mapFragment = this.fServiceClient.autoClassify(documentText, maxToAnalyzeWords, filter,
-                false, lang);
-        final Topic[] topics = mapFragment.getTopicMap().getTopic();
-        if (null != mapFragment.getListExcerpt()) {
-            totalSize[0] = mapFragment.getListExcerpt().getTotalSize().intValue();
-        }
 
-        if (topics != null) {
-            return toDetailedTopicArray(topics, plugId, lang, expired);
-        }
+    	// TERMS
+    	if ("/thesa".equals(filter)) {
+            if (log.isDebugEnabled()) {
+                log.debug("     !!!!!!!!!! calling API thesaurusService.getTermsFromText");
+            }
+        	Term[] terms = thesaurusService.getTermsFromText(documentText, maxToAnalyzeWords,
+        			false, new Locale(lang));
+
+            if (terms != null) {
+            	totalSize[0] = terms.length;
+            	return toDetailedTopicArray(terms, plugId, lang);
+            }
+    		
+       	// LOCATIONS
+//    	} else if ("/location".equals(filter)) {
+
+    	} else  {
+    		// IS THIS EVER CALLED FOR ANOTHER TOPIC TYPE ? Event ? All Topics (filter null) ? Then this is executed.
+    		// 
+            final TopicMapFragment mapFragment = this.fServiceClient.autoClassify(documentText, maxToAnalyzeWords, filter,
+                    false, lang);
+            final Topic[] topics = mapFragment.getTopicMap().getTopic();
+            if (null != mapFragment.getListExcerpt()) {
+                totalSize[0] = mapFragment.getListExcerpt().getTotalSize().intValue();
+            }
+
+            if (topics != null) {
+                return toDetailedTopicArray(topics, plugId, lang, expired);
+            }
+    	}
 
         return new DetailedTopic[0];
     }
@@ -257,6 +298,22 @@ public class SNSController {
     }
 
     /**
+     * @return An array of ingrid detailed topics from a Term array.
+     */
+    private DetailedTopic[] toDetailedTopicArray(Term[] terms, String plugId, String lang) {
+        final List<DetailedTopic> returnList = new ArrayList<DetailedTopic>();
+        for (Term term : terms) {
+        	if (term.getType() != TermType.DESCRIPTOR) {
+        		continue;
+        	}
+            
+        	returnList.add(buildDetailedTopicFromTerm(term, plugId, lang));
+        }
+
+        return returnList.toArray(new DetailedTopic[returnList.size()]);
+    }
+
+    /**
      * Build a detailed metadata index for a given topic.
      * 
      * @param topic
@@ -307,13 +364,49 @@ public class SNSController {
         return metaData;
     }
 
+    /** Build A detailed topic from Term */
+    private synchronized DetailedTopic buildDetailedTopicFromTerm(Term term, String plugId, String lang) {
+        String topicId = term.getId();
+        String title = term.getName();
+        String snsInstanceOf = mapTermTypeToSNSInstanceOf(term);
+        String summary = title + ' ' + snsInstanceOf;
+
+        DetailedTopic result = new DetailedTopic(plugId, topicId.hashCode(), topicId, title, summary, null);
+        result.addToList(DetailedTopic.INSTANCE_OF, snsInstanceOf);
+
+        // we push the stuff which IS ALWAYS ADDED, even if empty
+        // NOTICE: Further this converts the DetailedTopic to an IngridDocument !!!!?
+        pushDefinitions(result, null, lang);
+        pushSamples(result, null, lang);
+
+        pushGemetDataFromTerm(result, term);
+        result.setTopicNativeKey(topicId);
+
+        return result;
+    }
+
+    /** If GEMET data set in term, adapt topic */
+    private void pushGemetDataFromTerm(de.ingrid.iplug.sns.utils.Topic topic, Term term) {
+        if (term.getAlternateId() != null) {
+        	String gemetOcc = term.getAlternateId() + "@" + term.getName();
+        	topic.put(DetailedTopic.GEMET_OCC, gemetOcc);
+            // UMTHES name in AlternateName !
+            if (term.getAlternateName() != null) {
+            	topic.setTopicName(term.getAlternateName());            	
+            }
+        }
+    }
+
     private void pushDefinitions(DetailedTopic metaData, Topic topic, String lang) {
-        Occurrence[] occurrences = topic.getOccurrence();
         List titles = new ArrayList();
         List definitions = new ArrayList();
 
-        String type = null;
+        Occurrence[] occurrences = null;
+        if (topic != null) {
+        	occurrences = topic.getOccurrence();
+        }
         if (occurrences != null) {
+            String type = null;
             for (int i = 0; i < occurrences.length; i++) {
                 if (occurrences[i].getInstanceOf() != null) {
                     // Only compare the scope to the language if the element has one set.
@@ -336,12 +429,15 @@ public class SNSController {
     }
 
     private void pushSamples(DetailedTopic metaData, Topic topic, String lang) {
-        Occurrence[] occurrences = topic.getOccurrence();
         List titles = new ArrayList();
         List samples = new ArrayList();
 
-        String type = null;
+        Occurrence[] occurrences = null;
+        if (topic != null) {
+        	occurrences = topic.getOccurrence();
+        }
         if (occurrences != null) {
+            String type = null;
             for (int i = 0; i < occurrences.length; i++) {
                 if (occurrences[i].getInstanceOf() != null) {
                     // Only compare the scope to the language if the element has one set.
@@ -372,9 +468,12 @@ public class SNSController {
      *            A given topic.
      */
     private void pushTimes(DetailedTopic metaData, Topic topic) {
-        Occurrence[] occurrences = topic.getOccurrence();
-        String type = null;
+        Occurrence[] occurrences = null;
+        if (topic != null) {
+        	occurrences = topic.getOccurrence();
+        }
         if (occurrences != null) {
+            String type = null;
             for (int i = 0; i < occurrences.length; i++) {
                 if (occurrences[i].getInstanceOf() != null) {
                     type = occurrences[i].getInstanceOf().getTopicRef().getHref();
@@ -397,9 +496,12 @@ public class SNSController {
 
     private synchronized void pushOccurensie(String occType, Topic topic,
             de.ingrid.iplug.sns.utils.Topic detailedTopic, String lang) {
-        Occurrence[] occurrences = topic.getOccurrence();
-        String type = null;
+        Occurrence[] occurrences = null;
+        if (topic != null) {
+        	occurrences = topic.getOccurrence();
+        }
         if (occurrences != null) {
+            String type = null;
             for (int i = 0; i < occurrences.length; i++) {
                 if (occurrences[i].getInstanceOf() != null) {
                     // Only compare the scope to the language if the element has one set.
@@ -467,21 +569,14 @@ public class SNSController {
      */
     private de.ingrid.iplug.sns.utils.Topic buildTopicFromTerm(Term term, String plugId, String lang) {
         String title = term.getName();
-        String summary = title + ' ' + getTypeFromTerm(term);
+        String summary = title + ' ' + mapTermTypeToSNSInstanceOf(term);
         String topicId = term.getId();
         String associationType = "";
         de.ingrid.iplug.sns.utils.Topic result = new de.ingrid.iplug.sns.utils.Topic(plugId, topicId.hashCode(),
                 topicId, title, summary, associationType, null);
-        // if GEMET adapt data
-        if (term.getAlternateId() != null) {
-        	String gemetOcc = term.getAlternateId() + "@" + term.getName();
-            result.put(DetailedTopic.GEMET_OCC, gemetOcc);
-            // UMTHES name in AlternateName !
-            if (term.getAlternateName() != null) {
-                result.setTopicName(term.getAlternateName());            	
-            }
-        }
+        pushGemetDataFromTerm(result, term);
         result.setLanguage(lang);
+
         return result;
     }
 
@@ -513,22 +608,23 @@ public class SNSController {
     	return resultTopic;
     }
 
-    private static String getTypeFromTerm(Term term) {
+    /** map type ot term to the according SNS "instanceOf xlink:href" ! */
+    private static String mapTermTypeToSNSInstanceOf(Term term) {
     	// first check whether we have a tree term ! Only then we can determine whether top node !
 		if (TreeTerm.class.isAssignableFrom(term.getClass())) {
 	    	if (((TreeTerm)term).getParents() == null) {
-	    		return "#topTermType";
+	    		return SNS_INSTANCE_OF_URL + "#topTermType";
 	    	}    	
 		}
 
     	TermType termType = term.getType();
     	if (termType == TermType.NODE_LABEL) 
-			return "#nodeLabelType";
+			return SNS_INSTANCE_OF_URL + "#nodeLabelType";
 		if (termType == TermType.DESCRIPTOR) 
-			return "#descriptorType";
+			return SNS_INSTANCE_OF_URL + "#descriptorType";
 		if (termType == TermType.NON_DESCRIPTOR) 
-			return "#nonDescriptorType";
-		return "#topTermType";
+			return SNS_INSTANCE_OF_URL + "#nonDescriptorType";
+		return SNS_INSTANCE_OF_URL + "#topTermType";
     }
 
     /**
@@ -792,7 +888,7 @@ public class SNSController {
         de.ingrid.iplug.sns.utils.Topic[] result = new de.ingrid.iplug.sns.utils.Topic[0];
 
         if (log.isDebugEnabled()) {
-            log.debug("calling API thesaurusService.getSimilarTermsFromNames: " + searchTerm + "... " + lang);
+            log.debug("     !!!!!!!!!! calling API thesaurusService.getSimilarTermsFromNames: " + searchTerm + "... " + lang);
         }
     	Term[] terms = thesaurusService.getSimilarTermsFromNames(searchTerm, true, new Locale(lang));
 
@@ -973,28 +1069,6 @@ public class SNSController {
         return result;
     }
 
-    /**
-     * For a given text an array of detailed topics will returned (synchronized version).
-     * 
-     * @param searchTerm
-     *            The given text to analyze.
-     * @param maxToAnalyzeWords
-     *            Analyze only the first maxToAnalyzeWords words of the document in the body.
-     * @param plugId
-     *            The plugId as String.
-     * @param lang
-     *            Is used to specify the preferred language for requests.
-     * @param totalSize
-     *            The quantity of the found topics altogether.
-     * @param expired
-     * @return Array of detailed topics for the given text.
-     * @throws Exception
-     */
-    public synchronized DetailedTopic[] getTopicsForText(String searchTerm, int maxToAnalyzeWords, String plugId,
-            String lang, int[] totalSize, boolean expired) throws Exception {
-        return getTopicsForText(searchTerm, maxToAnalyzeWords, null, plugId, lang, totalSize, expired);
-    }
-
     private Date getExpiredDate(Topic topic) {
         Date result = null;
         Occurrence[] occurrences = topic.getOccurrence();
@@ -1044,7 +1118,7 @@ public class SNSController {
 
     		// never with siblings, always depth 2 !
             if (log.isDebugEnabled()) {
-                log.debug("calling API thesaurusService.getHierarchyNextLevel: " + topicId + " " + lang);
+                log.debug("     !!!!!!!!!! calling API thesaurusService.getHierarchyNextLevel: " + topicId + " " + lang);
             }
         	TreeTerm[] childTerms = thesaurusService.getHierarchyNextLevel(topicId, new Locale(lang));
         	
@@ -1073,7 +1147,7 @@ public class SNSController {
 
     		// never with siblings !
             if (log.isDebugEnabled()) {
-                log.debug("calling API thesaurusService.getHierarchyNextLevel: " + root + " " + lang);
+                log.debug("     !!!!!!!!!! calling API thesaurusService.getHierarchyNextLevel: " + root + " " + lang);
             }
         	TreeTerm startTerm = thesaurusService.getHierarchyPathToTop(root, new Locale(lang));
 
