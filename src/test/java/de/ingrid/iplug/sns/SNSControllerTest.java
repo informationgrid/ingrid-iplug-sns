@@ -73,10 +73,11 @@ public class SNSControllerTest extends TestCase {
      */
     public void testGetAssociatedTopics() throws Exception {
         SNSController controller = new SNSController(fClient, "ags:");
-        Topic[] topicsForTerm = controller.getTopicsForTopic("Wasser", 23, "aId", new int[1], false);
+        int[] totalSize = new int[1];
+        Topic[] topicsForTerm = controller.getTopicsForTopic("Wasser", 23, "/thesa", "aId", "de", totalSize, false);
         assertNull(topicsForTerm);
-        topicsForTerm = controller.getTopicsForTopic(VALID_TOPIC_ID, 23, "aId", new int[1], false);
-        assertTrue(topicsForTerm.length > 0);
+        topicsForTerm = controller.getTopicsForTopic(VALID_TOPIC_ID, 23, "/thesa", "aId", "de", totalSize, false);
+        assertEquals(7, topicsForTerm.length);
         for (int i = 0; i < topicsForTerm.length; i++) {
             Topic topic = topicsForTerm[i];
             if (this.fToStdout) {

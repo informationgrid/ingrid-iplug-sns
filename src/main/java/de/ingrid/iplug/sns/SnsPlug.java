@@ -108,8 +108,10 @@ public class SnsPlug implements IPlug {
                             filter, this.fPlugId, lang, totalSize, expired);
                     break;
                 case Topic.TOPIC_FROM_TOPIC:
+                	// ONLY CALLED FROM EXTENDED SEARCH THESAURUS !!!!
+                	filter = "/thesa";
                     hitsTemp = this.fSnsController.getTopicsForTopic(getSearchTerm(query), Integer.MAX_VALUE,
-                            this.fPlugId, totalSize, expired);
+                    		filter, this.fPlugId, lang, totalSize, expired);
                     break;
                 case Topic.ANNIVERSARY_FROM_TOPIC:
                     hitsTemp = this.fSnsController.getAnniversaryFromTopic(getSearchTerm(query), Integer.MAX_VALUE,

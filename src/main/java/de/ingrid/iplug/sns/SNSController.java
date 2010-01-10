@@ -26,8 +26,10 @@ import com.slb.taxi.webservice.xtm.stubs.xtm.Topic;
 import de.ingrid.external.FullClassifyService;
 import de.ingrid.external.GazetteerService;
 import de.ingrid.external.ThesaurusService;
+import de.ingrid.external.om.RelatedTerm;
 import de.ingrid.external.om.Term;
 import de.ingrid.external.om.TreeTerm;
+import de.ingrid.external.om.RelatedTerm.RelationType;
 import de.ingrid.external.om.Term.TermType;
 import de.ingrid.external.sns.SNSClient;
 import de.ingrid.iplug.sns.utils.DetailedTopic;
@@ -132,30 +134,59 @@ public class SNSController {
     }
 
     /**
-     * For a given topic (identified by id) an array of associated topics will returned.
-     * 
-     * @param topicId
-     *            The topic given by Id.
-     * @param maxResults
-     *            Limit number of results.
-     * @param plugId
-     *            The plugId as String
-     * @param totalSize
-     *            The quantity of the found topics altogether.
-     * @param expired
-     *            If true return also expired topics.
+     * For a given topic (identified by id) an array of associated topics will be returned.
+     * Calls thesaurusService</br>
+     * <ul><li>getRelatedTermsFromTerm()
+     * </ul>
+     * or direct autoClassify() dependent from passed filter.
+     * @param topicId The topic given by Id.
+     * @param maxResults Limit number of results.
+     * @param filter Topic type as search criterion
+     * @param plugId The plugId as String
+     * @param totalSize The quantity of the found topics altogether.
+     * @param expired filter expired topics ? IGNORED when calling ThesaurusService API, no filtering there !
      * @return an array of associated topics for a type identified by id
      * @throws Exception
      */
     public synchronized de.ingrid.iplug.sns.utils.Topic[] getTopicsForTopic(String topicId, int maxResults,
-            String plugId, int[] totalSize, boolean expired) throws Exception {
-        Map associationTypes = new HashMap();
-        Topic topic = new Topic();
-        topic.setId(topicId);
-        Topic[] associatedTopics = getAssociatedTopics(topic, fTypeFilters, associationTypes, totalSize, expired);
-        if (associatedTopics != null) {
-            return copyToTopicArray(associatedTopics, associationTypes, maxResults, plugId, "bla");
+    		String filter, String plugId, String lang, int[] totalSize, boolean expired) throws Exception {
+        if (log.isDebugEnabled()) {
+            log.debug("getTopicsForTopic: filter=" + filter + ", lang=" + lang);
         }
+
+    	// TERMS
+    	if ("/thesa".equals(filter)) {
+            if (log.isDebugEnabled()) {
+                log.debug("     !!!!!!!!!! calling API thesaurusService.getRelatedTermsFromTerm");
+            }
+            RelatedTerm[] terms = thesaurusService.getRelatedTermsFromTerm(topicId, new Locale(lang));
+
+        	List<de.ingrid.iplug.sns.utils.Topic> resultList = new ArrayList<de.ingrid.iplug.sns.utils.Topic>();
+            List<String> duplicateList = new ArrayList<String>();
+            for (RelatedTerm term : terms) {
+            	if (!duplicateList.contains(term.getId())) {
+                	resultList.add(buildTopicFromRelatedTerm(term, plugId, lang));
+                	duplicateList.add(term.getId());
+                	if (resultList.size() == maxResults) {
+                		break;
+                	}
+            	}
+            }
+            if (resultList.size() > 0) {
+            	totalSize[0] = resultList.size(); 
+            	return resultList.toArray(new de.ingrid.iplug.sns.utils.Topic[resultList.size()]);
+            }
+
+    	} else  {
+    		// IS THIS EVER CALLED FOR ANOTHER TOPIC TYPE ? All Topics (filter null) ? Then this is executed.
+            Map associationTypes = new HashMap();
+            Topic topic = new Topic();
+            topic.setId(topicId);
+            Topic[] associatedTopics = getAssociatedTopics(topic, fTypeFilters, associationTypes, totalSize, expired);
+            if (associatedTopics != null) {
+                return copyToTopicArray(associatedTopics, associationTypes, maxResults, plugId, "bla");
+            }
+    	}
 
         return null;
     }
@@ -199,6 +230,9 @@ public class SNSController {
      */
     public DetailedTopic[] getTopicsForText(String documentText, int maxToAnalyzeWords, String filter, String plugId,
             String lang, int[] totalSize, boolean expired) throws Exception {
+        if (log.isDebugEnabled()) {
+            log.debug("getTopicsForText: filter=" + filter + ", lang=" + lang);
+        }
 
     	// TERMS
     	if ("/thesa".equals(filter)) {
@@ -218,7 +252,6 @@ public class SNSController {
 
     	} else  {
     		// IS THIS EVER CALLED FOR ANOTHER TOPIC TYPE ? Event ? All Topics (filter null) ? Then this is executed.
-    		// 
             final TopicMapFragment mapFragment = this.fServiceClient.autoClassify(documentText, maxToAnalyzeWords, filter,
                     false, lang);
             final Topic[] topics = mapFragment.getTopicMap().getTopic();
@@ -368,7 +401,7 @@ public class SNSController {
     private synchronized DetailedTopic buildDetailedTopicFromTerm(Term term, String plugId, String lang) {
         String topicId = term.getId();
         String title = term.getName();
-        String snsInstanceOf = mapTermTypeToSNSInstanceOf(term);
+        String snsInstanceOf = getSNSInstanceOf(term);
         String summary = title + ' ' + snsInstanceOf;
 
         DetailedTopic result = new DetailedTopic(plugId, topicId.hashCode(), topicId, title, summary, null);
@@ -569,7 +602,7 @@ public class SNSController {
      */
     private de.ingrid.iplug.sns.utils.Topic buildTopicFromTerm(Term term, String plugId, String lang) {
         String title = term.getName();
-        String summary = title + ' ' + mapTermTypeToSNSInstanceOf(term);
+        String summary = title + ' ' + getSNSInstanceOf(term);
         String topicId = term.getId();
         String associationType = "";
         de.ingrid.iplug.sns.utils.Topic result = new de.ingrid.iplug.sns.utils.Topic(plugId, topicId.hashCode(),
@@ -608,23 +641,68 @@ public class SNSController {
     	return resultTopic;
     }
 
-    /** map type ot term to the according SNS "instanceOf xlink:href" ! */
-    private static String mapTermTypeToSNSInstanceOf(Term term) {
+    /**
+     * Also adds relation information to ingrid topic !
+     * @return A ingrid topic from a RelatedTerm. Also sets up relation info in topic !
+     */
+    private de.ingrid.iplug.sns.utils.Topic buildTopicFromRelatedTerm(RelatedTerm term, String plugId, String lang) {
+    	de.ingrid.iplug.sns.utils.Topic resultTopic = buildTopicFromTerm(term, plugId, lang);
+
+    	// add association type dependent from relation
+    	String memberType = getSNSAssociationMemberType(term);
+    	resultTopic.setTopicAssoc(memberType);
+    	
+    	return resultTopic;
+    }
+
+    /** Extract SNS instanceOf href from term ! */
+    private static String getSNSInstanceOf(Term term) {
+    	// unknown term types are handled as top terms !
+    	String snsInstanceOf = "#topTermType";
+
     	// first check whether we have a tree term ! Only then we can determine whether top node !
+    	boolean determined = false;
 		if (TreeTerm.class.isAssignableFrom(term.getClass())) {
 	    	if (((TreeTerm)term).getParents() == null) {
-	    		return SNS_INSTANCE_OF_URL + "#topTermType";
+	    		snsInstanceOf = "#topTermType";
+	    		determined = true;
 	    	}    	
 		}
+		
+		if (!determined) {
+	    	TermType termType = term.getType();
+	    	if (termType == TermType.NODE_LABEL) {
+	    		snsInstanceOf = "#nodeLabelType";
+	    	} else if (termType == TermType.DESCRIPTOR) {
+	    		snsInstanceOf = "#descriptorType";
+	    	} else if (termType == TermType.NON_DESCRIPTOR) {
+	    		snsInstanceOf = "#nonDescriptorType";
+	    	}			
+		}
 
-    	TermType termType = term.getType();
-    	if (termType == TermType.NODE_LABEL) 
-			return SNS_INSTANCE_OF_URL + "#nodeLabelType";
-		if (termType == TermType.DESCRIPTOR) 
-			return SNS_INSTANCE_OF_URL + "#descriptorType";
-		if (termType == TermType.NON_DESCRIPTOR) 
-			return SNS_INSTANCE_OF_URL + "#nonDescriptorType";
-		return SNS_INSTANCE_OF_URL + "#topTermType";
+		return SNS_INSTANCE_OF_URL + snsInstanceOf;
+    }
+
+    /** Extract SNS assoziation member type from related term ! */
+    private static String getSNSAssociationMemberType(RelatedTerm term) {
+    	// default is synonym member type)
+    	String snsMemberType = "#synonymMember";
+
+    	RelationType relationType = term.getRelationType();
+    	if (relationType == RelationType.CHILD) {
+    		snsMemberType = "#narrowerTermMember";
+    	} else if (relationType == RelationType.PARENT) {
+    		snsMemberType = "#widerTermMember";
+    	} else if (relationType == RelationType.RELATIVE) {
+    		// check type of term !
+    		if (term.getType() == TermType.DESCRIPTOR) {
+        		snsMemberType = "#descriptorMember";
+    		} else {
+        		snsMemberType = "#synonymMember";
+    		}
+    	}
+			
+		return SNS_INSTANCE_OF_URL + snsMemberType;
     }
 
     /**
@@ -885,13 +963,17 @@ public class SNSController {
      */
     public de.ingrid.iplug.sns.utils.Topic[] getSimilarTermsFromTopic(String[] searchTerm, int length, String plugId,
             int[] totalSize, String lang) throws Exception {
-        de.ingrid.iplug.sns.utils.Topic[] result = new de.ingrid.iplug.sns.utils.Topic[0];
+        if (log.isDebugEnabled()) {
+            log.debug("getSimilarTermsFromTopic: searchTerm[]=" + searchTerm + ", lang=" + lang);
+        }
+
 
         if (log.isDebugEnabled()) {
             log.debug("     !!!!!!!!!! calling API thesaurusService.getSimilarTermsFromNames: " + searchTerm + "... " + lang);
         }
     	Term[] terms = thesaurusService.getSimilarTermsFromNames(searchTerm, true, new Locale(lang));
 
+        de.ingrid.iplug.sns.utils.Topic[] result = new de.ingrid.iplug.sns.utils.Topic[0];
         if (terms != null) {
         	result = copyToTopicArray(terms, length, plugId, lang);
         }
@@ -1011,12 +1093,16 @@ public class SNSController {
     public DetailedTopic getTopicDetail(IngridHit hit, String filter, String lang) throws Exception {
         de.ingrid.iplug.sns.utils.Topic topic = (de.ingrid.iplug.sns.utils.Topic) hit;
         String topicID = topic.getTopicID();
+        if (log.isDebugEnabled()) {
+            log.debug("getTopicDetail: topicID=" + topicID + ", filter=" + filter + ", lang=" + lang);
+        }
+
         DetailedTopic result = null;
 
     	// TERMS
     	if ("/thesa".equals(filter)) {
             if (log.isDebugEnabled()) {
-                log.debug("     !!!!!!!!!! calling API thesaurusService.getTerm");
+                log.debug("     !!!!!!!!!! calling API thesaurusService.getTerm: " + topicID + " " + lang);
             }
         	Term term = thesaurusService.getTerm(topicID, new Locale(lang));
 
@@ -1126,6 +1212,10 @@ public class SNSController {
     public de.ingrid.iplug.sns.utils.Topic[] getTopicHierachy(int[] totalSize, String associationName, long depth,
             String direction, boolean includeSiblings, String lang, String root, boolean expired, String plugId)
             throws Exception {
+        if (log.isDebugEnabled()) {
+            log.debug("getTopicHierachy: topicID=" + root + ", direction=" + direction + ", lang=" + lang);
+        }
+
     	List<de.ingrid.iplug.sns.utils.Topic> resultList = new ArrayList<de.ingrid.iplug.sns.utils.Topic>();
 
     	if ("down".equals(direction)) {
@@ -1165,7 +1255,7 @@ public class SNSController {
 
     		// never with siblings !
             if (log.isDebugEnabled()) {
-                log.debug("     !!!!!!!!!! calling API thesaurusService.getHierarchyNextLevel: " + root + " " + lang);
+                log.debug("     !!!!!!!!!! calling API thesaurusService.getHierarchyPathToTop: " + root + " " + lang);
             }
         	TreeTerm startTerm = thesaurusService.getHierarchyPathToTop(root, new Locale(lang));
 
