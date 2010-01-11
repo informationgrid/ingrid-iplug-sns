@@ -94,6 +94,7 @@ public class SnsPlug implements IPlug {
                 Topic[] hitsTemp = null;
                 switch (type) {
                 case Topic.TOPIC_FROM_TERM:
+                	// ONLY RETURNS THESA TOPICS !!!
                     hitsTemp = this.fSnsController.getTopicsForTerm(getSearchTerm(query), start, Integer.MAX_VALUE,
                             this.fPlugId, totalSize, lang, expired, includeUse);
                     break;

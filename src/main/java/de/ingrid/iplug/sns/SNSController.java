@@ -26,6 +26,7 @@ import com.slb.taxi.webservice.xtm.stubs.xtm.Topic;
 import de.ingrid.external.FullClassifyService;
 import de.ingrid.external.GazetteerService;
 import de.ingrid.external.ThesaurusService;
+import de.ingrid.external.ThesaurusService.MatchingType;
 import de.ingrid.external.om.RelatedTerm;
 import de.ingrid.external.om.Term;
 import de.ingrid.external.om.TreeTerm;
@@ -98,36 +99,28 @@ public class SNSController {
     }
 
     /**
-     * For a given term (that should be a topic itself) an array of associated topics will returned.
+     * For a given term (that should be a thesaurus "descriptor" topic itself !) an array of associated topics will returned.
      * 
-     * @param queryTerm
-     *            The query term.
-     * @param start
-     *            The start offset.
-     * @param maxResults
-     *            Limit number of results.
-     * @param plugId
-     *            The plugId as String.
-     * @param totalSize
-     *            The quantity of the found topics altogether.
-     * @param lang
-     *            Is used to specify the preferred language for requests.
-     * @param expired
+     * @param queryTerm The query term.
+     * @param start IGNORED
+     * @param maxResults Limit number of results.
+     * @param plugId The plugId as String.
+     * @param totalSize The quantity of the found topics altogether.
+     * @param lang Is used to specify the preferred language for requests.
+     * @param expired IGNORED when calling ThesaurusService API, no filtering there !
      * @param includeUse
-     * @return an array of assiciated topics or null in case the term itself is not found as topic
+     * @return an array of associated topics or null in case the term itself is not found as topic
      * @throws Exception
      */
     public synchronized de.ingrid.iplug.sns.utils.Topic[] getTopicsForTerm(String queryTerm, int start, int maxResults,
             String plugId, int[] totalSize, String lang, boolean expired, boolean includeUse) throws Exception {
-        Map associationTypes = new HashMap();
         de.ingrid.iplug.sns.utils.Topic[] result = new de.ingrid.iplug.sns.utils.Topic[0];
 
-        Topic topic = getTopic(queryTerm, THESAURUS_DESCRIPTOR, start, totalSize, lang, includeUse);
-        if (topic != null) {
-            Topic[] associatedTopics = getAssociatedTopics(topic, fTypeFilters, associationTypes, totalSize, expired);
-            de.ingrid.iplug.sns.utils.Topic[] topics = copyToTopicArray(associatedTopics, associationTypes, maxResults,
-                    plugId, lang);
-            result = topics;
+        de.ingrid.iplug.sns.utils.Topic ingridTopic =
+        	getThesaurusDescriptorTopic(queryTerm, totalSize, lang, includeUse, plugId);
+        if (ingridTopic != null) {
+            result = getTopicsForTopic(ingridTopic.getTopicID(), maxResults,
+            		"/thesa", plugId, lang, totalSize, expired);
         }
 
         return result;
@@ -780,29 +773,63 @@ public class SNSController {
     }
 
     /**
-     * @param queryTerm
-     * @param topicType
-     * @param offSet
-     * @param totalSize
-     * @param lang
-     * @param includeUse
+     * ATTENTION: This method had a bug when using the old controller before introducing the ThesaurusService API !
+     * top and label topics were treated as descriptors !!! But not non descriptor topics !
+     * WE STILL SIMULATE THIS BUG HERE !!! Cause don't know where this query is called ! 
      * @return just one matching topic, in case more topics match or no topic match we return null
      * @throws Exception
      */
-    private Topic getTopic(String queryTerm, String topicType, long offSet, int[] totalSize, String lang,
-            boolean includeUse) throws Exception {
-        // changed from FieldsType.captors to FieldTypes.names
-        TopicMapFragment mapFragment = this.fServiceClient.findTopics(queryTerm, topicType, SearchType.exact,
-                FieldsType.names, offSet, lang, includeUse);
-        if (null != mapFragment) {
-            totalSize[0] = mapFragment.getListExcerpt().getTotalSize().intValue();
-            Topic[] topics = mapFragment.getTopicMap().getTopic();
-            if ((null != topics) && (topics.length == 1)) {
-                return topics[0];
-            }
+    private de.ingrid.iplug.sns.utils.Topic getThesaurusDescriptorTopic(String queryTerm, int[] totalSize, String lang,
+            boolean includeUse, String plugId) throws Exception {
+        if (log.isDebugEnabled()) {
+            log.debug("getTopic: " + queryTerm + ", lang=" + lang);
         }
 
-        return null;
+        if (log.isDebugEnabled()) {
+            log.debug("     !!!!!!!!!! calling API thesaurusService.findTermsFromQueryTerm: " + queryTerm + "... " + lang);
+        }
+    	Term[] terms = thesaurusService.findTermsFromQueryTerm(queryTerm, MatchingType.EXACT, includeUse, new Locale(lang));
+
+    	// filter terms. Same name !
+    	// NOTICE: old findTopics call before integration of API was
+    	//    findTopics(queryTerm, "/thesa/descriptor", SearchType.exact, FieldsType.names, offSet, lang, includeUse);
+    	// Although "/thesa/descriptor" is passed, SNS returns also a top topic (Hydrosphäre - Wasser und Gewässer) 
+    	// or a label topic (Wasser) BUT FILTERS non decriptor topics (Waldsterben) !
+    	// further the returned topic name matches the passed queryTerm, BUT CASE INSENSITIVE !
+    	// check here: http://www.semantic-network.de/doc_findtopics.html?lang=de
+
+    	List<Term> filteredTerms = new ArrayList<Term>();
+        List<String> duplicateList = new ArrayList<String>();
+        for (Term term : terms) {
+        	// NO ! Not only descriptors ! see above !
+//        	if (term.getType() != TermType.DESCRIPTOR) {
+//        		continue;
+//        	}
+        	// filter non descriptors, see above !
+        	if (term.getType() == TermType.NON_DESCRIPTOR) {
+        		continue;
+        	}
+
+        	// CASE INSENSITIVE, see above ! 
+        	if (!term.getName().equalsIgnoreCase(queryTerm)) {
+        		continue;
+        	}
+        	if (duplicateList.contains(term.getId())) {
+        		continue;
+        	}
+        	
+        	filteredTerms.add(term);
+        	duplicateList.add(term.getId());        	
+        }
+
+        // only return result if exactly ONE topic found !
+        de.ingrid.iplug.sns.utils.Topic result = null;
+        if (filteredTerms.size() == 1) {
+        	result = buildTopicFromTerm(filteredTerms.get(0), plugId, lang);
+        	totalSize[0] = 1;
+        }
+
+        return result;
     }
 
     /**

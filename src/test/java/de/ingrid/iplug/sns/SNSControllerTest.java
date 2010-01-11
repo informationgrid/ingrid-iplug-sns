@@ -58,14 +58,35 @@ public class SNSControllerTest extends TestCase {
      */
     public void testTopicsForTerm() throws Exception {
         SNSController controller = new SNSController(fClient, "ags:");
-        Topic[] topicsForTerm = controller.getTopicsForTerm("Wasser", 0, 1000, "aId", new int[1], "de", false, false);
-        assertTrue(topicsForTerm.length > 0);
+        int[] totalSize = new int[1];
+        // NOTICE: "Wasser" is LABEL topic !!!
+        Topic[] topicsForTerm = controller.getTopicsForTerm("Wasser", 0, 1000, "aId", totalSize, "de", false, false);
+        assertTrue(topicsForTerm.length == 26);
         for (int i = 0; i < topicsForTerm.length; i++) {
             Topic topic = topicsForTerm[i];
             if (this.fToStdout) {
                 System.out.println(topic);
             }
         }
+
+        // DESCRIPTOR topic !
+        topicsForTerm = controller.getTopicsForTerm("Hydrosph\u00E4re", 0, 1000, "aId", totalSize, "de", false, false);
+        assertTrue(topicsForTerm.length == 2);
+
+        // case insensitive !!!
+        topicsForTerm = controller.getTopicsForTerm("hydrosph\u00E4re", 0, 1000, "aId", totalSize, "de", false, false);
+        assertTrue(topicsForTerm.length == 2);
+
+        // NON DESCRIPTOR topic ! Here we do NOT get results !!!
+        topicsForTerm = controller.getTopicsForTerm("Waldsterben", 0, 1000, "aId", totalSize, "de", false, false);
+        assertTrue(topicsForTerm.length == 0);
+
+        // TOP topic !!!
+        topicsForTerm = controller.getTopicsForTerm("Hydrosph\u00E4re - Wasser und Gew\u00E4sser", 0, 1000, "aId", totalSize, "de", false, false);
+        assertTrue(topicsForTerm.length == 5);
+
+        topicsForTerm = controller.getTopicsForTerm("no thesa topic available", 0, 1000, "aId", totalSize, "de", false, false);
+        assertTrue(topicsForTerm.length == 0);
     }
 
     /**
