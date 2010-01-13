@@ -27,6 +27,7 @@ import de.ingrid.external.FullClassifyService;
 import de.ingrid.external.GazetteerService;
 import de.ingrid.external.ThesaurusService;
 import de.ingrid.external.ThesaurusService.MatchingType;
+import de.ingrid.external.om.Location;
 import de.ingrid.external.om.RelatedTerm;
 import de.ingrid.external.om.Term;
 import de.ingrid.external.om.TreeTerm;
@@ -61,8 +62,6 @@ public class SNSController {
 
     private static final String SYNONYM_TYPE = "synonymType";
 
-    private static final String THESAURUS_DESCRIPTOR = "/thesa/descriptor";
-
     private static final SimpleDateFormat expiredDateParser = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
 
     private SNSClient fServiceClient;
@@ -78,7 +77,9 @@ public class SNSController {
             "relatedTermsAssoc" };
 
     private static final String[] fAdministrativeTypes = new String[] { "communityType", "districtType", "quarterType",
-            "stateType", "nationType" };
+            "stateType", "nationType",
+            // extend with newest types !
+            "use6Type", "use4Type", "use2Type"};
 
     private String fNativeKeyPrefix;
 
@@ -99,7 +100,8 @@ public class SNSController {
     }
 
     /**
-     * For a given term (that should be a thesaurus "descriptor" topic itself !) an array of associated topics will returned.
+     * For a given term (that should be a thesaurus "descriptor" topic itself !) an array
+     * of associated topics will be returned.
      * 
      * @param queryTerm The query term.
      * @param start IGNORED
@@ -217,7 +219,9 @@ public class SNSController {
      * @param plugId The plugId as String.
      * @param lang Is used to specify the preferred language for requests.
      * @param totalSize The quantity of the found topics altogether.
-     * @param expired filter expired topics ? IGNORED when calling ThesaurusService API, no filtering there !
+     * @param expired also include expired topics ? IGNORED ! expired attribute only set in SNS
+     * 		location topics. There we call Gazetteer API which always filters expired ones (SNS) !
+     * 		Was also always filtered before introducing Gazetteer API.
      * @return array of detailed topics for the given text
      * @throws Exception
      */
@@ -226,6 +230,8 @@ public class SNSController {
         if (log.isDebugEnabled()) {
             log.debug("getTopicsForText: filter=" + filter + ", lang=" + lang);
         }
+
+        DetailedTopic[] result = new DetailedTopic[0];
 
     	// TERMS
     	if ("/thesa".equals(filter)) {
@@ -237,11 +243,22 @@ public class SNSController {
 
             if (terms != null) {
             	totalSize[0] = terms.length;
-            	return toDetailedTopicArray(terms, plugId, lang);
+            	result = toDetailedTopicArray(terms, plugId, lang);
             }
-    		
+
        	// LOCATIONS
-//    	} else if ("/location".equals(filter)) {
+    	} else if ("/location".equals(filter)) {
+
+            if (log.isDebugEnabled()) {
+                log.debug("     !!!!!!!!!! calling API gazetteerService.getLocationsFromText");
+            }
+        	Location[] locations = gazetteerService.getLocationsFromText(documentText, maxToAnalyzeWords,
+        			false, new Locale(lang));
+
+            if (locations != null) {
+            	totalSize[0] = locations.length;
+            	result = toDetailedTopicArray(locations, plugId, lang);
+            }
 
     	} else  {
     		// IS THIS EVER CALLED FOR ANOTHER TOPIC TYPE ? Event ? All Topics (filter null) ? Then this is executed.
@@ -253,11 +270,11 @@ public class SNSController {
             }
 
             if (topics != null) {
-                return toDetailedTopicArray(topics, plugId, lang, expired);
+            	result = toDetailedTopicArray(topics, plugId, lang, expired);
             }
     	}
 
-        return new DetailedTopic[0];
+        return result;
     }
 
     /**
@@ -340,6 +357,18 @@ public class SNSController {
     }
 
     /**
+     * @return An array of ingrid detailed topics from a Location array.
+     */
+    private DetailedTopic[] toDetailedTopicArray(Location[] locations, String plugId, String lang) {
+        final List<DetailedTopic> returnList = new ArrayList<DetailedTopic>();
+        for (Location location : locations) {
+        	returnList.add(buildDetailedTopicFromLocation(location, plugId, lang));
+        }
+
+        return returnList.toArray(new DetailedTopic[returnList.size()]);
+    }
+
+    /**
      * Build a detailed metadata index for a given topic.
      * 
      * @param topic
@@ -388,6 +417,42 @@ public class SNSController {
         }
 
         return metaData;
+    }
+
+    /** Build A detailed topic from Location */
+    private synchronized DetailedTopic buildDetailedTopicFromLocation(Location location, String plugId, String lang) {
+        String topicId = location.getId();
+        String title = location.getName();
+        String snsInstanceOf = getSNSInstanceOf(location);
+        String summary = title + ' ' + snsInstanceOf;
+
+        DetailedTopic result = new DetailedTopic(plugId, topicId.hashCode(), topicId, title, summary, null);
+        result.addToList(DetailedTopic.INSTANCE_OF, snsInstanceOf);
+
+        // we push the stuff which IS ALWAYS ADDED, even if empty
+        // NOTICE: Further this converts the DetailedTopic to an IngridDocument !!!!?
+        pushDefinitions(result, null, lang);
+        pushSamples(result, null, lang);
+
+        if (location.getNativeKey() != null) {
+        	result.setTopicNativeKey(SNSUtil.transformSpacialReference(this.fNativeKeyPrefix, location.getNativeKey()));
+        } else {
+        	result.setTopicNativeKey(topicId);
+        }
+
+        // if administrative location, also set topic id as administrative id !?
+        String locationType = location.getTypeId();
+        for (String adminType : fAdministrativeTypes) {
+        	if (adminType.equals(locationType)) {
+        		result.setAdministrativeID(topicId);
+        		break;
+        	}
+        }
+        
+        // NO BBox !!!? was never delivered ! Extend DetailedTopic with BBox ?
+        // Should be necessary for GSSoil (EGN) !? Or just use name there ?
+
+        return result;
     }
 
     /** Build A detailed topic from Term */
@@ -646,6 +711,11 @@ public class SNSController {
     	resultTopic.setTopicAssoc(memberType);
     	
     	return resultTopic;
+    }
+
+    /** Extract SNS instanceOf href from location ! */
+    private static String getSNSInstanceOf(Location location) {
+		return SNS_INSTANCE_OF_URL + "#" + location.getTypeId();
     }
 
     /** Extract SNS instanceOf href from term ! */

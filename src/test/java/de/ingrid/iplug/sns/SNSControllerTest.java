@@ -348,6 +348,12 @@ public class SNSControllerTest extends TestCase {
         assertEquals("NATURRAUM583", topics[0].getTopicNativeKey());
         assertEquals("NATURRAUM620", topics[1].getTopicNativeKey());
 
+        topics = controller.getTopicsForText("Frankfurt", 100, "/location", "aPlugId", "de", new int[1], false);
+        assertNotNull(topics);
+        assertEquals(4, topics.length);
+        assertEquals("06412000", topics[0].getTopicNativeKey());
+        assertEquals("12053000", topics[1].getTopicNativeKey());
+
     	// test events
         topics = controller.getTopicsForText(text, 100, "/event", "aPlugId", "de", totalSize, false);
         assertEquals(2, totalSize[0]);
