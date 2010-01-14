@@ -109,7 +109,7 @@ public class SNSController {
      * @param plugId The plugId as String.
      * @param totalSize The quantity of the found topics altogether.
      * @param lang Is used to specify the preferred language for requests.
-     * @param expired IGNORED when calling ThesaurusService API, no filtering there !
+     * @param expired return also expired topics ? IGNORED when calling ThesaurusService API
      * @param includeUse
      * @return an array of associated topics or null in case the term itself is not found as topic
      * @throws Exception
@@ -129,17 +129,20 @@ public class SNSController {
     }
 
     /**
-     * For a given topic (identified by id) an array of associated topics will be returned.
-     * Calls thesaurusService</br>
-     * <ul><li>getRelatedTermsFromTerm()
+     * For a given topic (identified by id) an array of associated topics will be returned.</br>
+     * Calls</br>
+     * <ul>
+     * <li>thesaurusService.getRelatedTermsFromTerm()
+     * <li>gazetteerService.getRelatedLocationsFromLocation
+     * <li>direct autoClassify()
      * </ul>
-     * or direct autoClassify() dependent from passed filter.
+     * dependent from passed filter.
      * @param topicId The topic given by Id.
      * @param maxResults Limit number of results.
      * @param filter Topic type as search criterion
      * @param plugId The plugId as String
      * @param totalSize The quantity of the found topics altogether.
-     * @param expired filter expired topics ? IGNORED when calling ThesaurusService API, no filtering there !
+     * @param expired return also expired topics ? IGNORED when calling ThesaurusService / GazetteerService API
      * @return an array of associated topics for a type identified by id
      * @throws Exception
      */
@@ -152,7 +155,7 @@ public class SNSController {
     	// TERMS
     	if ("/thesa".equals(filter)) {
             if (log.isDebugEnabled()) {
-                log.debug("     !!!!!!!!!! calling API thesaurusService.getRelatedTermsFromTerm");
+                log.debug("     !!!!!!!!!! calling API thesaurusService.getRelatedTermsFromTerm " + topicId + " " + lang);
             }
             RelatedTerm[] terms = thesaurusService.getRelatedTermsFromTerm(topicId, new Locale(lang));
 
@@ -171,6 +174,10 @@ public class SNSController {
             	totalSize[0] = resultList.size(); 
             	return resultList.toArray(new de.ingrid.iplug.sns.utils.Topic[resultList.size()]);
             }
+
+           	// LOCATIONS
+    	} else if ("/location".equals(filter)) {
+    		return getTopicSimilarLocationsFromTopic(topicId, maxResults, plugId, totalSize, lang);
 
     	} else  {
     		// IS THIS EVER CALLED FOR ANOTHER TOPIC TYPE ? All Topics (filter null) ? Then this is executed.
@@ -199,7 +206,7 @@ public class SNSController {
      *            Is used to specify the preferred language for requests.
      * @param totalSize
      *            The quantity of the found topics altogether.
-     * @param expired
+     * @param expired return also expired topics ? 
      * @return Array of detailed topics for the given text.
      * @throws Exception
      */
@@ -209,19 +216,22 @@ public class SNSController {
     }
 
     /** For a given text an array of detailed topics will be returned.</br>
-     * Calls thesaurusService</br>
-     * <ul><li>getTermsFromText()
+     * Calls</br>
+     * <ul>
+     * <li>thesaurusService.getTermsFromText()
+     * <li>gazetteerService.getLocationsFromText() -> ONLY NON EXPIRED ONES !
+     * <li>direct autoClassify()
      * </ul>
-     * or direct autoClassify() dependent from passed filter.
+     * dependent from passed filter.
      * @param documentText The given text to analyze.
      * @param maxToAnalyzeWords Analyze only the first maxToAnalyzeWords words of the document in the body.
      * @param filter Topic type as search criterion (only root paths may be used).
      * @param plugId The plugId as String.
      * @param lang Is used to specify the preferred language for requests.
      * @param totalSize The quantity of the found topics altogether.
-     * @param expired also include expired topics ? IGNORED ! expired attribute only set in SNS
+     * @param expired return also expired topics ? IGNORED ! expired attribute only set in SNS
      * 		location topics. There we call Gazetteer API which always filters expired ones (SNS) !
-     * 		Was also always filtered before introducing Gazetteer API.
+     * 		Was also filtered before introducing Gazetteer API.
      * @return array of detailed topics for the given text
      * @throws Exception
      */
@@ -236,7 +246,7 @@ public class SNSController {
     	// TERMS
     	if ("/thesa".equals(filter)) {
             if (log.isDebugEnabled()) {
-                log.debug("     !!!!!!!!!! calling API thesaurusService.getTermsFromText");
+                log.debug("     !!!!!!!!!! calling API thesaurusService.getTermsFromText " + lang);
             }
         	Term[] terms = thesaurusService.getTermsFromText(documentText, maxToAnalyzeWords,
         			false, new Locale(lang));
@@ -250,7 +260,7 @@ public class SNSController {
     	} else if ("/location".equals(filter)) {
 
             if (log.isDebugEnabled()) {
-                log.debug("     !!!!!!!!!! calling API gazetteerService.getLocationsFromText");
+                log.debug("     !!!!!!!!!! calling API gazetteerService.getLocationsFromText " + lang);
             }
         	Location[] locations = gazetteerService.getLocationsFromText(documentText, maxToAnalyzeWords,
         			false, new Locale(lang));
@@ -292,7 +302,7 @@ public class SNSController {
      *            Is used to specify the preferred language for requests.
      * @param totalSize
      *            The quantity of the found topics altogether.
-     * @param expired
+     * @param expired return also expired topics ?
      * @return array of detailed topics for the given text
      * @throws Exception
      */
@@ -321,6 +331,7 @@ public class SNSController {
      *            The plugId as String.
      * @param lang
      *            Is used to specify the preferred language for requests.
+     * @param expired return also expired topics ?
      * @return an array of detailed topics, we ignoring all topics of typ synonymType
      */
     private DetailedTopic[] toDetailedTopicArray(Topic[] topics, String plugId, String lang, boolean expired) {
@@ -449,8 +460,7 @@ public class SNSController {
         	}
         }
         
-        // NO BBox !!!? was never delivered ! Extend DetailedTopic with BBox ?
-        // Should be necessary for GSSoil (EGN) !? Or just use name there ?
+        // NO BBox !!!? was never delivered !
 
         return result;
     }
@@ -672,6 +682,32 @@ public class SNSController {
     }
 
     /**
+     * @return A ingrid topic from a Location.
+     */
+    private de.ingrid.iplug.sns.utils.Topic buildTopicFromLocation(Location location, String plugId, String lang) {
+        String title = location.getName();
+        String summary = title + ' ' + getSNSInstanceOf(location);
+        String topicId = location.getId();
+        String associationType = "";
+        de.ingrid.iplug.sns.utils.Topic result = new de.ingrid.iplug.sns.utils.Topic(plugId, topicId.hashCode(),
+                topicId, title, summary, associationType, null);
+
+        if (location.getNativeKey() != null) {
+            String ags = SNSUtil.transformSpacialReference(this.fNativeKeyPrefix, location.getNativeKey());
+            if (ags.startsWith("lawa:")) {
+                ags = SNSUtil.transformSpacialReference("lawa:", location.getNativeKey());
+            }
+        	result.setTopicNativeKey(SNSUtil.transformSpacialReference(this.fNativeKeyPrefix, location.getNativeKey()));
+        } else {
+        	result.setTopicNativeKey(topicId);
+        }
+        
+        result.setLanguage(lang);
+
+        return result;
+    }
+
+    /**
      * Also adds children OR parents as successors to ingrid topic !
      * @param addParentsAsSuccessors true = the parents of the passed term are added
      * 		as successors to the topic (recursively)</br>
@@ -773,6 +809,7 @@ public class SNSController {
      * @param typePattern
      * @param associationTypes
      * @param totalSize
+     * @param expired return also expired topics ?
      * @return Topic array of associated topics filter by the given patterns
      * @throws Exception
      */
@@ -947,7 +984,6 @@ public class SNSController {
                 }
             }
         }
-        duplicateList.clear();
         return (de.ingrid.iplug.sns.utils.Topic[]) ingridTopics
                 .toArray(new de.ingrid.iplug.sns.utils.Topic[ingridTopics.size()]);
     }
@@ -971,7 +1007,29 @@ public class SNSController {
                 }
             }
         }
-        duplicateList.clear();
+        return (de.ingrid.iplug.sns.utils.Topic[]) ingridTopics
+                .toArray(new de.ingrid.iplug.sns.utils.Topic[ingridTopics.size()]);
+    }
+
+    /**
+     * @return ingrid Topics from Locations.
+     */
+    private de.ingrid.iplug.sns.utils.Topic[] copyToTopicArray(Location[] locations, int maxResults,
+            String plugId, String lang) throws Exception {
+        final List<de.ingrid.iplug.sns.utils.Topic> ingridTopics =
+        	new ArrayList<de.ingrid.iplug.sns.utils.Topic>();
+        final List<String> duplicateList = new ArrayList<String>();
+
+        if (null != locations) {
+            int count = Math.min(maxResults, locations.length);
+            for (int i = 0; i < count; i++) {
+                final String topicId = locations[i].getId();
+                if (!duplicateList.contains(topicId)) {
+                	ingridTopics.add(buildTopicFromLocation(locations[i], plugId, lang));
+                    duplicateList.add(topicId);
+                }
+            }
+        }
         return (de.ingrid.iplug.sns.utils.Topic[]) ingridTopics
                 .toArray(new de.ingrid.iplug.sns.utils.Topic[ingridTopics.size()]);
     }
@@ -1223,8 +1281,7 @@ public class SNSController {
             }
 
     	} else  {
-    		// IS THIS EVER CALLED FOR ANOTHER TOPIC TYPE ? Event ? All Topics (filter null) ? Then this is executed.
-    		// 
+    		// filter: "/event" or null
             TopicMapFragment mapFragment = this.fServiceClient.getPSI(topicID, 0, filter);
             if (null != mapFragment) {
                 Topic[] topics = mapFragment.getTopicMap().getTopic();
@@ -1241,42 +1298,27 @@ public class SNSController {
     }
 
     /**
-     * Find for a given topic similar locations.
-     * 
-     * @param topicId
-     *            The topic given by Id.
-     * @param length
-     *            Number of elements that should be retrieved.
-     * @param plugId
-     *            The plugId as string.
-     * @param totalSize
-     *            Has the total size of the query set after the call.
-     * @param expired
-     * @return A topic array from similar location topics.
-     * @throws Exception
-     */
+     * Find for a given topic similar locations. ONLY NON EXPIRED ONES !!!
+     * Calls gazetteerService.getRelatedLocationsFromLocation().
+    * @param topicId The topic given by Id.
+    * @param length Number of elements that should be retrieved.
+    * @param plugId The plugId as string.
+    * @param totalSize Has the total size of the query set after the call.
+    * @param lang Is used to specify the preferred language for requests.
+    * @return A topic array from similar location topics (NOT EXPIRED) or null !
+    * @throws Exception
+    */
     public de.ingrid.iplug.sns.utils.Topic[] getTopicSimilarLocationsFromTopic(String topicId, int length,
-            String plugId, int[] totalSize, boolean expired) throws Exception {
+            String plugId, int[] totalSize, String lang) throws Exception {
         de.ingrid.iplug.sns.utils.Topic[] result = null;
 
-        TopicMapFragment mapFragment = this.fServiceClient.getPSI(topicId, 0, "/location/");
-        if (null != mapFragment) {
-            if (null != mapFragment.getListExcerpt().getTotalSize()) {
-                totalSize[0] = mapFragment.getListExcerpt().getTotalSize().intValue();
-            }
-            Topic[] topics = mapFragment.getTopicMap().getTopic();
-            if (!expired) {
-                List expiredTopics = new ArrayList();
-                for (int i = 0; i < topics.length; i++) {
-                    Date expiredDate = getExpiredDate(topics[i]);
-                    if ((null != expiredDate) && expiredDate.before(new Date())) {
-                        continue;
-                    }
-                    expiredTopics.add(topics[i]);
-                }
-                topics = (Topic[]) expiredTopics.toArray(new Topic[expiredTopics.size()]);
-            }
-            result = copyToTopicArray(topics, null, length, plugId, "bla");
+        if (log.isDebugEnabled()) {
+            log.debug("     !!!!!!!!!! calling API gazetteerService.getRelatedLocationsFromLocation" + topicId + " " + lang);
+        }
+        Location[] locations = gazetteerService.getRelatedLocationsFromLocation(topicId, true, new Locale(lang));
+        if (locations.length > 0) {
+        	totalSize[0] = locations.length;
+            result = copyToTopicArray(locations, length, plugId, lang);
         }
 
         return result;
@@ -1313,7 +1355,7 @@ public class SNSController {
      * @param includeSiblings IGNORED, always false
      * @param lang the language (e.g. "de")
      * @param root id of root topic (start topic)
-     * @param expired IGNORED, always false (no filtering of expired topics)
+     * @param expired return also expired topics ? IGNORED, expired topics are always removed
      * @param plugId the plug id needed for setup of Topics
      * @return structure of ingrid topics
      * @throws Exception

@@ -124,7 +124,7 @@ public class SnsPlug implements IPlug {
                     break;
                 case Topic.SIMILARLOCATIONS_FROM_TOPIC:
                     hitsTemp = this.fSnsController.getTopicSimilarLocationsFromTopic(getSearchTerm(query),
-                            Integer.MAX_VALUE, this.fPlugId, totalSize, expired);
+                            Integer.MAX_VALUE, this.fPlugId, totalSize, lang);
                     break;
                 case Topic.EVENT_FROM_TOPIC:
                     final String[] eventType = (String[]) query.get("eventtype");

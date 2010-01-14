@@ -95,16 +95,27 @@ public class SNSControllerTest extends TestCase {
     public void testGetAssociatedTopics() throws Exception {
         SNSController controller = new SNSController(fClient, "ags:");
         int[] totalSize = new int[1];
-        Topic[] topicsForTerm = controller.getTopicsForTopic("Wasser", 23, "/thesa", "aId", "de", totalSize, false);
-        assertNull(topicsForTerm);
-        topicsForTerm = controller.getTopicsForTopic(VALID_TOPIC_ID, 23, "/thesa", "aId", "de", totalSize, false);
-        assertEquals(7, topicsForTerm.length);
-        for (int i = 0; i < topicsForTerm.length; i++) {
-            Topic topic = topicsForTerm[i];
+        
+        // THESA
+        Topic[] topics = controller.getTopicsForTopic("Wasser", 23, "/thesa", "aId", "de", totalSize, false);
+        assertNull(topics);
+        topics = controller.getTopicsForTopic(VALID_TOPIC_ID, 23, "/thesa", "aId", "de", totalSize, false);
+        assertEquals(7, topics.length);
+        for (int i = 0; i < topics.length; i++) {
+            Topic topic = topics[i];
             if (this.fToStdout) {
                 System.out.println(topic);
             }
         }
+
+        // LOCATION
+		String locationId = "GEMEINDE0641200000"; // Frankfurt am Main
+        topics = controller.getTopicsForTopic(locationId, 23, "/location", "aId", "de", totalSize, false);
+        assertEquals(23, topics.length);
+
+        // LOCATION
+        topics = controller.getTopicSimilarLocationsFromTopic(locationId, 23, "aId", totalSize, "de");
+        assertEquals(23, topics.length);
     }
 
     /**
@@ -247,15 +258,19 @@ public class SNSControllerTest extends TestCase {
     public void testGetAssociatedTopicsExpired() throws Exception {
         SNSController controller = new SNSController(fClient, "ags:");
         int[] totalSize = new int[1];
+        // WITH INTRODUCTION OF GAZETTEER API NEVER RETURNS EXPIRED ONES !!!
         Topic[] topicsForTopic = controller.getTopicSimilarLocationsFromTopic("GEMEINDE0325300005", 1000, "aId",
-                totalSize, false);
+                totalSize, "de");
+//                totalSize, false, "de");
         assertNotNull(topicsForTopic);
         assertEquals(9, topicsForTopic.length);
 
+        // WITH INTRODUCTION OF GAZETTEER API NEVER RETURNS EXPIRED ONES !!!
         topicsForTopic = controller.getTopicSimilarLocationsFromTopic("GEMEINDE0325300005", 1000, "aId", totalSize,
-                true);
+                "de");
+//                true, "de");
         assertNotNull(topicsForTopic);
-        assertEquals(17, topicsForTopic.length);
+//        assertEquals(17, topicsForTopic.length);
     }
 
     /**
@@ -429,7 +444,7 @@ public class SNSControllerTest extends TestCase {
     public void testGetSimilarLocationsFromTopicNativeKeyHasLawaPrefix() throws Exception {
         SNSController controller = new SNSController(fClient, "ags:");
         String text = "NATURRAUM583";
-        Topic[] topics = controller.getTopicSimilarLocationsFromTopic(text, 100, "aPlugId", new int[1], false);
+        Topic[] topics = controller.getTopicSimilarLocationsFromTopic(text, 100, "aPlugId", new int[1], "de");
         assertNotNull(topics);
         assertEquals(90, topics.length);
         for (int i = 0; i < topics.length; i++) {
