@@ -130,6 +130,7 @@ public class SNSControllerTest extends TestCase {
         SNSController controller = new SNSController(fClient, "ags:");
         Topic topic = new Topic();
         // #legalType (EVENT)
+        // ---------------
         topic.setTopicID("t47098a_10220d1bc3e_4ee1");
 
         DetailedTopic dt = controller.getTopicDetail(topic, "de");
@@ -171,10 +172,13 @@ public class SNSControllerTest extends TestCase {
         System.out.println(bla);
 
         // #descriptorType (THESA) Waldschaden
+        // ---------------
         topic.setTopicID("uba_thes_27061");
 
-        dt = controller.getTopicDetail(topic, "de");
+        dt = controller.getTopicDetail(topic, "/thesa", "de");
         assertNotNull(dt);
+        assertEquals("uba_thes_27061", dt.getTopicID());
+        assertEquals("Waldschaden", dt.getTitle());
 
         // ALWAYS empty definitions cause using ThesaurusService API
         array = dt.getDefinitions();
@@ -197,6 +201,42 @@ public class SNSControllerTest extends TestCase {
         assertNull(bla);
 
         // NO descriptionOcc cause using ThesaurusService API
+        bla = (String) dt.get(DetailedTopic.DESCRIPTION_OCC);
+        assertNull(bla);
+
+        // #use6Type (LOCATION) Frankfurt am Main
+        // ---------------
+        topic.setTopicID("GEMEINDE0641200000");
+
+        dt = controller.getTopicDetail(topic, "/location", "de");
+        assertNotNull(dt);
+        assertEquals("GEMEINDE0641200000", dt.getTopicID());
+        assertEquals("Frankfurt am Main", dt.getTitle());
+        assertTrue(dt.getTopicNativeKey().indexOf("06412000") != -1);
+        assertEquals("GEMEINDE0641200000", dt.getAdministrativeID());
+        assertTrue(dt.getSummary().indexOf("use6Type") != -1);
+
+        // ALWAYS empty definitions cause using GazetterService API
+        array = dt.getDefinitions();
+        assertEquals(0, array.length);
+
+        // ALWAYS empty definitionTitles cause using GazetterService API
+        array = dt.getDefinitionTitles();
+        assertEquals(0, array.length);
+
+        // ALWAYS empty samples cause using GazetterService API
+        array = dt.getSamples();
+        assertEquals(0, array.length);
+
+        // ALWAYS empty sampleTitles cause using GazetterService API
+        array = dt.getSampleTitles();
+        assertEquals(0, array.length);
+
+        // NO associations cause using GazetterService API
+        bla = (String) dt.get(DetailedTopic.ASSOCIATED_OCC);
+        assertNull(bla);
+
+        // NO descriptionOcc cause using GazetterService API
         bla = (String) dt.get(DetailedTopic.DESCRIPTION_OCC);
         assertNull(bla);
     }

@@ -1177,12 +1177,15 @@ public class SNSController {
 
     /**
      * Get detailed information for a hit.</br>
-     * Calls thesaurusService</br>
-     * <ul><li>getTerm()
+     * Calls</br>
+     * <ul>
+     * <li>thesaurusService.getTerm()
+     * <li>gazetterService.getLocation()
+     * <li>direct getPSI()()
      * </ul>
-     * or direct getPSI() dependent from passed filter.
+     * dependent from passed filter.
      * @param hit The hit, for which further information should received.
-     * @param filter Topic type as search criterion (only root paths may be used).
+     * @param filter Topic type as search criterion (only root paths shall be used).
      * @param lang Is used to specify the preferred language for requests.
      * @return A detailed topic to a filter.
      * @throws Exception
@@ -1208,7 +1211,16 @@ public class SNSController {
             }
     		
        	// LOCATIONS
-//    	} else if ("/location".equals(filter)) {
+    	} else if ("/location".equals(filter)) {
+
+            if (log.isDebugEnabled()) {
+                log.debug("     !!!!!!!!!! calling API gazetteerService.getLocation: " + topicID + " " + lang);
+            }
+        	Location location = gazetteerService.getLocation(topicID, new Locale(lang));
+
+            if (location != null) {
+            	result = buildDetailedTopicFromLocation(location, hit.getPlugId(), lang);
+            }
 
     	} else  {
     		// IS THIS EVER CALLED FOR ANOTHER TOPIC TYPE ? Event ? All Topics (filter null) ? Then this is executed.
