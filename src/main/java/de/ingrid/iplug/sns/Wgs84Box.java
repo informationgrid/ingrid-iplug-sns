@@ -163,4 +163,13 @@ public class Wgs84Box {
     public void setGemeindekennziffer(String gemeindekennziffer) {
         this.fGemeindekennziffer = gemeindekennziffer;
     }
+
+	public String toString() {
+		String result = "[";
+		result += "Name: "+this.fTopicName;
+		result += ", Gemeindekennziffer: "+this.fGemeindekennziffer;
+		result += ", WGS84Box: "+this.fX1+","+this.fY1+" "+this.fX2+","+this.fY2;
+		result += "]";
+		return result;
+	}
 }

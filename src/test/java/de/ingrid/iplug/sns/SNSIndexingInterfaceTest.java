@@ -120,7 +120,8 @@ public class SNSIndexingInterfaceTest extends TestCase {
      */
     public void testGetBuzzword() throws Exception {
         String[] result = null;
-        final String words = "In diesem Jahr können sich kleine und mittlere Unternehmen bis zum 15. "
+        final String words = "Waldsterben Wesertal Explosion. "
+        		+ "In diesem Jahr können sich kleine und mittlere Unternehmen bis zum 15. "
                 + "August 2006 bewerben. Eine aus Vertretern von Wissenschaft, Wirtschaft und mittelständischen "
                 + "Anwenderunternehmen besetzte Jury wird bis zu drei Bewerber aus den Kategorien E-Business, Breitband und "
                 + "Mobilität auswählen und mit Preisen in Höhe von je 25.000 Euro auszeichnen. Die Preisverleihung findet im "
@@ -142,31 +143,64 @@ public class SNSIndexingInterfaceTest extends TestCase {
             final String output = "Time for getting all buzzwords: " + ((end - start) / 1000) + " s";
             System.out.println(output);
         }
-
         assertNotNull(result);
+        assertTrue(result.length > 0);
     }
 
     /**
      * @throws Exception
      */
     public void testGetBuzzwordToUrl() throws Exception {
+        // VALID URL GERMAN
         String[] result = null;
-        final String url = "http://www.101tec.com/";
-        final long start = System.currentTimeMillis();
+        String url = "http://www.portalu.de/";
+        long start = System.currentTimeMillis();
         try {
-            result = this.fSnsInterface.getBuzzwords(url, 1000, false);
+            result = this.fSnsInterface.getBuzzwordsToUrl(url, 1000, false, "de");
         } catch (Exception e) {
             e.printStackTrace();
             fail();
         }
-        final long end = System.currentTimeMillis();
+        long end = System.currentTimeMillis();
 
         if (this.fToStdout) {
             final String output = "Time for getting all buzzwords: " + ((end - start) / 1000) + " s";
             System.out.println(output);
         }
-
         assertNotNull(result);
+        assertTrue(result.length > 0);
+
+    	// VALID URL ENGLISH
+        url = "http://www.bbc.com/";
+        try {
+            result = this.fSnsInterface.getBuzzwordsToUrl(url, 1000, false, "en");
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail();
+        }
+        assertNotNull(result);
+        // NOTICE: May be ZERO !!!
+//        assertTrue(result.length > 0);
+
+        // NONEXISTENT URL GERMAN
+        url = "http://www.partalu.de/";
+        result = null;
+        try {
+            result = this.fSnsInterface.getBuzzwordsToUrl(url, 1000, false, "de");
+        } catch (Exception e) {
+        	System.out.println(e);
+        }
+        assertNull(result);
+
+    	// INVALID URL GERMAN
+        url = "htp://www.portalu.de/";
+        result = null;
+        try {
+            result = this.fSnsInterface.getBuzzwordsToUrl(url, 1000, false, "de");
+        } catch (Exception e) {
+        	System.out.println(e);
+        }
+        assertNull(result);
     }
 
     /**
@@ -174,7 +208,7 @@ public class SNSIndexingInterfaceTest extends TestCase {
      */
     public void testGetBuzzwordEnglish() throws Exception {
         String[] result = null;
-        final String words = "In this year we are all happy.";
+        final String words = "In this year we are all happy. Tschernobyl Frankfurt Water";
         final long start = System.currentTimeMillis();
         try {
             result = this.fSnsInterface.getBuzzwords(words, 1000, false, "en");
@@ -190,6 +224,7 @@ public class SNSIndexingInterfaceTest extends TestCase {
         }
 
         assertNotNull(result);
+        assertEquals(0, result.length);
     }
 
     /**
@@ -216,10 +251,10 @@ public class SNSIndexingInterfaceTest extends TestCase {
      * @throws Exception
      */
     public void testGetTopicIds() throws Exception {
-        this.fSnsInterface.getBuzzwords("http://www.101tec.com/", 1000, false);
+        this.fSnsInterface.getBuzzwordsToUrl("http://www.portalu.de/", 1000, false, "de");
 
         final String[] result = this.fSnsInterface.getTopicIds();
         assertNotNull(result);
-        assertEquals(0, result.length);
+        assertTrue(result.length > 0);
     }
 }

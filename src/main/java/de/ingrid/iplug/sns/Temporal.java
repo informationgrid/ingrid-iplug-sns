@@ -79,4 +79,13 @@ public class Temporal {
     public boolean isEmpty() {
         return ((this.fAt == null) && (this.fFrom == null) && (this.fTo == null));
     }
+
+	public String toString() {
+		String result = "[";
+		result += "At: "+this.fAt;
+		result += ", From: "+this.fFrom;
+		result += ", To: "+this.fTo;
+		result += "]";
+		return result;
+	}
 }
