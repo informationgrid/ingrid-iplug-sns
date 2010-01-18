@@ -65,8 +65,6 @@ public class SNSController {
 
     private static final String TEMPORAL_ATOccurrence = "temporalAtOcc";
 
-    private static final String SYNONYM_TYPE = "synonymType";
-
     private static final SimpleDateFormat expiredDateParser = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
 
     private SNSClient fServiceClient;
@@ -277,15 +275,19 @@ public class SNSController {
 
     	} else  {
     		// IS THIS EVER CALLED FOR ANOTHER TOPIC TYPE ? Event ? All Topics (filter null) ? Then this is executed.
-            final TopicMapFragment mapFragment = this.fServiceClient.autoClassify(documentText, maxToAnalyzeWords, filter,
-                    false, lang);
-            final Topic[] topics = mapFragment.getTopicMap().getTopic();
-            if (null != mapFragment.getListExcerpt()) {
-                totalSize[0] = mapFragment.getListExcerpt().getTotalSize().intValue();
-            }
+    		// NOTICE: we may always execute this with according filter !!! but let's keep the old structure
+            
+    		de.ingrid.external.FullClassifyService.FilterType filterType = getFullClassifyFilterType(filter);
 
-            if (topics != null) {
-            	result = toDetailedTopicArray(topics, plugId, lang, expired);
+            if (log.isDebugEnabled()) {
+                log.debug("     !!!!!!!!!! calling API fullClassifyService.autoClassifyText " + filter + " " + lang);
+            }
+            FullClassifyResult classifyResult =
+            	fullClassifyService.autoClassifyText(documentText, maxToAnalyzeWords, false, filterType, new Locale(lang));
+
+            if (classifyResult != null) {
+            	result = toDetailedTopicArray(classifyResult, plugId, lang);
+               	totalSize[0] = result.length;
             }
     	}
 
@@ -328,35 +330,6 @@ public class SNSController {
         }
 
         return result;
-    }
-
-    /**
-     * For a given topic array an array of associated topics which are not synonymous one will returned.
-     * 
-     * @param topics
-     *            Array of given topics.
-     * @param plugId
-     *            The plugId as String.
-     * @param lang
-     *            Is used to specify the preferred language for requests.
-     * @param expired return also expired topics ?
-     * @return an array of detailed topics, we ignoring all topics of typ synonymType
-     */
-    private DetailedTopic[] toDetailedTopicArray(Topic[] topics, String plugId, String lang, boolean expired) {
-        final List returnList = new ArrayList();
-        for (int i = 0; i < topics.length; i++) {
-            if (!topics[i].getInstanceOf()[0].getTopicRef().getHref().endsWith(SYNONYM_TYPE)) {
-                if (!expired) {
-                    Date expiredDate = getExpiredDate(topics[i]);
-                    if ((null != expiredDate) && expiredDate.before(new Date())) {
-                        continue;
-                    }
-                }
-                returnList.add(buildDetailedTopicFromTopic(topics[i], plugId, lang));
-            }
-        }
-
-        return (DetailedTopic[]) returnList.toArray(new DetailedTopic[returnList.size()]);
     }
 
     /**
@@ -484,7 +457,8 @@ public class SNSController {
         return metaData;
     }
 
-    /** Build A detailed topic from Event */
+    /** Build A detailed topic from Event.
+     * NOTICE: NO MAPPING OF ASSOCIATED TERMS YET !!!!!! */
     private synchronized DetailedTopic buildDetailedTopicFromEvent(Event event, String plugId, String lang) {
         String topicId = event.getId();
         String title = event.getTitle();
