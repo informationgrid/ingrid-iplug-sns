@@ -106,7 +106,7 @@ public class SnsPlug implements IPlug {
                 case Topic.TOPIC_FROM_URL:
                     filter = (String) query.get("filter");
                     hitsTemp = this.fSnsController.getTopicsForURL(getSearchTerm(query), this.fMaximalAnalyzedWord,
-                            filter, this.fPlugId, lang, totalSize, expired);
+                            filter, this.fPlugId, lang, totalSize);
                     break;
                 case Topic.TOPIC_FROM_TOPIC:
                 	// ONLY CALLED FROM EXTENDED SEARCH THESAURUS !!!!

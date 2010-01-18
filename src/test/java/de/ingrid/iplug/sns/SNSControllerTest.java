@@ -123,15 +123,56 @@ public class SNSControllerTest extends TestCase {
      */
     public void testGetDocumentRelatedTopics() throws Exception {
         SNSController controller = new SNSController(fClient, "ags:");
+        int[] totalSize = new int[1];
         String text = "Tschernobyl liegt in Halle gefunden";
-        DetailedTopic[] topics = controller.getTopicsForText(text, 100, "aPlugId", "de", new int[1], false);
+        DetailedTopic[] topics = controller.getTopicsForText(text, 100, "aPlugId", "de", totalSize, false);
         assertNotNull(topics);
         assertEquals(10, topics.length);
 
         text = "yyy xxx zzz";
-        topics = controller.getTopicsForText(text, 100, "aPlugId", "de", new int[1], false);
+        topics = controller.getTopicsForText(text, 100, "aPlugId", "de", totalSize, false);
         assertNotNull(topics);
         assertEquals(0, topics.length);
+
+        // valid URL
+        String url = "http://www.portalu.de";
+        int maxWords = 200;
+        topics = controller.getTopicsForURL(url, maxWords, null, "aPlugId", "de", totalSize);
+        assertNotNull(topics);
+        int numAllTopics = topics.length;
+		assertTrue(numAllTopics > 0);
+
+		// only thesa
+        topics = controller.getTopicsForURL(url, maxWords, "/thesa", "aPlugId", "de", totalSize);
+        assertNotNull(topics);
+		assertTrue(topics.length > 0);
+		assertTrue(topics.length < numAllTopics);
+
+		// only locations
+        topics = controller.getTopicsForURL(url, maxWords, "/location", "aPlugId", "de", totalSize);
+        assertNotNull(topics);
+		assertTrue(topics.length > 0);
+		assertTrue(topics.length < numAllTopics);
+
+		// only events
+        topics = controller.getTopicsForURL(url, maxWords, "/event", "aPlugId", "de", totalSize);
+        assertNotNull(topics);
+		assertTrue(topics.length > 0);
+		assertTrue(topics.length < numAllTopics);
+
+		// INVALID URL
+        url = "http://www.partalu.de";
+        try {
+            topics = controller.getTopicsForURL(url, maxWords, "/event", "aPlugId", "de", totalSize);        	
+        } catch (Exception ex) {
+            System.out.println("EXPECTED exception" + ex);
+        }
+        url = "htp://www.portalu .de";
+        try {
+            topics = controller.getTopicsForURL(url, maxWords, "/event", "aPlugId", "de", totalSize);
+        } catch (Exception ex) {
+            System.out.println("EXPECTED exception" + ex);
+        }
     }
 
     /**

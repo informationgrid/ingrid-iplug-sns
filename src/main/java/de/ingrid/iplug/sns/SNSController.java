@@ -1,8 +1,11 @@
 package de.ingrid.iplug.sns;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -27,6 +30,8 @@ import de.ingrid.external.FullClassifyService;
 import de.ingrid.external.GazetteerService;
 import de.ingrid.external.ThesaurusService;
 import de.ingrid.external.ThesaurusService.MatchingType;
+import de.ingrid.external.om.Event;
+import de.ingrid.external.om.FullClassifyResult;
 import de.ingrid.external.om.Location;
 import de.ingrid.external.om.RelatedTerm;
 import de.ingrid.external.om.Term;
@@ -288,38 +293,41 @@ public class SNSController {
     }
 
     /**
-     * For a given URL an array of detailed topics will returned.
+     * For a given URL an array of detailed topics will be returned.
+     * NOTICE: Returns only NON EXPIRED topics. 
      * 
-     * @param url
-     *            The given url to analyze.
-     * @param maxToAnalyzeWords
-     *            Analyze only the first maxToAnalyzeWords words of the document in the body.
-     * @param filter
-     *            Topic type as search criterion (only root paths may be used).
-     * @param plugId
-     *            The plugId as String.
-     * @param lang
-     *            Is used to specify the preferred language for requests.
-     * @param totalSize
-     *            The quantity of the found topics altogether.
-     * @param expired return also expired topics ?
+     * @param urlStr The given url to analyze.
+     * @param maxToAnalyzeWords Analyze only the first maxToAnalyzeWords words of the document in the body.
+     * @param filter Topic type as search criterion (only root paths may be used).
+     * @param plugId The plugId as String.
+     * @param lang Is used to specify the preferred language for requests.
+     * @param totalSize The quantity of the found topics altogether.
      * @return array of detailed topics for the given text
      * @throws Exception
      */
-    public DetailedTopic[] getTopicsForURL(String url, int maxToAnalyzeWords, String filter, String plugId,
-            String lang, int[] totalSize, boolean expired) throws Exception {
-        final TopicMapFragment mapFragment = this.fServiceClient.autoClassifyToUrl(url, maxToAnalyzeWords, filter,
-                false, lang);
-        final Topic[] topics = mapFragment.getTopicMap().getTopic();
-        if (null != mapFragment.getListExcerpt()) {
-            totalSize[0] = mapFragment.getListExcerpt().getTotalSize().intValue();
+    public DetailedTopic[] getTopicsForURL(String urlStr, int maxToAnalyzeWords, String filter, String plugId,
+            String lang, int[] totalSize) throws Exception {
+        if (log.isDebugEnabled()) {
+            log.debug("getTopicsForURL: " + urlStr + ", filter=" + filter + ", lang=" + lang);
         }
 
-        if (topics != null) {
-            return toDetailedTopicArray(topics, plugId, lang, expired);
+    	URL url = createURL(urlStr);
+		de.ingrid.external.FullClassifyService.FilterType filterType = getFullClassifyFilterType(filter);
+
+        if (log.isDebugEnabled()) {
+            log.debug("     !!!!!!!!!! calling API fullClassifyService.autoClassifyURL " + url
+            		+ " " + filter + " " + lang);
+        }
+        FullClassifyResult classifyResult =
+        	fullClassifyService.autoClassifyURL(url, maxToAnalyzeWords, false, filterType, new Locale(lang));
+
+        DetailedTopic[] result = new DetailedTopic[0];
+        if (classifyResult != null) {
+        	result = toDetailedTopicArray(classifyResult, plugId, lang);
+           	totalSize[0] = result.length;
         }
 
-        return new DetailedTopic[0];
+        return result;
     }
 
     /**
@@ -380,6 +388,52 @@ public class SNSController {
     }
 
     /**
+     * @return An array of ingrid detailed topics from an Event array.
+     */
+    private DetailedTopic[] toDetailedTopicArray(Event[] events, String plugId, String lang) {
+        final List<DetailedTopic> returnList = new ArrayList<DetailedTopic>();
+        for (Event event : events) {
+        	returnList.add(buildDetailedTopicFromEvent(event, plugId, lang));
+        }
+
+        return returnList.toArray(new DetailedTopic[returnList.size()]);
+    }
+
+    /**
+     * @return An array of ingrid detailed topics from a result of a full classification.
+     */
+    private DetailedTopic[] toDetailedTopicArray(FullClassifyResult classifyResult, String plugId, String lang) {
+        final List<DetailedTopic> returnList = new ArrayList<DetailedTopic>();
+        DetailedTopic[] topics;
+        
+        List<Term> classifyTerms = classifyResult.getTerms();
+        if (classifyTerms.size() > 0) {
+            topics = toDetailedTopicArray(classifyTerms.toArray(new Term[classifyTerms.size()]), plugId, lang);
+            if (topics.length > 0) {
+                returnList.addAll(Arrays.asList(topics));        	
+            }        	
+        }
+
+        List<Location> classifyLocations = classifyResult.getLocations();
+        if (classifyLocations.size() > 0) {
+            topics = toDetailedTopicArray(classifyLocations.toArray(new Location[classifyLocations.size()]), plugId, lang);
+            if (topics.length > 0) {
+                returnList.addAll(Arrays.asList(topics));        	
+            }        	
+        }
+
+        List<Event> classifyEvents = classifyResult.getEvents();
+        if (classifyEvents.size() > 0) {
+            topics = toDetailedTopicArray(classifyEvents.toArray(new Event[classifyEvents.size()]), plugId, lang);
+            if (topics.length > 0) {
+                returnList.addAll(Arrays.asList(topics));        	
+            }        	
+        }
+
+        return returnList.toArray(new DetailedTopic[returnList.size()]);
+    }
+
+    /**
      * Build a detailed metadata index for a given topic.
      * 
      * @param topic
@@ -428,6 +482,36 @@ public class SNSController {
         }
 
         return metaData;
+    }
+
+    /** Build A detailed topic from Event */
+    private synchronized DetailedTopic buildDetailedTopicFromEvent(Event event, String plugId, String lang) {
+        String topicId = event.getId();
+        String title = event.getTitle();
+        String snsInstanceOf = getSNSInstanceOf(event);
+        String summary = title + ' ' + snsInstanceOf;
+
+        DetailedTopic result = new DetailedTopic(plugId, topicId.hashCode(), topicId, title, summary, null);
+        result.addToList(DetailedTopic.INSTANCE_OF, snsInstanceOf);
+
+        // we push the stuff which IS ALWAYS ADDED, even if empty
+        // NOTICE: Further this converts the DetailedTopic to an IngridDocument !!!!?
+        pushDefinitions(result, null, lang);
+        pushSamples(result, null, lang);
+        // NO TERM ASSOCIATIONS MAPPED in EVENT SO FAR !!!
+//        pushOccurensie(DetailedTopic.ASSOCIATED_OCC, topic, metaData, lang);
+
+        result.put(DetailedTopic.DESCRIPTION_OCC, event.getDescription());
+        if (event.getTimeAt() != null) {
+        	String at = getSNSDateString(event.getTimeAt());
+           	result.setFrom(at);
+           	result.setTo(at);
+        } else {
+           	result.setFrom(getSNSDateString(event.getTimeRangeFrom()));
+           	result.setTo(getSNSDateString(event.getTimeRangeTo()));
+        }
+
+        return result;
     }
 
     /** Build A detailed topic from Location */
@@ -747,6 +831,20 @@ public class SNSController {
     	resultTopic.setTopicAssoc(memberType);
     	
     	return resultTopic;
+    }
+
+    private String getSNSDateString(Date date) {
+    	if (date == null) {
+    		return null;
+    	}
+
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		return dateFormat.format(date);
+    }
+
+    /** Extract SNS instanceOf href from event ! */
+    private static String getSNSInstanceOf(Event event) {
+		return SNS_INSTANCE_OF_URL + "#" + event.getTypeId();
     }
 
     /** Extract SNS instanceOf href from location ! */
@@ -1423,4 +1521,31 @@ public class SNSController {
 
         return resultList.toArray(new de.ingrid.iplug.sns.utils.Topic[resultList.size()]);
     }
+
+	/** Create URL from url String. Returns null if problems !!! */
+	private URL createURL(String urlStr) throws MalformedURLException {
+    	URL url = null;
+    	try {
+    		url = new URL(urlStr);
+    	} catch (MalformedURLException ex) {
+    		log.warn("Error building URL " + urlStr, ex);
+    		throw ex;
+    	}
+    	
+    	return url;
+	}
+
+	/** Determine FullClassifyService.FilterType from passed SNS filter. */
+	private de.ingrid.external.FullClassifyService.FilterType getFullClassifyFilterType(String filterStr) {
+		de.ingrid.external.FullClassifyService.FilterType filterType = null;
+		if ("/thesa".equals(filterStr)) {
+			filterType = de.ingrid.external.FullClassifyService.FilterType.ONLY_TERMS;
+    	} else if ("/location".equals(filterStr)) {
+			filterType = de.ingrid.external.FullClassifyService.FilterType.ONLY_LOCATIONS;
+    	} else  if ("/event".equals(filterStr)) {
+			filterType = de.ingrid.external.FullClassifyService.FilterType.ONLY_EVENTS;
+    	} 
+
+    	return filterType;
+	}
 }
