@@ -186,7 +186,10 @@ public class SNSIndexingInterface {
         	result.add(location.getName());
         }
         for (Event event : fEvents) {
-        	result.add(event.getTitle());
+    		// may be not set if NOT using SNS and event is just a time reference !
+        	if (event.getTitle() != null && event.getTitle().length() > 0) {
+            	result.add(event.getTitle());        		
+        	}
         }
 
         return result.toArray(new String[result.size()]);
@@ -227,7 +230,10 @@ public class SNSIndexingInterface {
     	}
 
     	for (Event event : fEvents) {
-            this.fTopicIds.add(event.getId());
+    		// may be not set if NOT using SNS and event is just a time reference !
+    		if (event.getId() != null && event.getId().length() > 0) {
+                this.fTopicIds.add(event.getId());    			
+    		}
 
             final Temporal temporal = new Temporal();
             temporal.setAt(event.getTimeAt());
