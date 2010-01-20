@@ -114,7 +114,11 @@ public class SNSIndexingInterface {
      * @throws Exception If we cannot connect to the sns server.
      */
     public String[] getBuzzwords(final String text, final int maxToAnalyzeWords, boolean ignoreCase, String language) throws Exception {
-        if (log.isDebugEnabled()) {
+    	if (language == null) {
+    		language = this.fLanguage;
+    	}
+    	
+    	if (log.isDebugEnabled()) {
             log.debug("     !!!!!!!!!! calling API fullClassifyService.autoClassifyText filter=" + null + " " + language);
         }
 
