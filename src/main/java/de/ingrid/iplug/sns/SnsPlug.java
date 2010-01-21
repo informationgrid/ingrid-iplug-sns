@@ -24,6 +24,7 @@ import de.ingrid.utils.query.FieldQuery;
 import de.ingrid.utils.query.IngridQuery;
 import de.ingrid.utils.query.TermQuery;
 import de.ingrid.utils.queryparser.IDataTypes;
+import de.ingrid.utils.tool.SNSUtil;
 
 /**
  * Semantic Network Service as IPlug.
@@ -239,6 +240,7 @@ public class SnsPlug implements IPlug {
         return false;
     }
 
+    /** Search term is the topic ID ! */
     private String getSearchTerm(IngridQuery query) {
         TermQuery[] terms = query.getTerms();
         if (terms.length > 1) {
@@ -249,6 +251,12 @@ public class SnsPlug implements IPlug {
         if (terms.length > 0) {
             searchTerm = terms[0].getTerm();
         }
+
+        // GSSoil Thesaurus Service topic id is marshalled due to special characters (URL)
+		searchTerm = SNSUtil.unmarshallTopicId(searchTerm);
+		if (log.isDebugEnabled()) {
+			log.debug("unmarshalled topicID = " + searchTerm);
+		}
 
         return searchTerm;
     }
@@ -285,8 +293,9 @@ public class SnsPlug implements IPlug {
      */
     public IngridHitDetail getDetail(IngridHit hit, IngridQuery query, String[] fields) throws Exception {
         String lang = getQueryLang(query);
+        String filter = (String) query.get("filter");
 
-        return this.fSnsController.getTopicDetail(hit, lang);
+        return this.fSnsController.getTopicDetail(hit, filter, lang);
     }
 
     private String getQueryLang(IngridQuery query) {

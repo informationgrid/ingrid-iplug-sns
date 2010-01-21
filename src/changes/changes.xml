@@ -7,7 +7,7 @@
   <body>
     <release version="?.?.?" date="2010-??-??" description="Release Thesaurus/Gazetteer API (GS Soil)">
       <action type="add">
-        Thesaurus/Gazetteer Funktionalität jetzt hinter API und per Spring injizierbar (SNS (PortalU) vs EGN, GEMET (GS Soil)) 
+        Thesaurus/Gazetteer/FullClassify Funktionalität jetzt hinter API und per Spring injizierbar (PortalU: SNS vs GS Soil: GEMET etc.) 
       </action>
     </release>
 

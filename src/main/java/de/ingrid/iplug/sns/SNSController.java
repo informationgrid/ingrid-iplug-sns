@@ -965,7 +965,7 @@ public class SNSController {
         }
 
         if (log.isDebugEnabled()) {
-            log.debug("     !!!!!!!!!! calling API thesaurusService.findTermsFromQueryTerm: " + queryTerm + "... " + lang);
+            log.debug("     !!!!!!!!!! calling API thesaurusService.findTermsFromQueryTerm: " + queryTerm + " ... " + lang);
         }
     	Term[] terms = thesaurusService.findTermsFromQueryTerm(queryTerm, MatchingType.EXACT, includeUse, new Locale(lang));
 
@@ -1196,7 +1196,7 @@ public class SNSController {
 
 
         if (log.isDebugEnabled()) {
-            log.debug("     !!!!!!!!!! calling API thesaurusService.getSimilarTermsFromNames: " + searchTerm + "... " + lang);
+            log.debug("     !!!!!!!!!! calling API thesaurusService.getSimilarTermsFromNames: " + searchTerm + " ... " + lang);
         }
     	Term[] terms = thesaurusService.getSimilarTermsFromNames(searchTerm, true, new Locale(lang));
 

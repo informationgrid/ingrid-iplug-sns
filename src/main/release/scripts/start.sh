@@ -87,7 +87,8 @@ startIplug()
   fi
   
   JAVA=$JAVA_HOME/bin/java
-  JAVA_HEAP_MAX=-Xmx128m
+  # needed for GSSoil implementations of Thesaurus/Gazetteer API (Edisoft)
+  JAVA_HEAP_MAX="-Xms256m -Xmx512m -DXX:PermSize=384m -DXX:MaxPermSize=384m -Xss2048k"
   
   # check envvars which might override default args
   if [ "$INGRID_HEAPSIZE" != "" ]; then

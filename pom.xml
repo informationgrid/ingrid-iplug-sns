@@ -101,6 +101,16 @@
       <artifactId>ingrid-external-service-sns</artifactId>
       <version>1.0.0-SNAPSHOT</version>
     </dependency>
+<!-- für mvn eclipse:eclipse ! Aber doch besser manuell in eclipse einbinden (classpath), da noch mehr libs ! -->
+<!--
+    <dependency>
+      <groupId>gssoil</groupId>
+      <artifactId>GSSoilSematicService</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
+      <scope>system</scope>
+      <systemPath>${basedir}/lib/GSSoilSematicService-1.0.0-SNAPSHOT.jar</systemPath>
+    </dependency>
+-->
   </dependencies>
   <repositories>
     <repository>

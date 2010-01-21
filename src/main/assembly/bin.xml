@@ -15,6 +15,10 @@
       <outputDirectory>${project.build.finalName}/</outputDirectory>
     </fileSet>
     <fileSet>
+      <directory>lib</directory>
+      <outputDirectory>${project.build.finalName}/lib</outputDirectory>
+    </fileSet>
+    <fileSet>
       <directory>src/main/release/ant-installer</directory>
       <outputDirectory>/</outputDirectory>
       <filtered>true</filtered>
