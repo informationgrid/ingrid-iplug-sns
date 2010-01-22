@@ -16,7 +16,7 @@ import de.ingrid.iplug.sns.utils.Topic;
 /**
  * Tests of GSSoil implementations of Thesaurus/Gazetteer/FullClassify APi !!!
  */
-public class GSSoilControllerTestLocal extends TestCase {
+public class GsSoilThesaurusTestLocal extends TestCase {
 
     private static SNSClient fClient;
 
@@ -91,55 +91,6 @@ public class GSSoilControllerTestLocal extends TestCase {
         // NO descriptionOcc cause using ThesaurusService API
         bla = (String) dt.get(DetailedTopic.DESCRIPTION_OCC);
         assertNull(bla);
-
-        // #use6Type (LOCATION) Frankfurt am Main
-        // ---------------
-        topic.setTopicID("GEMEINDE0641200000");
-
-        dt = controller.getTopicDetail(topic, "/location", "de");
-        assertNotNull(dt);
-        assertEquals("GEMEINDE0641200000", dt.getTopicID());
-        assertEquals("Frankfurt am Main", dt.getTitle());
-        assertTrue(dt.getTopicNativeKey().indexOf("06412000") != -1);
-        assertEquals("GEMEINDE0641200000", dt.getAdministrativeID());
-        assertTrue(dt.getSummary().indexOf("use6Type") != -1);
-
-        // GSSoil (LOCATION)
-        // ---------------
-/*
-        topic.setTopicID("Berlin");
-
-        dt = controller.getTopicDetail(topic, "/location", "de");
-        if (dt == null) {
-        	return;
-        }
-        assertNotNull(dt);
-        assertTrue(dt.getTopicID().indexOf("Berlin") != -1);
-        assertTrue(dt.getTitle().indexOf("Berlin") != -1);
-*/
-        // ALWAYS empty definitions cause using GazetterService API
-        array = dt.getDefinitions();
-        assertEquals(0, array.length);
-
-        // ALWAYS empty definitionTitles cause using GazetterService API
-        array = dt.getDefinitionTitles();
-        assertEquals(0, array.length);
-
-        // ALWAYS empty samples cause using GazetterService API
-        array = dt.getSamples();
-        assertEquals(0, array.length);
-
-        // ALWAYS empty sampleTitles cause using GazetterService API
-        array = dt.getSampleTitles();
-        assertEquals(0, array.length);
-
-        // NO associations cause using GazetterService API
-        bla = (String) dt.get(DetailedTopic.ASSOCIATED_OCC);
-        assertNull(bla);
-
-        // NO descriptionOcc cause using GazetterService API
-        bla = (String) dt.get(DetailedTopic.DESCRIPTION_OCC);
-        assertNull(bla);
     }
 
     public void testTopicsForTerm() throws Exception {
@@ -176,15 +127,6 @@ public class GSSoilControllerTestLocal extends TestCase {
         
         topics = controller.getTopicsForTopic(VALID_TOPIC_ID, 23, "/thesa", "aId", "en", totalSize, false);
         assertEquals(3, topics.length);
-
-        // LOCATION
-		String locationId = "GEMEINDE0641200000"; // Frankfurt am Main
-        topics = controller.getTopicsForTopic(locationId, 23, "/location", "aId", "de", totalSize, false);
-        assertEquals(23, topics.length);
-
-        // LOCATION
-        topics = controller.getTopicSimilarLocationsFromTopic(locationId, 23, "aId", totalSize, "de");
-        assertEquals(23, topics.length);
     }
 
     public void testGetDocumentRelatedTopics() throws Exception {
@@ -202,6 +144,7 @@ public class GSSoilControllerTestLocal extends TestCase {
         assertEquals(0, topics.length);
 
         // valid URL
+        // NO FILTER -> SNS !
         String url = "http://www.portalu.de";
         int maxWords = 200;
         topics = controller.getTopicsForURL(url, maxWords, null, "aPlugId", "de", totalSize);
@@ -209,19 +152,13 @@ public class GSSoilControllerTestLocal extends TestCase {
         int numAllTopics = topics.length;
 		assertTrue(numAllTopics > 0);
 
-		// only thesa
+		// only thesa -> GS Soil
         topics = controller.getTopicsForURL(url, maxWords, "/thesa", "aPlugId", "de", totalSize);
         assertNotNull(topics);
 		assertTrue(topics.length > 0);
 		assertTrue(topics.length < numAllTopics);
 
-		// only locations
-        topics = controller.getTopicsForURL(url, maxWords, "/location", "aPlugId", "de", totalSize);
-        assertNotNull(topics);
-		assertTrue(topics.length > 0);
-		assertTrue(topics.length < numAllTopics);
-
-		// only events
+		// only events -> SNS 
         topics = controller.getTopicsForURL(url, maxWords, "/event", "aPlugId", "de", totalSize);
         assertNotNull(topics);
 		assertTrue(topics.length > 0);
@@ -230,13 +167,13 @@ public class GSSoilControllerTestLocal extends TestCase {
 		// INVALID URL
         url = "http://www.partalu.de";
         try {
-            topics = controller.getTopicsForURL(url, maxWords, "/event", "aPlugId", "de", totalSize);        	
+            topics = controller.getTopicsForURL(url, maxWords, "/thesa", "aPlugId", "de", totalSize);        	
         } catch (Exception ex) {
             System.out.println("EXPECTED exception" + ex);
         }
         url = "htp://www.portalu .de";
         try {
-            topics = controller.getTopicsForURL(url, maxWords, "/event", "aPlugId", "de", totalSize);
+            topics = controller.getTopicsForURL(url, maxWords, "/thesa", "aPlugId", "de", totalSize);
         } catch (Exception ex) {
             System.out.println("EXPECTED exception" + ex);
         }
@@ -311,7 +248,7 @@ public class GSSoilControllerTestLocal extends TestCase {
         int[] totalSize = new int[1];
         Topic[] topicsForTopic = controller.getSimilarTermsFromTopic("water", 200, "pid", totalSize, "en");
         assertNotNull(topicsForTopic);
-        assertEquals(170, topicsForTopic.length);
+        assertTrue(topicsForTopic.length > 100);
     }
 
     public void testGetTopicFromText() throws Exception {
@@ -320,32 +257,27 @@ public class GSSoilControllerTestLocal extends TestCase {
         String text = "soil water sun";
         int[] totalSize = new int[1];
         DetailedTopic[] topics = controller.getTopicsForText(text, 100, "/thesa", "aPlugId", "en", totalSize, false);        
-        assertEquals(236, totalSize[0]);
+        assertTrue(totalSize[0] > 100);
         assertNotNull(topics);
-        assertEquals(236, topics.length);
+        assertTrue(topics.length > 100);
         assertEquals("alkali soil", topics[0].getTitle());
         assertEquals("contaminated soil", topics[1].getTitle());
 
-    	// test locations
-        topics = controller.getTopicsForText(text, 100, "/location", "aPlugId", "en", totalSize, false);
-        assertEquals(0, totalSize[0]);
+    	// test terms
+        text = "Wasser";
+        topics = controller.getTopicsForText(text, 100, "/thesa", "aPlugId", "de", totalSize, false);        
+        assertTrue(totalSize[0] > 10);
         assertNotNull(topics);
-        assertEquals(0, topics.length);
+        assertTrue(topics.length > 10);
 
-        topics = controller.getTopicsForText("Frankfurt", 100, "/location", "aPlugId", "en", new int[1], false);
-        assertNotNull(topics);
-        assertEquals(4, topics.length);
-        assertEquals("06412000", topics[0].getTopicNativeKey());
-        assertEquals("12053000", topics[1].getTopicNativeKey());
-
-    	// test events
+    	// test events WITH en !
         topics = controller.getTopicsForText(text, 100, "/event", "aPlugId", "en", totalSize, false);
         assertNotNull(topics);
 //        assertEquals(0, topics.length);
 //        assertEquals(2, topics.length);
 
     	// test ALL TOPICS
-        topics = controller.getTopicsForText(text, 100, null, "aPlugId", "en", totalSize, false);
+        topics = controller.getTopicsForText(text, 100, null, "aPlugId", "de", totalSize, false);
         assertNotNull(topics);
 //        assertEquals(0, topics.length);
 //      assertEquals(2, topics.length);

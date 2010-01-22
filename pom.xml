@@ -93,11 +93,6 @@
     </dependency>
     <dependency>
       <groupId>de.ingrid</groupId>
-      <artifactId>ingrid-external-services-api</artifactId>
-      <version>1.0.0-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>de.ingrid</groupId>
       <artifactId>ingrid-external-service-sns</artifactId>
       <version>1.0.0-SNAPSHOT</version>
     </dependency>
@@ -105,10 +100,10 @@
 <!--
     <dependency>
       <groupId>gssoil</groupId>
-      <artifactId>GSSoilSematicService</artifactId>
+      <artifactId>GsSoilThesaurus</artifactId>
       <version>1.0.0-SNAPSHOT</version>
       <scope>system</scope>
-      <systemPath>${basedir}/lib/GSSoilSematicService-1.0.0-SNAPSHOT.jar</systemPath>
+      <systemPath>${basedir}/lib/GsSoilThesaurus-1.0.0-SNAPSHOT.jar</systemPath>
     </dependency>
 -->
   </dependencies>
