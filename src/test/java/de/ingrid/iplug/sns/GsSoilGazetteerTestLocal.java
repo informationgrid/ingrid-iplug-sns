@@ -77,13 +77,13 @@ public class GsSoilGazetteerTestLocal extends TestCase {
         Topic[] topics = null;
         
         // LOCATION
-		String locationId = "GEMEINDE0641200000"; // Frankfurt am Main
-        topics = controller.getTopicsForTopic(locationId, 23, "/location", "aId", "de", totalSize, false);
-        assertEquals(23, topics.length);
+		String locationId = "Berlin";
+        topics = controller.getTopicsForTopic(locationId, 100, "/location", "aId", "de", totalSize, false);
+        assertTrue(topics.length > 0);
 
         // LOCATION
-        topics = controller.getTopicSimilarLocationsFromTopic(locationId, 23, "aId", totalSize, "de");
-        assertEquals(23, topics.length);
+        topics = controller.getTopicSimilarLocationsFromTopic(locationId, 100, "aId", totalSize, "de");
+        assertTrue(topics.length > 0);
     }
 
     public void testGetDocumentRelatedTopics() throws Exception {
@@ -118,26 +118,21 @@ public class GsSoilGazetteerTestLocal extends TestCase {
     public void testGetTopicFromText() throws Exception {
     	// test terms
         SNSController controller = new SNSController(fClient, "ags:");
-        String text = "soil water sun";
+        String text = "Berlin";
         int[] totalSize = new int[1];
         DetailedTopic[] topics;
 
-    	// test locations
-        topics = controller.getTopicsForText(text, 100, "/location", "aPlugId", "en", totalSize, false);
-        assertEquals(0, totalSize[0]);
-        assertNotNull(topics);
-        assertEquals(0, topics.length);
+    	// test locations, "de"
+        topics = controller.getTopicsForText(text, 100, "/location", "aPlugId", "de", totalSize, false);
+        assertTrue(topics.length > 0);
 
-        topics = controller.getTopicsForText("Frankfurt", 100, "/location", "aPlugId", "en", new int[1], false);
-        assertNotNull(topics);
-        assertEquals(4, topics.length);
-        assertEquals("06412000", topics[0].getTopicNativeKey());
-        assertEquals("12053000", topics[1].getTopicNativeKey());
+    	// test locations, "en"
+        topics = controller.getTopicsForText(text, 100, "/location", "aPlugId", "en", totalSize, false);
+        // no english ?
+        assertTrue(topics.length == 0);
 
     	// test ALL TOPICS
-        topics = controller.getTopicsForText(text, 100, null, "aPlugId", "en", totalSize, false);
-        assertNotNull(topics);
-//        assertEquals(0, topics.length);
-//      assertEquals(2, topics.length);
+        topics = controller.getTopicsForText(text, 100, null, "aPlugId", "de", totalSize, false);
+        assertTrue(topics.length > 0);
     }
 }

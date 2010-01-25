@@ -354,6 +354,10 @@ public class SNSController {
     private DetailedTopic[] toDetailedTopicArray(Location[] locations, String plugId, String lang) {
         final List<DetailedTopic> returnList = new ArrayList<DetailedTopic>();
         for (Location location : locations) {
+            // GSSoil Gazetteer delivers null locations and names !?
+            if (location == null || location.getName() == null) {
+            	continue;
+            }
         	returnList.add(buildDetailedTopicFromLocation(location, plugId, lang));
         }
 
@@ -1096,6 +1100,10 @@ public class SNSController {
             int count = Math.min(maxResults, locations.length);
             for (int i = 0; i < count; i++) {
                 final String topicId = locations[i].getId();
+                // GSSoil Gazetteer delivers null locations and names !?
+                if (locations[i] == null || locations[i].getName() == null) {
+                	continue;
+                }
                 if (!duplicateList.contains(topicId)) {
                 	ingridTopics.add(buildTopicFromLocation(locations[i], plugId, lang));
                     duplicateList.add(topicId);

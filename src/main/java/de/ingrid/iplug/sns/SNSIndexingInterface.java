@@ -205,6 +205,11 @@ public class SNSIndexingInterface {
     	}
 
     	for (Location location : fLocations) {
+            // GSSoil Gazetteer delivers null locations and names !?
+            if (location == null || location.getName() == null) {
+            	continue;
+            }
+
             this.fTopicIds.add(location.getId());
             this.fLocationNames.add(location.getName());
 
