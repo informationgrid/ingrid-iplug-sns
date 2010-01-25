@@ -187,6 +187,11 @@ public class SNSIndexingInterface {
         	result.add(term.getName());
         }
         for (Location location : fLocations) {
+            // GSSoil Gazetteer delivers null locations and names !?
+            if (location == null || location.getName() == null) {
+            	continue;
+            }
+
         	result.add(location.getName());
         }
         for (Event event : fEvents) {

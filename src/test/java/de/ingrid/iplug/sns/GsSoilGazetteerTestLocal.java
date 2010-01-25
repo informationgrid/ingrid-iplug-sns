@@ -89,7 +89,7 @@ public class GsSoilGazetteerTestLocal extends TestCase {
     public void testGetDocumentRelatedTopics() throws Exception {
         SNSController controller = new SNSController(fClient, "ags:");
         int[] totalSize = new int[1];
-        String text = "soil water sun";
+        String text = "soil water sun berlin";
         DetailedTopic[] topics = controller.getTopicsForText(text, 100, "aPlugId", "en", totalSize, false);
         assertNotNull(topics);
 //        assertEquals(0, topics.length);
