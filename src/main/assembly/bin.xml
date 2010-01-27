@@ -15,10 +15,6 @@
       <outputDirectory>${project.build.finalName}/</outputDirectory>
     </fileSet>
     <fileSet>
-      <directory>lib</directory>
-      <outputDirectory>${project.build.finalName}/lib</outputDirectory>
-    </fileSet>
-    <fileSet>
       <directory>src/main/release/ant-installer</directory>
       <outputDirectory>/</outputDirectory>
       <filtered>true</filtered>
@@ -30,6 +26,10 @@
     <fileSet>
       <directory>target/site</directory>
       <outputDirectory>${project.build.finalName}/doc</outputDirectory>
+    </fileSet>
+    <fileSet>
+      <directory>target/gssoil</directory>
+      <outputDirectory>${project.build.finalName}/</outputDirectory>
     </fileSet>
   </fileSets>
   <dependencySets>

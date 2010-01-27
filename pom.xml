@@ -136,4 +136,48 @@
       </plugin>
     </plugins>
   </build>
+  <profiles>
+    <profile>
+      <id>gssoil</id>
+      <build>
+        <plugins>
+      <!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
+      <!-- unzip all GSSoil Thesaurus Gazetteer resources and libs to target -->
+      <!-- USE THIS IF YOU SUPPLY IPLUG FOR GS SOIL -->
+      <!-- ADD THESE TO YOUR ECLIPSE libs / sourcepath to run GS Soil unit tests -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>unpack-gssoil</id>
+            <phase>package</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>gssoil</groupId>
+                  <artifactId>thesaurus-gazetteer-resources</artifactId>
+                  <version>1.0.0-SNAPSHOT</version>
+                  <type>zip</type>
+                  <outputDirectory>${project.build.directory}/gssoil/conf</outputDirectory>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>gssoil</groupId>
+                  <artifactId>thesaurus-gazetteer-libs</artifactId>
+                  <version>1.0.0-SNAPSHOT</version>
+                  <type>zip</type>
+                  <outputDirectory>${project.build.directory}/gssoil/lib</outputDirectory>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>
