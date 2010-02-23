@@ -12,4 +12,5 @@
     <!-- GS Soil: activate these ones on GS Soil server ! -->
     <!-- bean id="thesaurusService" class="org.edisoft.eu.gssoil.semanticservice.thesaurus.ThesaurusServiceImpl" /-->
     <!-- bean id="gazetteerService" class="org.edisoft.eu.gssoil.semanticservice.GazetteerServiceImpl" /-->
+    <!-- bean id="fullClassifyService" class="org.edisoft.eu.gssoil.semanticservice.classify.FullClassifyServiceImpl" /-->
 </beans>
