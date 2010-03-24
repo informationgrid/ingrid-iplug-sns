@@ -79,6 +79,7 @@ public class GsSoilGazetteerTestLocal extends TestCase {
         // LOCATION
 		String locationId = "Berlin";
         topics = controller.getTopicsForTopic(locationId, 100, "/location", "aId", "de", totalSize, false);
+        assertNotNull(topics);
         assertTrue(topics.length > 0);
 
         // LOCATION

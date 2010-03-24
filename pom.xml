@@ -96,16 +96,6 @@
       <artifactId>ingrid-external-service-sns</artifactId>
       <version>1.0.0-SNAPSHOT</version>
     </dependency>
-<!-- für mvn eclipse:eclipse ! Aber doch besser manuell in eclipse einbinden (classpath), da noch mehr libs ! -->
-<!--
-    <dependency>
-      <groupId>gssoil</groupId>
-      <artifactId>GsSoilThesaurus</artifactId>
-      <version>1.0.0-SNAPSHOT</version>
-      <scope>system</scope>
-      <systemPath>${basedir}/lib/GsSoilThesaurus-1.0.0-SNAPSHOT.jar</systemPath>
-    </dependency>
--->
   </dependencies>
   <repositories>
     <repository>
@@ -160,14 +150,14 @@
                 <artifactItem>
                   <groupId>gssoil</groupId>
                   <artifactId>thesaurus-gazetteer-resources</artifactId>
-                  <version>1.0.0-SNAPSHOT</version>
+                  <version>1.0.2</version>
                   <type>zip</type>
                   <outputDirectory>${project.build.directory}/gssoil/conf</outputDirectory>
                 </artifactItem>
                 <artifactItem>
                   <groupId>gssoil</groupId>
                   <artifactId>thesaurus-gazetteer-libs</artifactId>
-                  <version>1.0.0-SNAPSHOT</version>
+                  <version>1.0.2</version>
                   <type>zip</type>
                   <outputDirectory>${project.build.directory}/gssoil/lib</outputDirectory>
                 </artifactItem>
