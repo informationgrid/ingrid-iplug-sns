@@ -452,17 +452,18 @@ public class SNSControllerTest extends TestCase {
 
     	// test events
         topics = controller.getTopicsForText(text, 100, "/event", "aPlugId", "de", totalSize, false);
-        assertEquals(2, totalSize[0]);
+        assertEquals(3, totalSize[0]);
         assertNotNull(topics);
-        assertEquals(2, topics.length);
-        assertEquals("Explosion im Stickstoffwerk Oppau", topics[0].getTitle());
-        assertEquals("Kyschtym-Unfall von Majak", topics[1].getTitle());
+        assertEquals(3, topics.length);
+        assertEquals("Chemieexplosion in Toulouse", topics[0].getTitle());
+        assertEquals("Explosion im Stickstoffwerk Oppau", topics[1].getTitle());
+        assertEquals("Kyschtym-Unfall von Majak", topics[2].getTitle());
 
     	// test ALL TOPICS
         topics = controller.getTopicsForText(text, 100, null, "aPlugId", "de", totalSize, false);
-        assertEquals(6, totalSize[0]);
+        assertEquals(7, totalSize[0]);
         assertNotNull(topics);
-        assertEquals(6, topics.length);
+        assertEquals(7, topics.length);
     }
 
 
