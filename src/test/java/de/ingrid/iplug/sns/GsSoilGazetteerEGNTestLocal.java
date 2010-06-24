@@ -12,7 +12,7 @@ import de.ingrid.iplug.sns.utils.Topic;
 /**
  * Tests of GSSoil implementations of Thesaurus/Gazetteer/FullClassify APi !!!
  */
-public class GsSoilGazetteerTestLocal extends TestCase {
+public class GsSoilGazetteerEGNTestLocal extends TestCase {
 
     private static SNSClient fClient;
 

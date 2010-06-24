@@ -384,7 +384,7 @@ public class SNSController {
         DetailedTopic[] topics;
         
         List<Term> classifyTerms = classifyResult.getTerms();
-        if (classifyTerms.size() > 0) {
+        if (classifyTerms != null && classifyTerms.size() > 0) {
             topics = toDetailedTopicArray(classifyTerms.toArray(new Term[classifyTerms.size()]), plugId, lang);
             if (topics.length > 0) {
                 returnList.addAll(Arrays.asList(topics));        	
@@ -392,7 +392,7 @@ public class SNSController {
         }
 
         List<Location> classifyLocations = classifyResult.getLocations();
-        if (classifyLocations.size() > 0) {
+        if (classifyLocations != null && classifyLocations.size() > 0) {
             topics = toDetailedTopicArray(classifyLocations.toArray(new Location[classifyLocations.size()]), plugId, lang);
             if (topics.length > 0) {
                 returnList.addAll(Arrays.asList(topics));        	
@@ -400,7 +400,7 @@ public class SNSController {
         }
 
         List<Event> classifyEvents = classifyResult.getEvents();
-        if (classifyEvents.size() > 0) {
+        if (classifyEvents != null && classifyEvents.size() > 0) {
             topics = toDetailedTopicArray(classifyEvents.toArray(new Event[classifyEvents.size()]), plugId, lang);
             if (topics.length > 0) {
                 returnList.addAll(Arrays.asList(topics));        	

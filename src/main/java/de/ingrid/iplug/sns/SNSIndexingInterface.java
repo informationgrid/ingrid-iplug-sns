@@ -126,8 +126,17 @@ public class SNSIndexingInterface {
         	fFullClassifyService.autoClassifyText(text, maxToAnalyzeWords, ignoreCase, null, new Locale(language));
 
         this.fTerms = classifyResult.getTerms();
+        if (this.fTerms == null) {
+        	this.fTerms = new ArrayList<Term>();
+        }
         this.fLocations = classifyResult.getLocations();
+        if (this.fLocations == null) {
+        	this.fLocations = new ArrayList<Location>();
+        }
         this.fEvents = classifyResult.getEvents();
+        if (this.fEvents == null) {
+        	this.fEvents = new ArrayList<Event>();
+        }
         
         this.fTopicIds.clear();
         this.fTemporal.clear();
@@ -167,8 +176,17 @@ public class SNSIndexingInterface {
     	}
 
         this.fTerms = classifyResult.getTerms();
+        if (this.fTerms == null) {
+        	this.fTerms = new ArrayList<Term>();
+        }
         this.fLocations = classifyResult.getLocations();
+        if (this.fLocations == null) {
+        	this.fLocations = new ArrayList<Location>();
+        }
         this.fEvents = classifyResult.getEvents();
+        if (this.fEvents == null) {
+        	this.fEvents = new ArrayList<Event>();
+        }
 
         this.fTopicIds.clear();
         this.fTemporal.clear();

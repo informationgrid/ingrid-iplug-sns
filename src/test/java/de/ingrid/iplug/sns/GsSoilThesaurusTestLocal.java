@@ -6,12 +6,19 @@ package de.ingrid.iplug.sns;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import junit.framework.TestCase;
+import de.ingrid.external.ThesaurusService;
+import de.ingrid.external.ThesaurusService.MatchingType;
+import de.ingrid.external.om.RelatedTerm;
+import de.ingrid.external.om.Term;
+import de.ingrid.external.om.TreeTerm;
 import de.ingrid.external.sns.SNSClient;
 import de.ingrid.iplug.sns.utils.DetailedTopic;
 import de.ingrid.iplug.sns.utils.Topic;
+import de.ingrid.utils.tool.SpringUtil;
 
 /**
  * Tests of GSSoil implementations of Thesaurus/Gazetteer/FullClassify APi !!!
@@ -35,6 +42,60 @@ public class GsSoilThesaurusTestLocal extends TestCase {
         fClient.setTimeout(180000);
 
         this.fToStdout = true;
+    }
+
+    public void testThesaurusDirectly() throws Exception {
+        SpringUtil springUtil = new SpringUtil("spring/external-services.xml");
+        final Class<ThesaurusService> _thesaurusService = null;
+        ThesaurusService thesaurus = springUtil.getBean("thesaurusService", _thesaurusService);
+
+        // getTerm
+        // --------------------
+        String topicID = "http://www.eionet.europa.eu/gemet/concept/7843"; // Boden
+        Term term = thesaurus.getTerm(topicID, new Locale("en"));
+        assertTrue(term != null);
+        assertTrue(term.getName().equals("soil"));
+
+        // getHierarchyNextLevel
+        // --------------------
+        TreeTerm[] treeTerms = thesaurus.getHierarchyNextLevel(null, new Locale("en"));
+        assertTrue(treeTerms != null);
+        assertTrue(treeTerms.length > 0);
+
+        topicID = "http://www.eionet.europa.eu/gemet/supergroup/5499";
+        treeTerms = thesaurus.getHierarchyNextLevel(topicID, new Locale("en"));
+        assertTrue(treeTerms.length > 0);
+
+        // getHierarchyPathToTop
+        // --------------------
+        topicID = "http://www.eionet.europa.eu/gemet/concept/7843"; // Boden
+        TreeTerm treeTerm = thesaurus.getHierarchyPathToTop(topicID, new Locale("en"));
+        assertNotNull(treeTerm);
+
+        // findTermsFromQueryTerm
+        // --------------------     
+        Term[] terms = thesaurus.findTermsFromQueryTerm("Soil", MatchingType.EXACT, false, new Locale("en"));
+        assertNotNull(terms);
+        assertTrue(terms.length > 0);
+
+        // getRelatedTermsFromTerm
+        // --------------------     
+        RelatedTerm[] relTerms = thesaurus.getRelatedTermsFromTerm(topicID, new Locale("en"));
+        assertNotNull(relTerms);
+        assertTrue(relTerms.length > 0);
+
+        // getSimilarTermsFromNames
+        // --------------------
+        String[] names = new String[] { "soil", "water" };
+        terms = thesaurus.getSimilarTermsFromNames(names, true, new Locale("en"));
+        assertNotNull(terms);
+        assertTrue(terms.length > 0);
+
+        // getTermsFromText
+        // --------------------
+        terms = thesaurus.getTermsFromText("soil water lisbon", 10, true, new Locale("en"));
+        assertNotNull(terms);
+        assertTrue(terms.length > 0);
     }
 
     public void testGetDetails() throws Exception {
@@ -266,18 +327,34 @@ public class GsSoilThesaurusTestLocal extends TestCase {
         String text = "soil water sun";
         int[] totalSize = new int[1];
         DetailedTopic[] topics = controller.getTopicsForText(text, 100, "/thesa", "aPlugId", "en", totalSize, false);        
-        assertTrue(totalSize[0] > 100);
+        assertTrue(totalSize[0] > 0);
         assertNotNull(topics);
-        assertTrue(topics.length > 100);
+        assertTrue(topics.length > 0);
         assertEquals("alkali soil", topics[0].getTitle());
         assertEquals("contaminated soil", topics[1].getTitle());
 
     	// test terms
-        text = "Wasser";
+        // check INSPIRE Themes !
+        text = "Boden Bodennutzung";
         topics = controller.getTopicsForText(text, 100, "/thesa", "aPlugId", "de", totalSize, false);        
-        assertTrue(totalSize[0] > 10);
+        int numTopics = topics.length;
+        assertTrue(totalSize[0] > 0);
         assertNotNull(topics);
-        assertTrue(topics.length > 10);
+        assertTrue(topics.length > 0);
+
+        text = "Bodennutzung Boden";
+        topics = controller.getTopicsForText(text, 100, "/thesa", "aPlugId", "de", totalSize, false);        
+        assertTrue(totalSize[0] > 0);
+        assertNotNull(topics);
+        assertTrue(topics.length > 0);
+        assertEquals(numTopics, topics.length);
+
+    	// "invalid" text. NO TERMS !
+        text = "yyy xxx zzz";
+        topics = controller.getTopicsForText(text, 100, "/thesa", "aPlugId", "de", totalSize, false);        
+        assertTrue(totalSize[0] == 0);
+        assertNotNull(topics);
+        assertTrue(topics.length == 0);
 
     	// test events WITH en !
         topics = controller.getTopicsForText(text, 100, "/event", "aPlugId", "en", totalSize, false);
@@ -286,6 +363,7 @@ public class GsSoilThesaurusTestLocal extends TestCase {
 //        assertEquals(2, topics.length);
 
     	// test ALL TOPICS
+        text = "Wasser";
         topics = controller.getTopicsForText(text, 100, null, "aPlugId", "de", totalSize, false);
         assertNotNull(topics);
 //        assertEquals(0, topics.length);

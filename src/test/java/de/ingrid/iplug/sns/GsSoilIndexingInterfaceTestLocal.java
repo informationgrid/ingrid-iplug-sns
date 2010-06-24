@@ -4,9 +4,15 @@
 
 package de.ingrid.iplug.sns;
 
+import java.net.URL;
+import java.util.Locale;
 import java.util.Set;
 
 import junit.framework.TestCase;
+import de.ingrid.external.FullClassifyService;
+import de.ingrid.external.FullClassifyService.FilterType;
+import de.ingrid.external.om.FullClassifyResult;
+import de.ingrid.utils.tool.SpringUtil;
 
 /**
  * 
@@ -35,15 +41,49 @@ public class GsSoilIndexingInterfaceTestLocal extends TestCase {
         this.fSnsInterface = iinterface;
     }
 
+    public void testFullClassifyDirectly() throws Exception {
+        SpringUtil springUtil = new SpringUtil("spring/external-services.xml");
+        final Class<FullClassifyService> _fullClassifyService = null;
+        FullClassifyService fullClassify = springUtil.getBean("fullClassifyService", _fullClassifyService);
+        
+        // autoClassifyText
+        // --------------------
+        FullClassifyResult res = fullClassify.autoClassifyText("lisbon soil", 10, true, FilterType.ONLY_TERMS, new Locale("en"));
+        assertTrue(res.getTerms() != null);
+        assertTrue(res.getTerms().size() > 0);
+        res = fullClassify.autoClassifyText("lisbon soil", 10, true, FilterType.ONLY_LOCATIONS, new Locale("en"));
+        assertTrue(res.getLocations() != null);
+        assertTrue(res.getLocations().size() > 0);
+        res = fullClassify.autoClassifyText("lisbon soil", 10, true, null, new Locale("en"));
+        assertTrue(res.getTerms() != null);
+        assertTrue(res.getTerms().size() > 0);
+        assertTrue(res.getLocations() != null);
+        assertTrue(res.getLocations().size() > 0);
+
+        // autoClassifyURL
+        // --------------------
+        res = fullClassify.autoClassifyURL(new URL("http://www.portalu.de/"), 100, true, FilterType.ONLY_TERMS, new Locale("de"));
+        assertTrue(res.getTerms() != null);
+        assertTrue(res.getTerms().size() > 0);
+        res = fullClassify.autoClassifyURL(new URL("http://www.portalu.de/"), 100, true, FilterType.ONLY_LOCATIONS, new Locale("de"));
+        assertTrue(res.getLocations() != null);
+        assertTrue(res.getLocations().size() > 0);
+        res = fullClassify.autoClassifyURL(new URL("http://www.portalu.de/"), 100, true, null, new Locale("de"));
+        assertTrue(res.getTerms() != null);
+        assertTrue(res.getTerms().size() > 0);
+        assertTrue(res.getLocations() != null);
+        assertTrue(res.getLocations().size() > 0);
+    }
+
     /**
      * @throws Exception
      */
     public void testGetReferencesToSpace() throws Exception {
-        this.fSnsInterface.getBuzzwords("Halle", 1000, false);
+        this.fSnsInterface.getBuzzwords("Lissabon", 1000, false);
 
         final Wgs84Box[] result = this.fSnsInterface.getReferencesToSpace();
         assertNotNull(result);
-        assertTrue(result.length > 3);
+        assertTrue(result.length > 0);
 
         for (int i = 0; i < result.length; i++) {
             System.out.println(result[i].getTopicName());
@@ -59,7 +99,7 @@ public class GsSoilIndexingInterfaceTestLocal extends TestCase {
      * @throws Exception
      */
     public void testGetLocations() throws Exception {
-        this.fSnsInterface.getBuzzwords("Gronau Borken", 1000, false);
+        this.fSnsInterface.getBuzzwords("Lissabon Porto", 1000, false);
 
         Set<String> locations = fSnsInterface.getLocations();
         for (String location : locations) {
@@ -67,33 +107,24 @@ public class GsSoilIndexingInterfaceTestLocal extends TestCase {
         }
         assertTrue(locations.size() > 0);
 
-        this.fSnsInterface.getBuzzwords("Gronau Borken", 1000, false, "en");
+        this.fSnsInterface.getBuzzwords("Lissabon Porto", 1000, false, "en");
 
         locations = fSnsInterface.getLocations();
         for (String location : locations) {
             System.out.println("location (en): " + location);
         }
-//        assertTrue(locations.size() > 0);
-/*
-        this.fSnsInterface.getBuzzwords("Helgoland", 1000, false);
-
-        locations = fSnsInterface.getLocations();
-        for (String location : locations) {
-            System.out.println("location Helgoland: " + location);
-        }
         assertTrue(locations.size() > 0);
-*/
     }
 
     /**
      * @throws Exception
      */
     public void testGetReferencesToSpaceBundesland() throws Exception {
-        this.fSnsInterface.getBuzzwords("Sachsen", 1000, false);
+        this.fSnsInterface.getBuzzwords("Portugal", 1000, false);
 
         final Wgs84Box[] result = this.fSnsInterface.getReferencesToSpace();
         assertNotNull(result);
-        assertTrue(result.length > 1);
+        assertTrue(result.length > 0);
 
         for (int i = 0; i < result.length; i++) {
             System.out.println(result[i].getTopicName());
@@ -112,6 +143,7 @@ public class GsSoilIndexingInterfaceTestLocal extends TestCase {
         this.fSnsInterface.getBuzzwords("Tschernobyl Ohio", 1000, false);
 
         final Temporal[] result = this.fSnsInterface.getReferencesToTime();
+        // NO REFERENCES TO EVENTS IN GS SOIL !!!
         assertNotNull(result);
         assertEquals(0, result.length);
     }
@@ -120,7 +152,6 @@ public class GsSoilIndexingInterfaceTestLocal extends TestCase {
      * @throws Exception
      */
     public void testGetBuzzword() throws Exception {
-/*
         String[] result = null;
         final String words = "Waldsterben Wesertal Explosion. "
         		+ "In diesem Jahr können sich kleine und mittlere Unternehmen bis zum 15. "
@@ -148,7 +179,6 @@ public class GsSoilIndexingInterfaceTestLocal extends TestCase {
         }
         assertNotNull(result);
         assertTrue(result.length > 0);
-*/
     }
 
     /**
@@ -160,10 +190,7 @@ public class GsSoilIndexingInterfaceTestLocal extends TestCase {
         String url = "http://www.portalu.de/";
         long start = System.currentTimeMillis();
         try {
-        	// THIS TAKES HOURS !!!!!
-//            result = this.fSnsInterface.getBuzzwordsToUrl(url, 1000, false, "de");
-            // just analyze 10 words, but this isn't usable in "real life" !
-            result = this.fSnsInterface.getBuzzwordsToUrl(url, 10, false, "de");
+            result = this.fSnsInterface.getBuzzwordsToUrl(url, 1000, false, "de");
         } catch (Exception e) {
             e.printStackTrace();
             fail();
@@ -186,10 +213,9 @@ public class GsSoilIndexingInterfaceTestLocal extends TestCase {
             fail();
         }
         assertNotNull(result);
-        // NOTICE: May be ZERO !!!
-//        assertTrue(result.length > 0);
+        assertTrue(result.length > 0);
 
-        // NONEXISTENT URL GERMAN
+        // NONEXISTENT URL, but correct URL syntax !
         url = "http://www.partalu.de/";
         result = null;
         try {
@@ -197,9 +223,12 @@ public class GsSoilIndexingInterfaceTestLocal extends TestCase {
         } catch (Exception e) {
         	System.out.println(e);
         }
-        assertNull(result);
+//        assertNull(result);
+        assertNotNull(result);
+        assertTrue(result.length == 0);
 
-    	// INVALID URL GERMAN
+
+    	// INVALID URL SYNTAX !
         url = "htp://www.portalu.de/";
         result = null;
         try {
@@ -215,7 +244,7 @@ public class GsSoilIndexingInterfaceTestLocal extends TestCase {
      */
     public void testGetBuzzwordEnglish() throws Exception {
         String[] result = null;
-        final String words = "In this year we are all happy. Tschernobyl Frankfurt Water";
+        final String words = "In this year we are all happy. Tschernobyl Lisbon Soil";
         final long start = System.currentTimeMillis();
         try {
             result = this.fSnsInterface.getBuzzwords(words, 1000, false, "en");
@@ -231,7 +260,11 @@ public class GsSoilIndexingInterfaceTestLocal extends TestCase {
         }
 
         assertNotNull(result);
-        assertEquals(0, result.length);
+        assertTrue(result.length > 0);
+        
+        for (int i = 0; i < result.length; i++) {
+            System.out.println(result[i]);
+        }
     }
 
     /**

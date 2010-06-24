@@ -22,10 +22,6 @@
     </dependency>
     <dependency>
       <groupId>de.ingrid</groupId>
-      <artifactId>ingrid-utils</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>de.ingrid</groupId>
       <artifactId>ingrid-iplug</artifactId>
       <exclusions>
         <exclusion>
@@ -39,71 +35,23 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>commons-collections</groupId>
-      <artifactId>commons-collections</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-beans</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>commons-logging</groupId>
-      <artifactId>commons-logging</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.thoughtworks.xstream</groupId>
-      <artifactId>xstream</artifactId>
-    </dependency>
-    <!-- jetty -->
-    <dependency>
-      <groupId>tomcat</groupId>
-      <artifactId>jasper-compiler</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>tomcat</groupId>
-      <artifactId>jasper-runtime</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>ant</groupId>
-      <artifactId>ant</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>commons-el</groupId>
-      <artifactId>commons-el</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>jetty</groupId>
-      <artifactId>servlet-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>jetty</groupId>
-      <artifactId>org.mortbay.jetty</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
+      <groupId>de.ingrid</groupId>
+      <artifactId>ingrid-external-service-sns</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
     </dependency>
-    <dependency>
-      <groupId>de.ingrid</groupId>
-      <artifactId>ingrid-external-service-sns</artifactId>
-      <version>1.0.0-SNAPSHOT</version>
-    </dependency>
   </dependencies>
+  <!-- NEVER DELETE: InGrid repo needed for download of parent pom if not present ! -->
   <repositories>
-    <repository>
-      <id>de.ingrid.m2</id>
-      <name>Maven2 Repo InGrid</name>
-      <url>http://harrison.its-technidata.de/ingrid/maven2</url>
-    </repository>
-  </repositories>
+        <repository>
+            <id>de.ingrid.m2</id>
+            <name>Maven2 Repo InGrid</name>
+            <url>http://harrison.its-technidata.de/ingrid/maven2</url>
+        </repository>
+    </repositories>
   <build>
     <finalName>${project.artifactId}-${project.version}</finalName>
     <plugins>
@@ -150,20 +98,22 @@
                 <artifactItem>
                   <groupId>gssoil</groupId>
                   <artifactId>thesaurus-gazetteer-resources</artifactId>
-                  <version>1.0.2</version>
+                  <version>2.0.1</version>
                   <type>zip</type>
                   <outputDirectory>${project.build.directory}/gssoil/conf</outputDirectory>
                 </artifactItem>
                 <artifactItem>
                   <groupId>gssoil</groupId>
                   <artifactId>thesaurus-gazetteer-libs</artifactId>
-                  <version>1.0.2</version>
+                  <version>2.0.1</version>
                   <type>zip</type>
                   <outputDirectory>${project.build.directory}/gssoil/lib</outputDirectory>
                 </artifactItem>
               </artifactItems>
             </configuration>
           </execution>
+<!-- NO SEPARATE REPO LIBS FOR GSSOIL ! WE EXTRACT EVERYTHING FROM ZIP FILE (see above, "thesaurus-gazetteer-libs") !
+SO WE CAN JUST UPDATE LIBS FROM EDISOFT DELIVERIES !
           <execution>
             <id>copy-gssoil</id>
             <phase>package</phase>
@@ -181,10 +131,12 @@
               </artifactItems>
             </configuration>
           </execution>
+-->
         </executions>
       </plugin>
         </plugins>
       </build>
+<!--
       <repositories>
         <repository>
           <snapshots />
@@ -193,6 +145,7 @@
           <url>http://mirrors.ibiblio.org/pub/mirrors/maven2</url>
         </repository>
       </repositories>
+-->
     </profile>
   </profiles>
 </project>
