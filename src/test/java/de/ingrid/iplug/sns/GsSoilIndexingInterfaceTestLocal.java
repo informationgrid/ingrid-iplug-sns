@@ -107,7 +107,7 @@ public class GsSoilIndexingInterfaceTestLocal extends TestCase {
         }
         assertTrue(locations.size() > 0);
 
-        this.fSnsInterface.getBuzzwords("Lissabon Porto", 1000, false, "en");
+        this.fSnsInterface.getBuzzwords("Lisbon Porto", 1000, false, "en");
 
         locations = fSnsInterface.getLocations();
         for (String location : locations) {

@@ -49,6 +49,7 @@ public class GsSoilGazetteerGeoNamesTestLocal extends TestCase {
         // --------------------
         // NOTICE: service checks text on all languages, so passed language isn't necessary for finding location !
         // But found locations then are translated to passed language !
+        // NO, NOT ANYMORE ! Locations are now checked in passed language !  
 
         // pass correct language OF TEXT ! returns Lisbon !
         Location[] locations = gazetteer.getLocationsFromText("Lisbon", 100, false, new Locale("en"));
@@ -56,19 +57,23 @@ public class GsSoilGazetteerGeoNamesTestLocal extends TestCase {
         assertTrue(locations[0].getId().equals(idLisbon));
         assertTrue(locations[0].getName().equals("Lisbon"));
 
-        // pass wrong language of text -> finds location ! service checks text in all languages !?
-        // BUT RETURNS location in passed language !
+        // pass wrong language of text -> no results !
         locations = gazetteer.getLocationsFromText("Lisbon", 100, false, new Locale("de"));
+        assertTrue(locations.length == 0);
+
+        locations = gazetteer.getLocationsFromText("Lisboa", 100, false, new Locale("pt"));
+        assertTrue(locations.length > 0);
+        assertTrue(locations[0].getId().equals(idLisbon));
+        assertTrue(locations[0].getName().equals("Lisboa"));
+/*
+GERMAN not included yet !?
+        locations = gazetteer.getLocationsFromText("Lissabon", 100, false, new Locale("de"));
         assertTrue(locations.length > 0);
         assertTrue(locations[0].getId().equals(idLisbon));
         assertTrue(locations[0].getName().equals("Lissabon"));
 
-        locations = gazetteer.getLocationsFromText("Lissabon", 100, false, new Locale("pt"));
-        assertTrue(locations.length > 0);
-        assertTrue(locations[0].getId().equals(idLisbon));
-        assertTrue(locations[0].getName().equals("Lisboa"));
-
         // FINDET AUCH "Porto" als Ort, obwohl Brief Porto gemeint ist, da Text sprachenunabhängig analysiert !!!!! :(
+        // NEIN, nicht mehr !!!!????
         locations = gazetteer.getLocationsFromText("Brief Porto nach Lissabon, Portugal", 100, false, new Locale("de"));
         assertTrue(locations.length > 0);
         String[] names = new String[] { "Lissabon", "Portugal", "Porto"};
@@ -79,7 +84,7 @@ public class GsSoilGazetteerGeoNamesTestLocal extends TestCase {
             assertTrue(idList.contains(loc.getId()));
             assertTrue(nameList.contains(loc.getName()));
         }
-
+*/
         // invalid text
         locations = gazetteer.getLocationsFromText("yyy xxx zzz", 100, false, new Locale("en"));
         assertTrue(locations.length == 0);
@@ -95,12 +100,13 @@ public class GsSoilGazetteerGeoNamesTestLocal extends TestCase {
 
         locations = gazetteer.findLocationsFromQueryTerm("Lisbon", QueryType.ALL_LOCATIONS, MatchingType.EXACT, new Locale("de"));
         assertTrue(locations.length == 0);
-       
+/*       
+GERMAN not included yet !?
         locations = gazetteer.findLocationsFromQueryTerm("Lissabon", QueryType.ALL_LOCATIONS, MatchingType.CONTAINS, new Locale("de"));
         assertTrue(locations.length > 0);
         assertTrue(locations[0].getId().equals(idLisbon));
         assertTrue(locations[0].getName().equals("Lissabon"));
-
+*/
         locations = gazetteer.findLocationsFromQueryTerm("Lisboa", QueryType.ALL_LOCATIONS, MatchingType.BEGINS_WITH, new Locale("pt"));
         assertTrue(locations.length > 0);
         assertTrue(locations[0].getId().equals(idLisbon));
@@ -114,10 +120,13 @@ public class GsSoilGazetteerGeoNamesTestLocal extends TestCase {
         assertTrue(location != null);
         assertTrue(location.getId().equals(idLisbon));
         assertTrue(location.getName().equals("Lisbon"));
+/*       
+        GERMAN not included yet !?
         location = gazetteer.getLocation(idLisbon, new Locale("de"));
         assertTrue(location != null);
         assertTrue(location.getId().equals(idLisbon));
         assertTrue(location.getName().equals("Lissabon"));
+*/
 
         location = gazetteer.getLocation(idPortugal, new Locale("pt"));
         assertTrue(location != null);
@@ -164,10 +173,10 @@ public class GsSoilGazetteerGeoNamesTestLocal extends TestCase {
         // ---------------
         topic.setTopicID(idLisbon);
 
-        DetailedTopic dt = controller.getTopicDetail(topic, "/location", "de");
+        DetailedTopic dt = controller.getTopicDetail(topic, "/location", "en");
         assertNotNull(dt);
         assertTrue(dt.getTopicID().indexOf(idLisbon) != -1);
-        assertTrue(dt.getTitle().indexOf("Lissabon") != -1);
+        assertTrue(dt.getTitle().indexOf("Lisbon") != -1);
 
         // ALWAYS empty definitions cause using GazetterService API
         String[] array = dt.getDefinitions();
@@ -200,29 +209,31 @@ public class GsSoilGazetteerGeoNamesTestLocal extends TestCase {
         Topic[] topics = null;
         
         // LOCATION
-        topics = controller.getTopicsForTopic(idLisbon, 100, "/location", "aId", "de", totalSize, false);
+        topics = controller.getTopicsForTopic(idLisbon, 100, "/location", "aId", "en", totalSize, false);
         assertNotNull(topics);
         assertTrue(topics.length > 0);
 
         // LOCATION
         // "Lisboa"
-        topics = controller.getTopicSimilarLocationsFromTopic(idLisbon, 100, "aId", totalSize, "de");
+        topics = controller.getTopicSimilarLocationsFromTopic(idLisbon, 100, "aId", totalSize, "en");
         assertTrue(topics.length > 0);
     }
 
     public void testGetTopicFromText() throws Exception {
     	// test terms
         SNSController controller = new SNSController(fClient, "ags:");
-        String text = "Lisbon";
         int[] totalSize = new int[1];
         DetailedTopic[] topics;
 
     	// test locations, "de"
-        topics = controller.getTopicsForText(text, 100, "/location", "aPlugId", "de", totalSize, false);
-        assertTrue(topics.length > 0);
+/*       
+GERMAN not included yet !?
 
+        topics = controller.getTopicsForText("Lissabon", 100, "/location", "aPlugId", "de", totalSize, false);
+        assertTrue(topics.length > 0);
+*/
     	// test locations, "en"
-        topics = controller.getTopicsForText(text, 100, "/location", "aPlugId", "en", totalSize, false);
+        topics = controller.getTopicsForText("Lisbon", 100, "/location", "aPlugId", "en", totalSize, false);
         assertTrue(topics.length > 0);
 
     	// test invalid text
@@ -230,7 +241,7 @@ public class GsSoilGazetteerGeoNamesTestLocal extends TestCase {
         assertTrue(topics.length == 0);
 
     	// test ALL TOPICS
-        topics = controller.getTopicsForText(text, 100, null, "aPlugId", "de", totalSize, false);
+        topics = controller.getTopicsForText("Lisbon", 100, null, "aPlugId", "en", totalSize, false);
         assertTrue(topics.length > 0);
     }
 
@@ -239,7 +250,7 @@ public class GsSoilGazetteerGeoNamesTestLocal extends TestCase {
         int[] totalSize = new int[1];
         DetailedTopic[] topics;
         
-        String text = "soil water sun lisboa";
+        String text = "soil water sun lisbon";
 
         // ALWAYS NO FILTER !
         topics = controller.getTopicsForText(text, 100, "aPlugId", "en", totalSize, false);
