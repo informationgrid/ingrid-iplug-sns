@@ -79,7 +79,7 @@ public class GsSoilIndexingInterfaceTestLocal extends TestCase {
      * @throws Exception
      */
     public void testGetReferencesToSpace() throws Exception {
-        this.fSnsInterface.getBuzzwords("Lissabon", 1000, false);
+        this.fSnsInterface.getBuzzwords("Berlin", 1000, false);
 
         final Wgs84Box[] result = this.fSnsInterface.getReferencesToSpace();
         assertNotNull(result);
@@ -99,7 +99,7 @@ public class GsSoilIndexingInterfaceTestLocal extends TestCase {
      * @throws Exception
      */
     public void testGetLocations() throws Exception {
-        this.fSnsInterface.getBuzzwords("Lissabon Porto", 1000, false);
+        this.fSnsInterface.getBuzzwords("Berlin Deutschland", 1000, false);
 
         Set<String> locations = fSnsInterface.getLocations();
         for (String location : locations) {
@@ -120,7 +120,7 @@ public class GsSoilIndexingInterfaceTestLocal extends TestCase {
      * @throws Exception
      */
     public void testGetReferencesToSpaceBundesland() throws Exception {
-        this.fSnsInterface.getBuzzwords("Portugal", 1000, false);
+        this.fSnsInterface.getBuzzwords("Bayern", 1000, false);
 
         final Wgs84Box[] result = this.fSnsInterface.getReferencesToSpace();
         assertNotNull(result);

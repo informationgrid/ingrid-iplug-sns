@@ -28,6 +28,8 @@ public class GsSoilGazetteerGeoNamesTestLocal extends TestCase {
     String idLisbon = "2267057";
     String idPortugal = "2264397";
     String idPorto = "2735943";
+    String idBerlin = "2950157";
+    String idDeutschland = "2921044";
 
     public void setSNSClient(SNSClient client) throws Exception {
         fClient = client;
@@ -47,9 +49,7 @@ public class GsSoilGazetteerGeoNamesTestLocal extends TestCase {
         
         // getLocationsFromText
         // --------------------
-        // NOTICE: service checks text on all languages, so passed language isn't necessary for finding location !
-        // But found locations then are translated to passed language !
-        // NO, NOT ANYMORE ! Locations are now checked in passed language !  
+        // NOTICE: Locations are now checked in passed language !  
 
         // pass correct language OF TEXT ! returns Lisbon !
         Location[] locations = gazetteer.getLocationsFromText("Lisbon", 100, false, new Locale("en"));
@@ -65,33 +65,21 @@ public class GsSoilGazetteerGeoNamesTestLocal extends TestCase {
         assertTrue(locations.length > 0);
         assertTrue(locations[0].getId().equals(idLisbon));
         assertTrue(locations[0].getName().equals("Lisboa"));
-/*
-GERMAN not included yet !?
-        locations = gazetteer.getLocationsFromText("Lissabon", 100, false, new Locale("de"));
-        assertTrue(locations.length > 0);
-        assertTrue(locations[0].getId().equals(idLisbon));
-        assertTrue(locations[0].getName().equals("Lissabon"));
 
-        // FINDET AUCH "Porto" als Ort, obwohl Brief Porto gemeint ist, da Text sprachenunabhängig analysiert !!!!! :(
-        // NEIN, nicht mehr !!!!????
-        locations = gazetteer.getLocationsFromText("Brief Porto nach Lissabon, Portugal", 100, false, new Locale("de"));
+        locations = gazetteer.getLocationsFromText("Berlin", 100, false, new Locale("de"));
         assertTrue(locations.length > 0);
-        String[] names = new String[] { "Lissabon", "Portugal", "Porto"};
-        List<String> nameList = Arrays.asList(names); 
-        String[] ids = new String[] { idLisbon, idPortugal, idPorto};
-        List<String> idList = Arrays.asList(ids);
-        for (Location loc : locations) {
-            assertTrue(idList.contains(loc.getId()));
-            assertTrue(nameList.contains(loc.getName()));
-        }
-*/
+        assertTrue(locations[0].getName().contains("Berlin"));
+
+        locations = gazetteer.getLocationsFromText("Brief Porto nach Berlin, Deutschland", 100, false, new Locale("de"));
+        assertTrue(locations.length > 1);
+
         // invalid text
         locations = gazetteer.getLocationsFromText("yyy xxx zzz", 100, false, new Locale("en"));
         assertTrue(locations.length == 0);
 
         // findLocationsFromQueryTerm
         // --------------------
-        // NOTICE: Here passed Name of location and language must match, e.g. "Lisbon"<->"en" or "Lissabon"<->"de" ... 
+        // NOTICE: Passed Name of location and language must match, e.g. "Lisbon"<->"en" or "Lisboa"<->"pt" ... 
 
         locations = gazetteer.findLocationsFromQueryTerm("Lisbon", QueryType.ALL_LOCATIONS, MatchingType.EXACT, new Locale("en"));
         assertTrue(locations.length > 0);
@@ -100,13 +88,11 @@ GERMAN not included yet !?
 
         locations = gazetteer.findLocationsFromQueryTerm("Lisbon", QueryType.ALL_LOCATIONS, MatchingType.EXACT, new Locale("de"));
         assertTrue(locations.length == 0);
-/*       
-GERMAN not included yet !?
-        locations = gazetteer.findLocationsFromQueryTerm("Lissabon", QueryType.ALL_LOCATIONS, MatchingType.CONTAINS, new Locale("de"));
+
+        locations = gazetteer.findLocationsFromQueryTerm("Berlin", QueryType.ALL_LOCATIONS, MatchingType.CONTAINS, new Locale("de"));
         assertTrue(locations.length > 0);
-        assertTrue(locations[0].getId().equals(idLisbon));
-        assertTrue(locations[0].getName().equals("Lissabon"));
-*/
+        assertTrue(locations[0].getName().contains("Berlin"));
+
         locations = gazetteer.findLocationsFromQueryTerm("Lisboa", QueryType.ALL_LOCATIONS, MatchingType.BEGINS_WITH, new Locale("pt"));
         assertTrue(locations.length > 0);
         assertTrue(locations[0].getId().equals(idLisbon));
@@ -120,13 +106,11 @@ GERMAN not included yet !?
         assertTrue(location != null);
         assertTrue(location.getId().equals(idLisbon));
         assertTrue(location.getName().equals("Lisbon"));
-/*       
-        GERMAN not included yet !?
-        location = gazetteer.getLocation(idLisbon, new Locale("de"));
+
+        location = gazetteer.getLocation(idBerlin, new Locale("de"));
         assertTrue(location != null);
-        assertTrue(location.getId().equals(idLisbon));
-        assertTrue(location.getName().equals("Lissabon"));
-*/
+        assertTrue(location.getId().equals(idBerlin));
+        assertTrue(location.getName().equals("Berlin"));
 
         location = gazetteer.getLocation(idPortugal, new Locale("pt"));
         assertTrue(location != null);
@@ -226,12 +210,9 @@ GERMAN not included yet !?
         DetailedTopic[] topics;
 
     	// test locations, "de"
-/*       
-GERMAN not included yet !?
-
-        topics = controller.getTopicsForText("Lissabon", 100, "/location", "aPlugId", "de", totalSize, false);
+        topics = controller.getTopicsForText("Berlin Deutschland", 100, "/location", "aPlugId", "de", totalSize, false);
         assertTrue(topics.length > 0);
-*/
+
     	// test locations, "en"
         topics = controller.getTopicsForText("Lisbon", 100, "/location", "aPlugId", "en", totalSize, false);
         assertTrue(topics.length > 0);
@@ -262,21 +243,16 @@ GERMAN not included yet !?
         assertNotNull(topics);
         assertEquals(0, topics.length);
 
-        // valid URL
-//        String url = "http://www.portalu.de";
-        String url = "http://www.visitlisboa.com";
-
 /*
         // NO FILTER !
-        topics = controller.getTopicsForURL(url, maxWords, null, "aPlugId", "de", totalSize);
+        topics = controller.getTopicsForURL("http://www.visitlisboa.com", maxWords, null, "aPlugId", "de", totalSize);
         assertNotNull(topics);
         int numAllTopics = topics.length;
 		assertTrue(numAllTopics > 0);
 */
 		// only locations
-        topics = controller.getTopicsForURL(url, 1000, "/location", "aPlugId", "en", totalSize);
+        topics = controller.getTopicsForURL("http://www.visitlisboa.com", 1000, "/location", "aPlugId", "en", totalSize);
         assertNotNull(topics);
 		assertTrue(topics.length > 0);
-//		assertTrue(topics.length < numAllTopics);
     }
 }
