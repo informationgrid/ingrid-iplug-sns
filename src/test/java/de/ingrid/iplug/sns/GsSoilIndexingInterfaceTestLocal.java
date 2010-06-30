@@ -62,13 +62,18 @@ public class GsSoilIndexingInterfaceTestLocal extends TestCase {
 
         // autoClassifyURL
         // --------------------
-        res = fullClassify.autoClassifyURL(new URL("http://www.portalu.de/"), 100, true, FilterType.ONLY_TERMS, new Locale("de"));
+        res = fullClassify.autoClassifyURL(new URL("http://www.visitlisboa.com"), 1000, true, FilterType.ONLY_TERMS, new Locale("en"));
         assertTrue(res.getTerms() != null);
         assertTrue(res.getTerms().size() > 0);
-        res = fullClassify.autoClassifyURL(new URL("http://www.portalu.de/"), 100, true, FilterType.ONLY_LOCATIONS, new Locale("de"));
+        // ignore case
+        res = fullClassify.autoClassifyURL(new URL("http://www.visitlisboa.com"), 1000, true, FilterType.ONLY_LOCATIONS, new Locale("pt"));
         assertTrue(res.getLocations() != null);
         assertTrue(res.getLocations().size() > 0);
-        res = fullClassify.autoClassifyURL(new URL("http://www.portalu.de/"), 100, true, null, new Locale("de"));
+        // DO NOT IGNORE CASE
+        res = fullClassify.autoClassifyURL(new URL("http://www.visitlisboa.com"), 1000, false, FilterType.ONLY_LOCATIONS, new Locale("en"));
+        assertTrue(res.getLocations() != null);
+        assertTrue(res.getLocations().size() > 0);
+        res = fullClassify.autoClassifyURL(new URL("http://www.visitlisboa.com"), 1000, true, null, new Locale("en"));
         assertTrue(res.getTerms() != null);
         assertTrue(res.getTerms().size() > 0);
         assertTrue(res.getLocations() != null);

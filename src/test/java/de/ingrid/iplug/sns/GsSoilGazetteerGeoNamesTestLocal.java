@@ -4,8 +4,6 @@
 
 package de.ingrid.iplug.sns;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Locale;
 
 import junit.framework.TestCase;
