@@ -68,6 +68,9 @@ public class GsSoilGazetteerGeoNamesTestLocal extends TestCase {
         assertTrue(locations.length > 0);
         assertTrue(locations[0].getName().contains("Berlin"));
 
+        locations = gazetteer.getLocationsFromText("ruhlsdorf", 100, false, new Locale("de"));
+        assertTrue(locations.length > 0);
+        
         locations = gazetteer.getLocationsFromText("Brief Porto nach Berlin, Deutschland", 100, false, new Locale("de"));
         assertTrue(locations.length > 1);
 
@@ -95,6 +98,9 @@ public class GsSoilGazetteerGeoNamesTestLocal extends TestCase {
         assertTrue(locations.length > 0);
         assertTrue(locations[0].getId().equals(idLisbon));
         assertTrue(locations[0].getName().equals("Lisboa"));
+
+        locations = gazetteer.findLocationsFromQueryTerm("ruhlsdorf", QueryType.ALL_LOCATIONS, MatchingType.CONTAINS, new Locale("de"));
+        assertTrue(locations.length > 0);
 
         // getLocation
         // --------------------
@@ -249,7 +255,7 @@ public class GsSoilGazetteerGeoNamesTestLocal extends TestCase {
 		assertTrue(numAllTopics > 0);
 */
 		// only locations
-        topics = controller.getTopicsForURL("http://www.visitlisboa.com", 1000, "/location", "aPlugId", "en", totalSize);
+        topics = controller.getTopicsForURL("http://www.visitlisboa.com", 1000, "/location", "aPlugId", "pt", totalSize);
         assertNotNull(topics);
 		assertTrue(topics.length > 0);
     }
