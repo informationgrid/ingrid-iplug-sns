@@ -2,7 +2,7 @@
   <parent>
     <artifactId>ingrid-releases-pom</artifactId>
     <groupId>de.ingrid</groupId>
-    <version>1.0.3-SNAPSHOT</version>
+    <version>1.1.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>de.ingrid</groupId>
@@ -25,7 +25,7 @@
       <artifactId>ingrid-iplug</artifactId>
       <exclusions>
         <exclusion>
-          <groupId>quartz</groupId>
+          <groupId>opensymphony</groupId>
           <artifactId>quartz</artifactId>
         </exclusion>
         <exclusion>
@@ -37,7 +37,6 @@
     <dependency>
       <groupId>de.ingrid</groupId>
       <artifactId>ingrid-external-service-sns</artifactId>
-      <version>1.0.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
@@ -58,7 +57,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
-        <version>2.2</version>
         <configuration>
           <archive>
             <manifestEntries>
@@ -74,7 +72,6 @@
       </plugin>
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
-        <version>2.2-beta-4</version>
             <!-- Add Type of Component to Manifest of Installer for Upgrade Server -->
             <configuration>
                 <archive>
