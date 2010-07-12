@@ -224,7 +224,8 @@ public class SNSIndexingInterfaceTest extends TestCase {
         }
 
         assertNotNull(result);
-        assertEquals(0, result.length);
+//        assertEquals(0, result.length);
+        assertTrue(result.length > 0);
     }
 
     /**
