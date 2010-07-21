@@ -12,13 +12,13 @@ import de.ingrid.external.sns.SNSClient;
 /**
  * 
  */
-public class SNSControllerPerformanceTest extends TestCase {
+public class SNSControllerPerformanceTestLocal extends TestCase {
 
     private SNSControllerTest fSNSControllerTest;
     
     private SNSIndexingInterfaceTest fSNSIndexingInterfaceTest;
 
-    private static final int fMaxLoops = 10;
+    private final int fMaxLoops = 10;
 
     /**
      * @see junit.framework.TestCase#setUp()
@@ -41,13 +41,13 @@ public class SNSControllerPerformanceTest extends TestCase {
      */
     public void testTopicsForTerm100() throws Exception {
         final long start = System.currentTimeMillis();
-        for (int i = 0; i < SNSControllerPerformanceTest.fMaxLoops; i++) {
+        for (int i = 0; i < this.fMaxLoops; i++) {
             this.fSNSControllerTest.testTopicsForTerm();
         }
         final long stop = System.currentTimeMillis();
 
-        final String output = "Time for " + SNSControllerPerformanceTest.fMaxLoops + " calls of testTopicsForTerm(): " + ((stop - start) / 1000) + " ("
-                + (SNSControllerPerformanceTest.fMaxLoops / ((stop - start) / 1000)) + " calls/second)";
+        final String output = "Time for " + this.fMaxLoops + " calls of testTopicsForTerm(): " + ((stop - start) / 1000) + " ("
+                + (this.fMaxLoops / ((stop - start) / 1000)) + " calls/second)";
         System.out.println(output);
     }
 
@@ -56,13 +56,13 @@ public class SNSControllerPerformanceTest extends TestCase {
      */
     public void testGetAssociatedTopics100() throws Exception {
         final long start = System.currentTimeMillis();
-        for (int i = 0; i < SNSControllerPerformanceTest.fMaxLoops; i++) {
+        for (int i = 0; i < this.fMaxLoops; i++) {
             this.fSNSControllerTest.testGetAssociatedTopics();
         }
         final long stop = System.currentTimeMillis();
 
-        final String output = "Time for " + SNSControllerPerformanceTest.fMaxLoops + " calls of testGetAssociatedTopics(): " + ((stop - start) / 1000) + " ("
-                + (SNSControllerPerformanceTest.fMaxLoops / ((stop - start) / 1000)) + " calls/second)";
+        final String output = "Time for " + this.fMaxLoops + " calls of testGetAssociatedTopics(): " + ((stop - start) / 1000) + " ("
+                + (this.fMaxLoops / ((stop - start) / 1000)) + " calls/second)";
         System.out.println(output);
     }
 
@@ -71,13 +71,13 @@ public class SNSControllerPerformanceTest extends TestCase {
      */
     public void testGetDocumentRelatedTopics100() throws Exception {
         final long start = System.currentTimeMillis();
-        for (int i = 0; i < SNSControllerPerformanceTest.fMaxLoops; i++) {
+        for (int i = 0; i < this.fMaxLoops; i++) {
             this.fSNSControllerTest.testGetDocumentRelatedTopics();
         }
         final long stop = System.currentTimeMillis();
 
-        final String output = "Time for " + SNSControllerPerformanceTest.fMaxLoops + " calls of testGetDocumentRelatedTopics(): " + ((stop - start) / 1000) + " ("
-        + (SNSControllerPerformanceTest.fMaxLoops / ((stop - start) / 1000)) + " calls/second)"; 
+        final String output = "Time for " + this.fMaxLoops + " calls of testGetDocumentRelatedTopics(): " + ((stop - start) / 1000) + " ("
+        + (this.fMaxLoops / ((stop - start) / 1000)) + " calls/second)"; 
         System.out.println(output);
     }
 
@@ -86,13 +86,13 @@ public class SNSControllerPerformanceTest extends TestCase {
      */
     public void testGetBuzzword100() throws Exception {
         final long start = System.currentTimeMillis();
-        for (int i = 0; i < SNSControllerPerformanceTest.fMaxLoops; i++) {
+        for (int i = 0; i < this.fMaxLoops; i++) {
             this.fSNSIndexingInterfaceTest.testGetBuzzword();
         }
         final long stop = System.currentTimeMillis();
 
-        final String output = "Time for " + SNSControllerPerformanceTest.fMaxLoops + " calls of testGetBuzzword(): " + ((stop - start) / 1000) + " ("
-                + (SNSControllerPerformanceTest.fMaxLoops / ((stop - start) / 1000)) + " calls/second)";
+        final String output = "Time for " + this.fMaxLoops + " calls of testGetBuzzword(): " + ((stop - start) / 1000) + " ("
+                + (this.fMaxLoops / ((stop - start) / 1000)) + " calls/second)";
         System.out.println(output);
     }
 }
