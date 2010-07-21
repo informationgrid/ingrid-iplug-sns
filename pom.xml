@@ -39,6 +39,11 @@
       <artifactId>ingrid-external-service-sns</artifactId>
     </dependency>
     <dependency>
+      <groupId>commons-el</groupId>
+      <artifactId>commons-el</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
     </dependency>
