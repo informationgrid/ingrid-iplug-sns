@@ -51,9 +51,9 @@
   <!-- NEVER DELETE: InGrid repo needed for download of parent pom if not present ! -->
   <repositories>
         <repository>
-            <id>de.ingrid.m2</id>
-            <name>Maven2 Repo InGrid</name>
-            <url>http://harrison.its-technidata.de/ingrid/maven2</url>
+            <id>de.ingrid.all</id>
+			<name>InGrid Repo Maven</name>
+			<url>http://harrison.its-technidata.de/archiva/repository/ingrid-all</url>
         </repository>
     </repositories>
   <build>
