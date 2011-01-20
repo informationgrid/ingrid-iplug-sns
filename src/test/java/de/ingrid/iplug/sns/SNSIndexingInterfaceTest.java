@@ -153,7 +153,8 @@ public class SNSIndexingInterfaceTest extends TestCase {
     public void testGetBuzzwordToUrl() throws Exception {
         // VALID URL GERMAN
         String[] result = null;
-        String url = "http://www.portalu.de/";
+//        String url = "http://www.portalu.de/";
+        String url = "http://www.google.de/";
         long start = System.currentTimeMillis();
         try {
             result = this.fSnsInterface.getBuzzwordsToUrl(url, 1000, false, "de");
@@ -253,7 +254,9 @@ public class SNSIndexingInterfaceTest extends TestCase {
      * @throws Exception
      */
     public void testGetTopicIds() throws Exception {
-        this.fSnsInterface.getBuzzwordsToUrl("http://www.portalu.de/", 1000, false, "de");
+//      String url = "http://www.portalu.de/";
+        String url = "http://www.spiegel.de/";
+        this.fSnsInterface.getBuzzwordsToUrl(url, 1000, false, "de");
 
         final String[] result = this.fSnsInterface.getTopicIds();
         assertNotNull(result);

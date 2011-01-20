@@ -135,7 +135,8 @@ public class SNSControllerTest extends TestCase {
         assertEquals(0, topics.length);
 
         // valid URL
-        String url = "http://www.portalu.de";
+//        String url = "http://www.portalu.de";
+        String url = "http://www.rmv.de";
         int maxWords = 200;
         topics = controller.getTopicsForURL(url, maxWords, null, "aPlugId", "de", totalSize);
         assertNotNull(topics);
@@ -157,6 +158,7 @@ public class SNSControllerTest extends TestCase {
 		// only events
         topics = controller.getTopicsForURL(url, maxWords, "/event", "aPlugId", "de", totalSize);
         assertNotNull(topics);
+        // May fail due to wrong content on Site ?!!!!????
 		assertTrue(topics.length > 0);
 		assertTrue(topics.length < numAllTopics);
 
