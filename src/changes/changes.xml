@@ -5,6 +5,12 @@
     <author email="joachim@wemove.com">Joachim Müller</author>
   </properties>
   <body>
+    <release version="2.3.1" date="2011-01-20" description="Update dependencies Release">
+      <action type="update">
+		Use most current dependencies (jars), NO FUNCTIONAL CHANGES !
+      </action>
+    </release>
+
     <release version="1.5.0" date="2010-07-12" description="Release Thesaurus/Gazetteer API (GS Soil)">
       <action type="add">
         Thesaurus/Gazetteer/FullClassify Funktionalität jetzt hinter API und per Spring injizierbar (PortalU:SNS vs GS Soil:GEMET etc.) 
