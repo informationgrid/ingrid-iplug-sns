@@ -5,7 +5,7 @@
     <author email="joachim@wemove.com">Joachim Müller</author>
   </properties>
   <body>
-    <release version="2.3.1" date="2011-01-20" description="Update dependencies Release">
+    <release version="2.3.1" date="2011-01-24" description="Update dependencies Release">
       <action type="update">
 		Use most current dependencies (jars), NO FUNCTIONAL CHANGES !
       </action>
