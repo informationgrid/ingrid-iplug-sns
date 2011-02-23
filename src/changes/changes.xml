@@ -5,6 +5,12 @@
     <author email="joachim@wemove.com">Joachim Müller</author>
   </properties>
   <body>
+    <release version="???" date="???" description="???">
+      <action type="update">
+		Always ignore case sensitivity when calling ThesaurusService (was case sensitive when calling getTermsFromText -> used by Portal/Extended Search) ! Case Sensitivity was ignored by SNS but NOT by GSSoil ThesaurusService !
+      </action>
+    </release>
+
     <release version="2.3.1" date="2011-01-24" description="Update dependencies Release">
       <action type="update">
 		Use most current dependencies (jars), NO FUNCTIONAL CHANGES !
