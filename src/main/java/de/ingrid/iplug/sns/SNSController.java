@@ -252,7 +252,7 @@ public class SNSController {
                 log.debug("     !!!!!!!!!! calling API thesaurusService.getTermsFromText " + lang);
             }
         	Term[] terms = thesaurusService.getTermsFromText(documentText, maxToAnalyzeWords,
-        			false, new Locale(lang));
+        			true, new Locale(lang));
 
             if (terms != null) {
             	totalSize[0] = terms.length;
