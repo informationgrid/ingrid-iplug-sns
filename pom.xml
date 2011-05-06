@@ -2,7 +2,7 @@
   <parent>
     <artifactId>ingrid-releases-pom</artifactId>
     <groupId>de.ingrid</groupId>
-    <version>3.0.0-SNAPSHOT</version>
+    <version>3.0.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>de.ingrid</groupId>
@@ -160,16 +160,6 @@ SO WE CAN JUST UPDATE LIBS FROM EDISOFT DELIVERIES !
       </plugin>
         </plugins>
       </build>
-<!--
-      <repositories>
-        <repository>
-          <snapshots />
-          <id>ibiblio</id>
-          <name>iBiblio.or.</name>
-          <url>http://mirrors.ibiblio.org/pub/mirrors/maven2</url>
-        </repository>
-      </repositories>
--->
     </profile>
   </profiles>
 </project>

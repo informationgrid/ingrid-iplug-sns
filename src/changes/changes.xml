@@ -5,7 +5,7 @@
     <author email="joachim@wemove.com">Joachim Müller</author>
   </properties>
   <body>
-    <release version="???" date="???" description="???">
+    <release version="3.0.0" date="2011-05-06" description="Release InGrid3.0">
       <action type="update">
 		Always ignore case sensitivity when calling ThesaurusService (was case sensitive when calling getTermsFromText -> used by Portal/Extended Search) ! Case Sensitivity was ignored by SNS but NOT by GSSoil ThesaurusService !
       </action>
