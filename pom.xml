@@ -8,12 +8,26 @@
   <groupId>de.ingrid</groupId>
   <artifactId>ingrid-iplug-sns</artifactId>
   <packaging>jar</packaging>
-  <version>3.1.0-SNAPSHOT</version>
+  <version>3.0.1-SNAPSHOT</version>
   <name>Ingrid iPlug SNS</name>
   <scm>
     <connection>scm:svn:https://harrison.its-technidata.de:444/svn/ingrid/ingrid-iplug-sns/trunk</connection>
     <developerConnection>scm:svn:https://harrison.its-technidata.de:444/svn/ingrid/ingrid-iplug-sns/trunk</developerConnection>
   </scm>
+
+  <!-- ==================== DEPENDENCY MANAGEMENT ==================== -->
+  <!-- DEPENDENCY MANAGEMENT FOR USING OTHER VERSIONS (needed for assembly). COMMENT IF USING VERSIONS FROM PARENT -->
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>de.ingrid</groupId>
+        <artifactId>ingrid-utils</artifactId>
+        <version>3.0.1-SNAPSHOT</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <!-- ==================== DEPENDENCIES ==================== -->
   <dependencies>
     <dependency>
       <groupId>de.ingrid</groupId>

@@ -333,6 +333,33 @@ public class SNSController {
     }
 
     /**
+     * For a given topic ID the detailed topic will be returned in an array.
+     * @param topicID the id of the topic
+     * @param filter Topic type as search criterion (only root paths may be used).
+     * @param plugId The plugId as String.
+     * @param lang Is used to specify the preferred language for requests.
+     * @param totalSize The quantity of the found topics altogether (is 1 !)
+     * @return array of detailed topics for the given topic id (should be size 1, if problems is size 0
+     * @throws Exception
+     */
+    public DetailedTopic[] getTopicForId(String topicID, String filter, String plugId,
+            String lang, int[] totalSize) throws Exception {
+        if (log.isDebugEnabled()) {
+            log.debug("getTopicForId: " + topicID + ", filter=" + filter + ", lang=" + lang);
+        }
+
+        DetailedTopic detailedTopic = getTopicDetail(topicID, filter, lang, plugId);
+        
+        DetailedTopic[] result = new DetailedTopic[0];
+        if (detailedTopic != null) {
+        	result = new DetailedTopic[]{ detailedTopic };
+           	totalSize[0] = 1;
+        }
+
+        return result;
+    }
+
+    /**
      * @return An array of ingrid detailed topics from a Term array.
      */
     private DetailedTopic[] toDetailedTopicArray(Term[] terms, String plugId, String lang) {
@@ -1330,7 +1357,26 @@ public class SNSController {
      */
     public DetailedTopic getTopicDetail(IngridHit hit, String filter, String lang) throws Exception {
         de.ingrid.iplug.sns.utils.Topic topic = (de.ingrid.iplug.sns.utils.Topic) hit;
-        String topicID = topic.getTopicID();
+        return getTopicDetail(topic.getTopicID(), filter, lang, hit.getPlugId());
+    }
+
+    /**
+     * Get detailed information for topic identified by its id.</br>
+     * Calls</br>
+     * <ul>
+     * <li>thesaurusService.getTerm()
+     * <li>gazetterService.getLocation()
+     * <li>direct getPSI()()
+     * </ul>
+     * dependent from passed filter.
+     * @param topicID The id of the topic for which further information should received.
+     * @param filter Topic type as search criterion (only root paths shall be used).
+     * @param lang Is used to specify the preferred language for requests.
+     * @param plugId the plug id to be added to detail
+     * @return A detailed topic to a filter.
+     * @throws Exception
+     */
+    private DetailedTopic getTopicDetail(String topicID, String filter, String lang, String plugId) throws Exception {
         if (log.isDebugEnabled()) {
             log.debug("getTopicDetail: topicID=" + topicID + ", filter=" + filter + ", lang=" + lang);
         }
@@ -1345,7 +1391,7 @@ public class SNSController {
         	Term term = thesaurusService.getTerm(topicID, new Locale(lang));
 
             if (term != null) {
-            	result = buildDetailedTopicFromTerm(term, hit.getPlugId(), lang);
+            	result = buildDetailedTopicFromTerm(term, plugId, lang);
             }
     		
        	// LOCATIONS
@@ -1357,7 +1403,7 @@ public class SNSController {
         	Location location = gazetteerService.getLocation(topicID, new Locale(lang));
 
             if (location != null) {
-            	result = buildDetailedTopicFromLocation(location, hit.getPlugId(), lang);
+            	result = buildDetailedTopicFromLocation(location, plugId, lang);
             }
 
     	} else  {
@@ -1368,7 +1414,7 @@ public class SNSController {
 
                 for (int i = 0; i < topics.length; i++) {
                     if (topics[i].getId().equals(topicID)) {
-                        result = buildDetailedTopicFromTopic(topics[0], hit.getPlugId(), lang);
+                        result = buildDetailedTopicFromTopic(topics[0], plugId, lang);
                     }
                 }
             }

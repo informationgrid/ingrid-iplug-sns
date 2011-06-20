@@ -116,6 +116,24 @@ public class SnsPlugTest extends TestCase {
         }
     }
 
+    public void testTOPIC_FROM_ID() throws Exception {
+        SnsPlug plug = new SnsPlug(fPlugDescription);
+        String q = "uba_thes_27061";
+        IngridQuery query = QueryStringParser.parse(q);
+        query.addField(new FieldQuery(true, false, "datatype", IDataTypes.SNS));
+        query.addField(new FieldQuery(true, false, "lang", "de"));
+        query.putInt(Topic.REQUEST_TYPE, Topic.TOPIC_FROM_ID);
+        query.put("filter", "/thesa");
+        IngridHits hits = plug.search(query, 0, 10);
+        IngridHit[] hitsArray = hits.getHits();
+        assertNotNull(hitsArray);
+        assertTrue(hitsArray.length == 1);
+        for (int i = 0; i < hitsArray.length; i++) {
+            Topic hit = (Topic) hitsArray[i];
+            System.out.println(hit.getTopicName() + ":" + hit.getTopicID() + ":" + hit.getTopicAssoc());
+        }
+    }
+
     /**
      * @throws Exception
      */

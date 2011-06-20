@@ -115,6 +115,11 @@ public class SnsPlug implements IPlug {
                     hitsTemp = this.fSnsController.getTopicsForTopic(getSearchTerm(query), Integer.MAX_VALUE,
                     		filter, this.fPlugId, lang, totalSize, expired);
                     break;
+                case Topic.TOPIC_FROM_ID:
+                	// ONLY CALLED FROM Thesaurus Browser in Portal (GSSoil fetch english term) !!!
+                    filter = (String) query.get("filter");
+                    hitsTemp = this.fSnsController.getTopicForId(getSearchTerm(query), filter, this.fPlugId, lang, totalSize);
+                    break;
                 case Topic.ANNIVERSARY_FROM_TOPIC:
                     hitsTemp = this.fSnsController.getAnniversaryFromTopic(getSearchTerm(query), Integer.MAX_VALUE,
                             this.fPlugId, totalSize);
