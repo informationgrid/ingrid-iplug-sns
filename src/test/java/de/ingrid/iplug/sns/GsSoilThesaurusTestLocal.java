@@ -154,6 +154,45 @@ public class GsSoilThesaurusTestLocal extends TestCase {
         assertNull(bla);
     }
 
+    public void testTopicForId() throws Exception {
+        SNSController controller = new SNSController(fClient, "ags:");
+        int[] totalSize = new int[1];
+
+        String id = "http://www.eionet.europa.eu/gemet/supergroup/5499";
+        DetailedTopic[] topicsForId = controller.getTopicForId(id, "/thesa", "plugId", "en", totalSize);
+
+        assertTrue(topicsForId.length == 1);
+        DetailedTopic dt = topicsForId[0];
+
+        assertNotNull(dt);
+        assertEquals(id, dt.getTopicID());
+        assertEquals("NATURAL ENVIRONMENT, ANTHROPIC ENVIRONMENT", dt.getTitle());
+
+        // ALWAYS empty definitions cause using ThesaurusService API
+        String[] array = dt.getDefinitions();
+        assertEquals(0, array.length);
+
+        // ALWAYS empty definitionTitles cause using ThesaurusService API
+        array = dt.getDefinitionTitles();
+        assertEquals(0, array.length);
+
+        // ALWAYS empty samples cause using ThesaurusService API
+        array = dt.getSamples();
+        assertEquals(0, array.length);
+
+        // ALWAYS empty sampleTitles cause using ThesaurusService API
+        array = dt.getSampleTitles();
+        assertEquals(0, array.length);
+
+        // NO associations cause using ThesaurusService API
+        String bla = (String) dt.get(DetailedTopic.ASSOCIATED_OCC);
+        assertNull(bla);
+
+        // NO descriptionOcc cause using ThesaurusService API
+        bla = (String) dt.get(DetailedTopic.DESCRIPTION_OCC);
+        assertNull(bla);
+    }
+
     public void testTopicsForTerm() throws Exception {
         SNSController controller = new SNSController(fClient, "ags:");
         int[] totalSize = new int[1];
