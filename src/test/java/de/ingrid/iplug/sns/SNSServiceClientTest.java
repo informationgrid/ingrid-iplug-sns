@@ -42,7 +42,7 @@ public class SNSServiceClientTest extends TestCase {
         int offset = -1;
 
         try {
-            adapter.findTopics(queryTerm, null, null, null, offset, "de", false);
+            adapter.findTopics(queryTerm, null, null, null, offset, 500, "de", false);
             fail("Should throw an exception");
         } catch (Exception e) {
             assertTrue(e instanceof IllegalArgumentException);
@@ -50,15 +50,15 @@ public class SNSServiceClientTest extends TestCase {
 
         queryTerm = "xyz";
         try {
-            adapter.findTopics(queryTerm, null, null, null, offset, "de", false);
+            adapter.findTopics(queryTerm, null, null, null, offset, 500, "de", false);
             fail("Should throw an exception");
         } catch (Exception e) {
             assertTrue(e instanceof IllegalArgumentException);
         }
         offset = 1;
-        assertNotNull(adapter.findTopics(queryTerm, null, null, null, offset, "de", false));
+        assertNotNull(adapter.findTopics(queryTerm, null, null, null, offset, 500, "de", false));
         offset = Integer.MAX_VALUE;
-        assertNotNull(adapter.findTopics(queryTerm, null, null, null, offset, "de", false));
+        assertNotNull(adapter.findTopics(queryTerm, null, null, null, offset, 500, "de", false));
     }
 
     /**
