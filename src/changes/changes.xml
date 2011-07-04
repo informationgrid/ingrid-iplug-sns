@@ -5,6 +5,12 @@
     <author email="joachim@wemove.com">Joachim Müller</author>
   </properties>
   <body>
+    <release version="3.0.1" date="2011-07-04" description="Add-Ons + Bugfixes for InGrid 3.0">
+      <action type="add" issue="GSSOIL-18">
+        GS Soil: Add new method for searching thesaurus topic via it's ID (TOPIC_FROM_ID) to fetch thesaurus topic in different languages.
+      </action>
+    </release>
+
     <release version="3.0.0" date="2011-05-06" description="Release InGrid3.0">
       <action type="update">
 		Always ignore case sensitivity when calling ThesaurusService (was case sensitive when calling getTermsFromText -> used by Portal/Extended Search) ! Case Sensitivity was ignored by SNS but NOT by GSSoil ThesaurusService !
