@@ -5,6 +5,12 @@
     <author email="joachim@wemove.com">Joachim Müller</author>
   </properties>
   <body>
+    <release version="3.1.x" date="???" description="Bugfixes">
+      <action type="fix" issue="INGRID-1870">
+        Configuration within a text browser is now possible.
+      </action>
+    </release>
+  
     <release version="3.0.1" date="2011-07-04" description="Add-Ons + Bugfixes for InGrid 3.0">
       <action type="add" issue="GSSOIL-18">
         GS Soil: Add new method for searching thesaurus topic via it's ID (TOPIC_FROM_ID) to fetch thesaurus topic in different languages.
