@@ -1177,10 +1177,14 @@ public class SNSController {
             eventPath = new String[] { "/event/" };
         }
 
+        // now always "contains" like default on http://www.semantic-network.de/doc_findevents.html?lang=de
+        SearchType searchType = SearchType.contains;
+/*
         SearchType searchType = SearchType.exact;
         if ((null == searchTerm) || (searchTerm.trim().equals(""))) {
             searchType = SearchType.contains;
         }
+*/
         TopicMapFragment topicMapFragment = this.fServiceClient.findEvents(searchTerm, true, searchType, eventPath,
                 FieldsType.captors, start, atDate, lang, length);
         Topic[] topic = topicMapFragment.getTopicMap().getTopic();
@@ -1310,10 +1314,14 @@ public class SNSController {
             eventPath = new String[] { "/event/" };
         }
 
+        // now always "contains" like default on http://www.semantic-network.de/doc_findevents.html?lang=de
+        SearchType searchType = SearchType.contains;
+/*
         SearchType searchType = SearchType.exact;
         if ((null == searchTerm) || (searchTerm.trim().equals(""))) {
             searchType = SearchType.contains;
         }
+*/
         TopicMapFragment topicMapFragment = this.fServiceClient.findEvents(searchTerm, true, searchType, eventPath,
                 FieldsType.captors, start, fromDate, toDate, lang, length);
         Topic[] topic = topicMapFragment.getTopicMap().getTopic();

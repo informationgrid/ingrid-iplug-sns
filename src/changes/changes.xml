@@ -6,6 +6,9 @@
   </properties>
   <body>
     <release version="3.1.x" date="???" description="Bugfixes">
+      <action type="update" issue="INGRID-1972">
+        Alamanac searches now events in the same way as SNS web page defaults (SearchType.contains). 
+      </action>
       <action type="fix" issue="INGRID-1870">
         Configuration within a text browser is now possible.
       </action>
