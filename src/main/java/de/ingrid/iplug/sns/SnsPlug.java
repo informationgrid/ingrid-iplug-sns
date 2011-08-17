@@ -138,10 +138,10 @@ public class SnsPlug implements IPlug {
                     final String fromDate = (String) query.get("t1");
                     final String toDate = (String) query.get("t2");
                     if (null != atDate) {
-                        hitsTemp = this.fSnsController.getEventFromTopic(getSearchTerm(query), eventType, atDate,
+                        hitsTemp = this.fSnsController.getEventFromTopic(getSearchTerm(query, true), eventType, atDate,
                                 start, length, this.fPlugId, totalSize, lang);
                     } else {
-                        hitsTemp = this.fSnsController.getEventFromTopic(getSearchTerm(query), eventType, fromDate,
+                        hitsTemp = this.fSnsController.getEventFromTopic(getSearchTerm(query, true), eventType, fromDate,
                                 toDate, start, length, this.fPlugId, totalSize, lang);
                     }
                     break;
@@ -245,23 +245,39 @@ public class SnsPlug implements IPlug {
         return false;
     }
 
-    /** Search term is the topic ID ! */
+    /** Search term can be topic ID ! */
     private String getSearchTerm(IngridQuery query) {
+    	return getSearchTerm(query, false);
+    }
+
+    private String getSearchTerm(IngridQuery query, boolean multipleTerms) {
         TermQuery[] terms = query.getTerms();
-        if (terms.length > 1) {
+        if (terms.length > 1 && !multipleTerms) {
             throw new IllegalArgumentException("only one term per query is allowed");
         }
 
         String searchTerm = "";
-        if (terms.length > 0) {
-            searchTerm = terms[0].getTerm();
+        if (terms != null) {
+        	for (int i=0; i < terms.length; i++) {
+                // GSSoil Thesaurus Service topic id is marshalled due to special characters (URL)
+        		String unmarshalledSearchTerm = SNSUtil.unmarshallTopicId(terms[i].getTerm());
+        		if (log.isDebugEnabled()) {
+        			log.debug("unmarshalled term (topicID) = " + unmarshalledSearchTerm);
+        		}
+
+                searchTerm = searchTerm + unmarshalledSearchTerm;
+                if (!multipleTerms) {
+                	break;
+                }
+                if (i != terms.length-1) {
+                    searchTerm = searchTerm + " ";
+                }
+        	}
         }
 
-        // GSSoil Thesaurus Service topic id is marshalled due to special characters (URL)
-		searchTerm = SNSUtil.unmarshallTopicId(searchTerm);
-		if (log.isDebugEnabled()) {
-			log.debug("unmarshalled topicID = " + searchTerm);
-		}
+        if (log.isDebugEnabled()) {
+            log.debug("searchterm from query: " + searchTerm);
+        }
 
         return searchTerm;
     }
