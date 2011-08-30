@@ -34,10 +34,10 @@ import de.ingrid.external.om.Event;
 import de.ingrid.external.om.FullClassifyResult;
 import de.ingrid.external.om.Location;
 import de.ingrid.external.om.RelatedTerm;
-import de.ingrid.external.om.Term;
-import de.ingrid.external.om.TreeTerm;
 import de.ingrid.external.om.RelatedTerm.RelationType;
+import de.ingrid.external.om.Term;
 import de.ingrid.external.om.Term.TermType;
+import de.ingrid.external.om.TreeTerm;
 import de.ingrid.external.sns.SNSClient;
 import de.ingrid.iplug.sns.utils.DetailedTopic;
 import de.ingrid.utils.IngridHit;
@@ -455,9 +455,15 @@ public class SNSController {
         for (int i = 0; i < bn.length; i++) {
             final String href = bn[i].getScope().getTopicRef()[0].getHref();
             if (href.endsWith('#' + lang)) {
-                title = topic.getBaseName()[i].getBaseNameString().get_value();
+                title = bn[i].getBaseNameString().get_value();
                 break;
             }
+        }
+        // SNS workaround ! sometimes SNS delivers english title tagged as german ("language.xtm#de" in scope)
+        // we always take the last title found, this can be german (if NO english title) or english (if
+        // english title tagged as german, normally the last one !)
+        if (title.isEmpty() && bn.length > 0) {
+        	title =  bn[bn.length-1].getBaseNameString().get_value();
         }
 
         String summary = title + ' ' + topic.getInstanceOf()[0].getTopicRef().getHref();
@@ -1416,7 +1422,13 @@ public class SNSController {
 
     	} else  {
     		// filter: "/event" or null
-            TopicMapFragment mapFragment = this.fServiceClient.getPSI(topicID, 0, filter);
+            TopicMapFragment mapFragment = null;
+        	try {
+        		mapFragment = this.fServiceClient.getPSI(topicID, 0, filter);
+        	} catch (Exception e) {
+            	log.error("Error calling snsClient.getPSI (topicId=" + topicID
+                		+ ", filter=" + filter + "), we return null Details", e);
+    	    }
             if (null != mapFragment) {
                 Topic[] topics = mapFragment.getTopicMap().getTopic();
 
