@@ -19,7 +19,7 @@ import de.ingrid.utils.tool.SpringUtil;
 /**
  * Tests of GSSoil implementations of Thesaurus/Gazetteer/FullClassify APi !!!
  */
-public class GsSoilGazetteerGeoNamesTestLocal extends TestCase {
+public class GsSoilGazetteer2TestLocal extends TestCase {
 
     private static SNSClient fClient;
 
