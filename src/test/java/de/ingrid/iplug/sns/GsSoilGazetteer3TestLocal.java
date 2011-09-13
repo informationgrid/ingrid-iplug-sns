@@ -144,8 +144,7 @@ public class GsSoilGazetteer3TestLocal extends TestCase {
         // include location with passed id !
         locations = gazetteer.getRelatedLocationsFromLocation(idLisbon, true, new Locale("en"));
         assertTrue(locations.length > 0);
-// TODO ADD WHEN FIXED !
-//        assertTrue(locations[0].getId().equals(idLisbon));
+        assertTrue(locations[0].getId().equals(idLisbon));
         // do NOT include location with passed id !
         locations = gazetteer.getRelatedLocationsFromLocation(idLisbon, false, new Locale("de"));
         assertTrue(locations != null);
