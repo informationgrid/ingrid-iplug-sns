@@ -5,12 +5,18 @@
     <author email="joachim@wemove.com">Joachim Müller</author>
   </properties>
   <body>
-    <release version="3.1.x" date="???" description="Bugfixes">
+    <release version="3.1.0" date="2011-09-15" description="Release InGrid 3.1">
       <action type="update" issue="INGRID-1972">
         Almanac searches now events in the same way as SNS web page defaults (SearchType.contains), further multiple searchterms are possible in almanac. 
       </action>
       <action type="fix" issue="INGRID-1870">
         Configuration within a text browser is now possible.
+      </action>
+      <action type="fix" issue="INGRID-1992">
+        Changed logging behavior, so that not so many files will be created.
+      </action>
+      <action type="fix" issue="INGRID-1870">
+        Configuration with text browser now possible.
       </action>
     </release>
   
