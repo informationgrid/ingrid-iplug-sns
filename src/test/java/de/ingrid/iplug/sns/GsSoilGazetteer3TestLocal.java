@@ -6,6 +6,9 @@ package de.ingrid.iplug.sns;
 
 import java.util.Locale;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import junit.framework.TestCase;
 import de.ingrid.external.GazetteerService;
 import de.ingrid.external.GazetteerService.MatchingType;
@@ -20,6 +23,8 @@ import de.ingrid.utils.tool.SpringUtil;
  * Tests of GSSoil implementations of Thesaurus/Gazetteer/FullClassify APi !!!
  */
 public class GsSoilGazetteer3TestLocal extends TestCase {
+
+    private static Log log = LogFactory.getLog(GsSoilGazetteer3TestLocal.class);
 
     private static SNSClient fClient;
 
@@ -266,7 +271,9 @@ public class GsSoilGazetteer3TestLocal extends TestCase {
 		assertTrue(numAllTopics > 0);
 */
 		// only locations
+        log.info("START -> getTopicsForURL http://www.visitlisboa.com");
         topics = controller.getTopicsForURL("http://www.visitlisboa.com", 1000, "/location", "aPlugId", "pt", totalSize);
+        log.info("END -> getTopicsForURL http://www.visitlisboa.com");
         assertNotNull(topics);
 		assertTrue(topics.length > 0);
     }
