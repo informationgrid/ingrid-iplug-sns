@@ -68,6 +68,12 @@ public class GsSoilGazetteer3TestLocal extends TestCase {
         assertTrue(locations[0].getId().equals(idLisbon));
         assertTrue(locations[0].getName().equals("Lisbon"));
 
+        // pass wrong language of text -> still a result!
+        locations = gazetteer.getLocationsFromText("Lisboa", 100, false, new Locale("de"));
+        assertTrue(locations.length > 0);
+        assertTrue(locations[0].getId().equals(idLisboa));
+        assertTrue(locations[0].getName().equals("Lisboa"));
+
         locations = gazetteer.getLocationsFromText("Lisboa", 100, false, new Locale("pt"));
         assertTrue(locations.length > 0);
         assertTrue(locations[0].getId().equals(idLisboa));
@@ -237,12 +243,20 @@ public class GsSoilGazetteer3TestLocal extends TestCase {
         topics = controller.getTopicsForText("Lisbon", 100, "/location", "aPlugId", "en", totalSize, false);
         assertTrue(topics.length > 0);
 
-    	// test invalid text
+        // pass wrong language of text -> still results
+        topics = controller.getTopicsForText("Lisbon", 100, "/location", "aPlugId", "de", totalSize, false);
+        assertTrue(topics.length > 0);
+
+        // test invalid text
         topics = controller.getTopicsForText("yyy xxx zzz", 100, "/location", "aPlugId", "en", totalSize, false);
         assertTrue(topics.length == 0);
 
     	// test ALL TOPICS
         topics = controller.getTopicsForText("Lisbon", 100, null, "aPlugId", "en", totalSize, false);
+        assertTrue(topics.length > 0);
+
+        // pass wrong language of text -> still results
+        topics = controller.getTopicsForText("Lisbon", 100, null, "aPlugId", "de", totalSize, false);
         assertTrue(topics.length > 0);
     }
 

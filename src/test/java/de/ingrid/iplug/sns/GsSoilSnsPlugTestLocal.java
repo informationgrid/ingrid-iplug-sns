@@ -40,8 +40,9 @@ public class GsSoilSnsPlugTestLocal extends TestCase {
         IngridQuery query = QueryStringParser.parse(marshalledTopicId);
         query.addField(new FieldQuery(true, false, "datatype", IDataTypes.SNS));
         query.addField(new FieldQuery(true, false, "lang", "en"));
-        query.putInt(Topic.REQUEST_TYPE, Topic.TOPIC_FROM_ID);
         query.put("filter", "/thesa");
+        query.putInt(Topic.REQUEST_TYPE, Topic.TOPIC_FROM_ID);
+
         IngridHits hits = plug.search(query, 0, 10);
         IngridHit[] hitsArray = hits.getHits();
         assertNotNull(hitsArray);
@@ -51,4 +52,26 @@ public class GsSoilSnsPlugTestLocal extends TestCase {
             System.out.println(hit.getTopicName() + ":" + hit.getTopicID() + ":" + hit.getTopicAssoc());
         }
     }
+
+    public void testTOPIC_FROM_TEXT() throws Exception {
+        SnsPlug plug = new SnsPlug(fPlugDescription);
+        
+        String term = "Lisbon";
+
+    	// enclose term in '"' if the term has a space, otherwise no results will be returned from SNS
+    	if (term.indexOf(" ") != -1 && !term.startsWith("\"") && !term.endsWith("\"")) {
+    		term = "\"".concat(term).concat("\"");
+    	}
+    	IngridQuery query = QueryStringParser.parse(term);
+        query.addField(new FieldQuery(true, false, "datatype", IDataTypes.SNS));
+        query.addField(new FieldQuery(true, false, "lang", "de"));
+        query.put("filter", "/location");
+        query.putInt(Topic.REQUEST_TYPE, Topic.TOPIC_FROM_TEXT);
+
+        IngridHits hits = plug.search(query, 0, 10);
+        IngridHit[] hitsArray = hits.getHits();
+        assertNotNull(hitsArray);
+        assertTrue(hitsArray.length > 0);
+    }
+
 }
