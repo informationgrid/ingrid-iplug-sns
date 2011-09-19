@@ -5,6 +5,12 @@
     <author email="joachim@wemove.com">Joachim Müller</author>
   </properties>
   <body>
+    <release version="3.2.0-SNAPSHOT" date="????-??-??" description="Release ???">
+      <action type="update">
+        GS Soil: Added newest version of GS Soil Semantic Services by Edisoft (Thesaurus, Gazetteer, FullClassify).
+      </action>
+    </release>
+  
     <release version="3.1.0" date="2011-09-15" description="Release InGrid 3.1">
       <action type="update" issue="INGRID-1972">
         Almanac searches now events in the same way as SNS web page defaults (SearchType.contains), further multiple searchterms are possible in almanac. 
