@@ -72,6 +72,23 @@ public class GsSoilSnsPlugTestLocal extends TestCase {
         IngridHit[] hitsArray = hits.getHits();
         assertNotNull(hitsArray);
         assertTrue(hitsArray.length > 0);
+
+        // now lower case ! SET CASE SENSITIVITY IN sns.properties !
+        term = "lisbon";
+
+    	query = QueryStringParser.parse(term);
+        query.addField(new FieldQuery(true, false, "datatype", IDataTypes.SNS));
+        query.addField(new FieldQuery(true, false, "lang", "de"));
+        query.put("filter", "/location");
+        query.putInt(Topic.REQUEST_TYPE, Topic.TOPIC_FROM_TEXT);
+
+        hits = plug.search(query, 0, 10);
+        hitsArray = hits.getHits();
+        assertNotNull(hitsArray);
+        // if gazetteerService.getLocationsFromText.ignoreCase=false in sns.properties
+//        assertTrue(hitsArray.length == 0);
+        // if gazetteerService.getLocationsFromText.ignoreCase=true in sns.properties
+        assertTrue(hitsArray.length > 0);
     }
 
 }

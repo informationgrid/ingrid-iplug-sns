@@ -84,6 +84,16 @@ public class GsSoilGazetteer3TestLocal extends TestCase {
         assertTrue(locations[0].getId().equals(idBerlinStadt));
         assertTrue(locations[0].getName().equals("Berlin, Stadt"));
 
+        // case sensitive ! NOTICE: can be set now in sns.properties for controller
+        locations = gazetteer.getLocationsFromText("berlin", 100, false, new Locale("de"));
+        assertTrue(locations.length == 0);
+
+        // case insensitive ! NOTICE: can be set now in sns.properties for controller
+        locations = gazetteer.getLocationsFromText("berlin", 100, true, new Locale("de"));
+        assertTrue(locations.length > 0);
+        assertTrue(locations[0].getId().equals(idBerlinStadt));
+        assertTrue(locations[0].getName().equals("Berlin, Stadt"));
+
         locations = gazetteer.getLocationsFromText("ruhlsdorf", 100, false, new Locale("de"));
 //        assertTrue(locations.length > 0);
         assertTrue(locations.length == 0);

@@ -1,14 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd"
+    xmlns:util="http://www.springframework.org/schema/util"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd"
     default-init-method="init" default-destroy-method="destroy">
+
     <!-- PortalU -->
 	<bean id="thesaurusService" class="de.ingrid.external.sns.SNSService" />
 	<bean id="gazetteerService" class="de.ingrid.external.sns.SNSService" />
 	<bean id="fullClassifyService" class="de.ingrid.external.sns.SNSService" />
-    <!-- GS Soil -->
+
+    <!-- GS Soil: activate these ones for GS Soil on GS Soil server (comment PortalU ones above) ! -->
     <!-- bean id="thesaurusService" class="org.edisoft.eu.gssoil.semanticservice.thesaurus.ThesaurusServiceImpl" />
     <bean id="gazetteerService" class="org.edisoft.eu.gssoil.semanticservice.gazetteer.GazetteerServiceImpl" />
     <bean id="fullClassifyService" class="org.edisoft.eu.gssoil.semanticservice.classify.FullClassifyServiceImpl" /-->
+
+    <!-- Properties for services above ! -->
+    <util:map id="servicesProperties">
+        <!-- Portal "Advanced Search/Gazetteer initial lookup", search case insensitive or not -->
+        <!-- PortalU.SNS:false / GS Soil.gazetteerService:true -> always commit false to svn ! -->
+        <entry key="gazetteerService.getLocationsFromText.ignoreCase" value="false"/>
+    </util:map>
 </beans>

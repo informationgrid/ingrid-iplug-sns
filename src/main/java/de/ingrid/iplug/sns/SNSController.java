@@ -86,6 +86,9 @@ public class SNSController {
 
     private String fNativeKeyPrefix;
 
+    /** Can be set from spring/external-services.xml, default is false */
+    private boolean getLocationsFromText_ignoreCase = false;
+
     /**
      * Constructor for SNS controller.
      * 
@@ -100,6 +103,18 @@ public class SNSController {
         this.thesaurusService = springUtil.getBean("thesaurusService", _thesaurusService);
         this.gazetteerService = springUtil.getBean("gazetteerService", _gazetteerService);
         this.fullClassifyService = springUtil.getBean("fullClassifyService", _fullClassifyService);
+        
+        // change default parameters e.g. query case sensitive or not ! (in GS Soil different than in PortalU)
+    	try {
+            final Class<Map> _map = null;
+            Map props = springUtil.getBean("servicesProperties", _map);
+        	getLocationsFromText_ignoreCase = new Boolean((String)props.get("gazetteerService.getLocationsFromText.ignoreCase"));
+    	} catch (Exception ex) {
+        	if (log.isInfoEnabled()) {
+        		log.info("Problems fetching properties from spring/external-services.xml, we use defaults:\n" +
+        			"gazetteerService.getLocationsFromText.ignoreCase:" + getLocationsFromText_ignoreCase);
+        	}    		
+    	}
     }
 
     /**
@@ -266,7 +281,7 @@ public class SNSController {
                 log.debug("     !!!!!!!!!! calling API gazetteerService.getLocationsFromText " + lang);
             }
         	Location[] locations = gazetteerService.getLocationsFromText(documentText, maxToAnalyzeWords,
-        			false, new Locale(lang));
+        			getLocationsFromText_ignoreCase, new Locale(lang));
 
             if (locations != null) {
             	totalSize[0] = locations.length;
