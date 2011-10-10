@@ -62,18 +62,28 @@ public class GsSoilIndexingInterfaceTestLocal extends TestCase {
 
         // autoClassifyURL
         // --------------------
-        res = fullClassify.autoClassifyURL(new URL("http://www.visitlisboa.com"), 1000, true, FilterType.ONLY_TERMS, new Locale("en"));
+//        String url = "http://www.visitlisboa.com";
+        String url = "http://www.berlin.de/";
+
+        res = fullClassify.autoClassifyURL(new URL(url), 1000, true, FilterType.ONLY_TERMS, new Locale("en"));
         assertTrue(res.getTerms() != null);
         assertTrue(res.getTerms().size() > 0);
         // ignore case
-        res = fullClassify.autoClassifyURL(new URL("http://www.visitlisboa.com"), 1000, true, FilterType.ONLY_LOCATIONS, new Locale("pt"));
+        res = fullClassify.autoClassifyURL(new URL(url), 1000, true, FilterType.ONLY_LOCATIONS, new Locale("pt"));
         assertTrue(res.getLocations() != null);
         assertTrue(res.getLocations().size() > 0);
         // DO NOT IGNORE CASE
-        res = fullClassify.autoClassifyURL(new URL("http://www.visitlisboa.com"), 1000, false, FilterType.ONLY_LOCATIONS, new Locale("en"));
+        res = fullClassify.autoClassifyURL(new URL(url), 1000, false, FilterType.ONLY_LOCATIONS, new Locale("en"));
         assertTrue(res.getLocations() != null);
         assertTrue(res.getLocations().size() > 0);
-        res = fullClassify.autoClassifyURL(new URL("http://www.visitlisboa.com"), 1000, true, null, new Locale("en"));
+        // get all in "en"
+        res = fullClassify.autoClassifyURL(new URL(url), 1000, true, null, new Locale("en"));
+        assertTrue(res.getTerms() != null);
+        assertTrue(res.getTerms().size() > 0);
+        assertTrue(res.getLocations() != null);
+        assertTrue(res.getLocations().size() > 0);
+        // get all in "de"
+        res = fullClassify.autoClassifyURL(new URL(url), 1000, true, null, new Locale("de"));
         assertTrue(res.getTerms() != null);
         assertTrue(res.getTerms().size() > 0);
         assertTrue(res.getLocations() != null);
@@ -96,7 +106,28 @@ public class GsSoilIndexingInterfaceTestLocal extends TestCase {
             System.out.println("y1:" + result[i].getY1());
             System.out.println("x2:" + result[i].getX2());
             System.out.println("y2:" + result[i].getY2());
-            System.out.println(result[i].getGemeindekennziffer());
+            System.out.println("Gemeindekennziffer: " + result[i].getGemeindekennziffer());
+            System.out.println();
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testGetReferencesToSpaceBundesland() throws Exception {
+        this.fSnsInterface.getBuzzwords("Bayern", 1000, false);
+
+        final Wgs84Box[] result = this.fSnsInterface.getReferencesToSpace();
+        assertNotNull(result);
+        assertTrue(result.length > 0);
+
+        for (int i = 0; i < result.length; i++) {
+            System.out.println(result[i].getTopicName());
+            System.out.println(result[i].getX1());
+            System.out.println(result[i].getX2());
+            System.out.println(result[i].getY1());
+            System.out.println(result[i].getY2());
+            System.out.println("Gemeindekennziffer: " + result[i].getGemeindekennziffer());
         }
     }
 
@@ -119,26 +150,6 @@ public class GsSoilIndexingInterfaceTestLocal extends TestCase {
             System.out.println("location (en): " + location);
         }
         assertTrue(locations.size() > 0);
-    }
-
-    /**
-     * @throws Exception
-     */
-    public void testGetReferencesToSpaceBundesland() throws Exception {
-        this.fSnsInterface.getBuzzwords("Bayern", 1000, false);
-
-        final Wgs84Box[] result = this.fSnsInterface.getReferencesToSpace();
-        assertNotNull(result);
-        assertTrue(result.length > 0);
-
-        for (int i = 0; i < result.length; i++) {
-            System.out.println(result[i].getTopicName());
-            System.out.println(result[i].getX1());
-            System.out.println(result[i].getX2());
-            System.out.println(result[i].getY1());
-            System.out.println(result[i].getY2());
-            System.out.println(result[i].getGemeindekennziffer());
-        }
     }
 
     /**
@@ -303,5 +314,79 @@ public class GsSoilIndexingInterfaceTestLocal extends TestCase {
         final String[] result = this.fSnsInterface.getTopicIds();
         assertNotNull(result);
         assertTrue(result.length > 0);
+    }
+
+    public void testUrlAllResults() throws Exception {
+        // VALID URL GERMAN
+        String[] resultStrings = null;
+        String url = "http://www.berlin.de/";
+
+        long start = System.currentTimeMillis();
+        try {
+            resultStrings = this.fSnsInterface.getBuzzwordsToUrl(url, 1000, false, "de");
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail();
+        }
+        long end = System.currentTimeMillis();
+
+        System.out.println();
+        System.out.println("Analyzed: " + url);
+        if (this.fToStdout) {
+            System.out.println("Needed Time: " + ((end - start) / 1000) + " s");
+        }
+        System.out.println();
+
+        // Buzzwords
+        assertNotNull(resultStrings);
+        System.out.println(resultStrings.length + " Results BUZZWORDS (! Duplicates filtered !) -> indexed in SE as \"buzzword\" field:");
+        assertTrue(resultStrings.length > 0);
+        for (String buzzword : resultStrings) {
+            System.out.println("buzzword: " + buzzword);
+        }
+        System.out.println();
+
+        // Locations
+        Set<String> locations = fSnsInterface.getLocations();
+        System.out.println(locations.size() + " Results LOCATIONS (! Duplicates filtered !) -> indexed in SE as \"location\" field:");
+        assertTrue(locations.size() > 0);
+        for (String location : locations) {
+            System.out.println("location: " + location);
+        }
+        System.out.println();
+
+        // BBoxes
+        final Wgs84Box[] resultBBoxes = this.fSnsInterface.getReferencesToSpace();
+        assertNotNull(resultBBoxes);
+        System.out.println(resultBBoxes.length + " Results Wgs84Box(es) -> indexed in SE as \"x1\",\"y1\",\"x2\",\"y2\",\"area\"(=Gemeindekennziffer) fields:");
+        assertTrue(resultBBoxes.length > 0);
+        for (int i = 0; i < resultBBoxes.length; i++) {
+            System.out.println(resultBBoxes[i].getTopicName());
+            System.out.println("  x1:" + resultBBoxes[i].getX1());
+            System.out.println("  y1:" + resultBBoxes[i].getY1());
+            System.out.println("  x2:" + resultBBoxes[i].getX2());
+            System.out.println("  y2:" + resultBBoxes[i].getY2());
+            System.out.println("  Gemeindekennziffer: " + resultBBoxes[i].getGemeindekennziffer());
+        }
+        System.out.println();
+
+        // Time
+        final Temporal[] resultTime = this.fSnsInterface.getReferencesToTime();
+        // NO REFERENCES TO EVENTS IN GS SOIL !!!
+        assertNotNull(resultTime);
+        System.out.println(resultTime.length + " Results Temporal: -> indexed in SE as \"t0\",\"t1\",\"t2\" fields:");
+        assertEquals(0, resultTime.length);
+        System.out.println();
+
+        // TopicIds
+        resultStrings = this.fSnsInterface.getTopicIds();
+        assertNotNull(resultStrings);
+        System.out.println(resultStrings.length + " Results TopicIds (includes Terms, Locations, Events ! Duplicates filtered !) -> indexed in SE as \"area\" field:");
+        assertTrue(resultStrings.length > 0);
+        assertTrue(resultStrings.length > 0);
+        for (String topicId : resultStrings) {
+            System.out.println("topicId: " + topicId);
+        }
+        System.out.println();
     }
 }

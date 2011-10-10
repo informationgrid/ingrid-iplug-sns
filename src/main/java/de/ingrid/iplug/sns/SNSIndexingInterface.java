@@ -125,24 +125,7 @@ public class SNSIndexingInterface {
         FullClassifyResult classifyResult =
         	fFullClassifyService.autoClassifyText(text, maxToAnalyzeWords, ignoreCase, null, new Locale(language));
 
-        this.fTerms = classifyResult.getTerms();
-        if (this.fTerms == null) {
-        	this.fTerms = new ArrayList<Term>();
-        }
-        this.fLocations = classifyResult.getLocations();
-        if (this.fLocations == null) {
-        	this.fLocations = new ArrayList<Location>();
-        }
-        this.fEvents = classifyResult.getEvents();
-        if (this.fEvents == null) {
-        	this.fEvents = new ArrayList<Event>();
-        }
-        
-        this.fTopicIds.clear();
-        this.fTemporal.clear();
-        this.fWgs84Box.clear();
-        this.fLocationNames.clear();
-
+    	initializeFromFullClassifyResult(classifyResult);
         String[] result = getBasenames();
 
         return result;
@@ -175,7 +158,17 @@ public class SNSIndexingInterface {
     		throw ex;
     	}
 
-        this.fTerms = classifyResult.getTerms();
+    	initializeFromFullClassifyResult(classifyResult);
+    	String[] result = getBasenames();
+
+        return result;
+    }
+
+    /** Set up initial structures from classification result.
+     * @param classifyResult
+     */
+    private void initializeFromFullClassifyResult(FullClassifyResult classifyResult) {
+    	this.fTerms = classifyResult.getTerms();
         if (this.fTerms == null) {
         	this.fTerms = new ArrayList<Term>();
         }
@@ -188,17 +181,16 @@ public class SNSIndexingInterface {
         	this.fEvents = new ArrayList<Event>();
         }
 
-        this.fTopicIds.clear();
-        this.fTemporal.clear();
-        this.fWgs84Box.clear();
-        this.fLocationNames.clear();
-
-        String[] result = getBasenames();
-
-        return result;
+        // we set these ones to NULL ! So we know not processed yet (set to empty list when processed !)
+        this.fTopicIds = null;
+        this.fTemporal = null;
+        this.fWgs84Box = null;
+        this.fLocationNames = null;
     }
 
+    
     private String[] getBasenames() {
+    	// we use set, so duplicates are removed !!!
         Set<String> result = new HashSet<String>();
         
         for (Term term : fTerms) {
@@ -223,6 +215,12 @@ public class SNSIndexingInterface {
     }
 
     private void getReferences() throws Exception, ParseException {
+    	// initialize Lists here ! So we can differ whether getReferences() already called !
+       	fTopicIds = new ArrayList<String>();
+        fTemporal = new ArrayList<Temporal>();
+        fWgs84Box = new ArrayList<Wgs84Box>();
+        fLocationNames = new ArrayList<String>();
+
     	for (Term term : fTerms) {
             this.fTopicIds.add(term.getId());
     	}
@@ -285,11 +283,11 @@ public class SNSIndexingInterface {
      * @throws ParseException
      */
     public String[] getTopicIds() throws Exception, ParseException {
-        if (this.fTopicIds.isEmpty()) {
+        if (this.fTopicIds == null) {
             getReferences();
         }
 
-        // remove duplicates
+        // we use set to remove duplicates
         Set<String> ret = new LinkedHashSet<String>();
         for (String topicId : fTopicIds) {
             ret.add(topicId);
@@ -308,7 +306,7 @@ public class SNSIndexingInterface {
      *             If the date cannot be parsed.
      */
     public Temporal[] getReferencesToTime() throws Exception, ParseException {
-        if (this.fTemporal.isEmpty()) {
+        if (this.fTemporal == null) {
             getReferences();
         }
 
@@ -323,7 +321,7 @@ public class SNSIndexingInterface {
      *             If we cannot connect to the sns server.
      */
     public Wgs84Box[] getReferencesToSpace() throws Exception {
-        if (this.fWgs84Box.isEmpty()) {
+        if (this.fWgs84Box == null) {
             getReferences();
         }
 
@@ -338,10 +336,11 @@ public class SNSIndexingInterface {
      * @return A set of locations. It is empty, if no location topics are available.
      */
     public Set<String> getLocations() throws Exception {
-        if (this.fLocationNames.isEmpty()) {
+        if (this.fLocationNames == null) {
             getReferences();
         }
 
+        // we use set to remove duplicates
         Set<String> ret = new LinkedHashSet<String>();
         for (String locationName : fLocationNames) {
             ret.add(locationName);
