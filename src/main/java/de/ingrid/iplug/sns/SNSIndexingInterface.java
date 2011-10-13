@@ -211,6 +211,14 @@ public class SNSIndexingInterface {
         	}
         }
 
+        if (log.isDebugEnabled()) {
+        	String output = "     buzzwords (\"buzzword\" index field): ";
+        	for (String buzzword : result) {
+        		output = output + buzzword + ", ";
+        	}
+            log.debug("     " + output);
+        }
+
         return result.toArray(new String[result.size()]);
     }
 
@@ -293,6 +301,14 @@ public class SNSIndexingInterface {
             ret.add(topicId);
         }
 
+        if (log.isDebugEnabled()) {
+        	String output = "     topicIds (\"areaid\" index field): ";
+        	for (String topicId : ret) {
+        		output = output + topicId + ", ";
+        	}
+            log.debug("     " + output);
+        }
+
         return (String[]) ret.toArray(new String[ret.size()]);
     }
 
@@ -345,6 +361,15 @@ public class SNSIndexingInterface {
         for (String locationName : fLocationNames) {
             ret.add(locationName);
         }
+
+        if (log.isDebugEnabled()) {
+        	String output = "     locations (\"location\" index field): ";
+        	for (String location : ret) {
+        		output = output + location + ", ";
+        	}
+            log.debug("     " + output);
+        }
+
         return ret;
     }
 
