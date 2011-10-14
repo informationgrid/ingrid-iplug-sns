@@ -339,7 +339,7 @@ public class GsSoilIndexingInterfaceTestLocal extends TestCase {
 
         // Buzzwords
         assertNotNull(resultStrings);
-        System.out.println(resultStrings.length + " Results BUZZWORDS (! Duplicates filtered !) -> indexed in SE as \"buzzword\" field:");
+        System.out.println(resultStrings.length + " Results BUZZWORDS (includes Terms, Locations, Events in that order ! Duplicates filtered !) -> indexed in SE as \"buzzword\" field:");
         assertTrue(resultStrings.length > 0);
         for (String buzzword : resultStrings) {
             System.out.println("buzzword: " + buzzword);
@@ -358,7 +358,7 @@ public class GsSoilIndexingInterfaceTestLocal extends TestCase {
         // BBoxes
         final Wgs84Box[] resultBBoxes = this.fSnsInterface.getReferencesToSpace();
         assertNotNull(resultBBoxes);
-        System.out.println(resultBBoxes.length + " Results Wgs84Box(es) -> indexed in SE as \"x1\",\"y1\",\"x2\",\"y2\",\"area\"(=Gemeindekennziffer) fields:");
+        System.out.println(resultBBoxes.length + " Results Wgs84Box(es) -> indexed in SE as \"x1\",\"y1\",\"x2\",\"y2\",\"areaid\"(=Gemeindekennziffer) fields:");
         assertTrue(resultBBoxes.length > 0);
         for (int i = 0; i < resultBBoxes.length; i++) {
             System.out.println(resultBBoxes[i].getTopicName());
@@ -381,7 +381,7 @@ public class GsSoilIndexingInterfaceTestLocal extends TestCase {
         // TopicIds
         resultStrings = this.fSnsInterface.getTopicIds();
         assertNotNull(resultStrings);
-        System.out.println(resultStrings.length + " Results TopicIds (includes Terms, Locations, Events ! Duplicates filtered !) -> indexed in SE as \"area\" field:");
+        System.out.println(resultStrings.length + " Results TopicIds (includes Locations, Terms, Events in that order ! Duplicates filtered !) -> indexed in SE as \"areaid\" field:");
         assertTrue(resultStrings.length > 0);
         assertTrue(resultStrings.length > 0);
         for (String topicId : resultStrings) {

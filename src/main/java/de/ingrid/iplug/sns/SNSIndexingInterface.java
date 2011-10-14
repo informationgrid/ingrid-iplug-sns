@@ -8,7 +8,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
@@ -168,14 +167,25 @@ public class SNSIndexingInterface {
      * @param classifyResult
      */
     private void initializeFromFullClassifyResult(FullClassifyResult classifyResult) {
-    	this.fTerms = classifyResult.getTerms();
-        if (this.fTerms == null) {
-        	this.fTerms = new ArrayList<Term>();
+    	// we already filter stuff to be sure we get valid results ! We never know (SNS or GS Soil Services or ...)
+
+    	this.fTerms = new ArrayList<Term>();
+        for (Term term : classifyResult.getTerms()) {
+            if (term == null || term.getName() == null || term.getName().trim().isEmpty()) {
+            	continue;
+            }
+            this.fTerms.add(term);
         }
-        this.fLocations = classifyResult.getLocations();
-        if (this.fLocations == null) {
-        	this.fLocations = new ArrayList<Location>();
+
+        // GSSoil Gazetteer delivers null locations and names !? So we filter empty elements !
+    	this.fLocations = new ArrayList<Location>();
+        for (Location location : classifyResult.getLocations()) {
+            if (location == null || location.getName() == null || location.getName().trim().isEmpty()) {
+            	continue;
+            }
+            this.fLocations.add(location);
         }
+
         this.fEvents = classifyResult.getEvents();
         if (this.fEvents == null) {
         	this.fEvents = new ArrayList<Event>();
@@ -189,30 +199,29 @@ public class SNSIndexingInterface {
     }
 
     
+    /** Return the BUZZWORDS ! NOTICE: terms, locations AND events ! */
     private String[] getBasenames() {
-    	// we use set, so duplicates are removed !!!
-        Set<String> result = new HashSet<String>();
+    	// we use set (ordered), so duplicates are removed !!!
+        Set<String> result = new LinkedHashSet<String>();
         
         for (Term term : fTerms) {
         	result.add(term.getName());
         }
-        for (Location location : fLocations) {
-            // GSSoil Gazetteer delivers null locations and names !?
-            if (location == null || location.getName() == null) {
-            	continue;
-            }
 
+        for (Location location : fLocations) {
         	result.add(location.getName());
         }
+
         for (Event event : fEvents) {
-    		// may be not set if NOT using SNS and event is just a time reference !
-        	if (event.getTitle() != null && event.getTitle().length() > 0) {
-            	result.add(event.getTitle());        		
+    		// may not be set if NOT using SNS and event is just a time reference !
+        	if (event.getTitle() == null || event.getTitle().trim().isEmpty()) {
+        		continue;
         	}
+        	result.add(event.getTitle());
         }
 
         if (log.isDebugEnabled()) {
-        	String output = "     buzzwords (\"buzzword\" index field): ";
+        	String output = "     \"buzzword\" index field SE (Terms, Locations, Events in that order): ";
         	for (String buzzword : result) {
         		output = output + buzzword + ", ";
         	}
@@ -229,16 +238,9 @@ public class SNSIndexingInterface {
         fWgs84Box = new ArrayList<Wgs84Box>();
         fLocationNames = new ArrayList<String>();
 
-    	for (Term term : fTerms) {
-            this.fTopicIds.add(term.getId());
-    	}
-
+        // NOTICE: the fTopicIds go into the "areaid" index field in the SE !
+        // so we first process locations and then the terms, see below. 
     	for (Location location : fLocations) {
-            // GSSoil Gazetteer delivers null locations and names !?
-            if (location == null || location.getName() == null) {
-            	continue;
-            }
-
             this.fTopicIds.add(location.getId());
             this.fLocationNames.add(location.getName());
 
@@ -265,6 +267,14 @@ public class SNSIndexingInterface {
             if (wgs84BoxSet) {
                 this.fWgs84Box.add(wgs84Box);
             }
+    	}
+
+        // NOTICE: the fTopicIds go into the "areaid" index field in the SE !
+        // So why add the ids of the terms ? We move this one behind the locations
+        // to guarantee locations first in index field (number of entries in index
+    	// field may be limited)
+    	for (Term term : fTerms) {
+            this.fTopicIds.add(term.getId());
     	}
 
     	for (Event event : fEvents) {
@@ -302,7 +312,7 @@ public class SNSIndexingInterface {
         }
 
         if (log.isDebugEnabled()) {
-        	String output = "     topicIds (\"areaid\" index field): ";
+        	String output = "     topicIds (\"areaid\" index field SE = Locations, Terms, Events in that order)): ";
         	for (String topicId : ret) {
         		output = output + topicId + ", ";
         	}
@@ -363,7 +373,7 @@ public class SNSIndexingInterface {
         }
 
         if (log.isDebugEnabled()) {
-        	String output = "     locations (\"location\" index field): ";
+        	String output = "     \"location\" index field SE: ";
         	for (String location : ret) {
         		output = output + location + ", ";
         	}
