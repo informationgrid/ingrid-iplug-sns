@@ -221,11 +221,12 @@ public class SNSIndexingInterface {
         }
 
         if (log.isDebugEnabled()) {
-        	String output = "     \"buzzword\" index field SE (Terms, Locations, Events in that order): ";
+            log.debug("     FULL RESULTS OF CLASSIFICATION (limited number may be written into index fields, see max* in sns.properties)");
+        	String output = "     buzzwords (Terms, Locations, Events in that order -> \"buzzword\" index field): ";
         	for (String buzzword : result) {
         		output = output + buzzword + ", ";
         	}
-            log.debug("     " + output);
+            log.debug(output);
         }
 
         return result.toArray(new String[result.size()]);
@@ -312,11 +313,11 @@ public class SNSIndexingInterface {
         }
 
         if (log.isDebugEnabled()) {
-        	String output = "     topicIds (\"areaid\" index field SE = Locations, Terms, Events in that order)): ";
+        	String output = "     topicIds (Locations, Terms, Events in that order -> \"areaid\" index field): ";
         	for (String topicId : ret) {
         		output = output + topicId + ", ";
         	}
-            log.debug("     " + output);
+            log.debug(output);
         }
 
         return (String[]) ret.toArray(new String[ret.size()]);
@@ -336,6 +337,16 @@ public class SNSIndexingInterface {
             getReferences();
         }
 
+        if (log.isDebugEnabled()) {
+        	String output = "     time (-> \"t0\", \"t1\", \"t2\" index fields, date format 'yyyyMMdd'): ";
+        	for (Temporal temporal : this.fTemporal) {
+        		output = output + "at:" + temporal.getAt();
+        		output = output + " from:" + temporal.getFrom();
+        		output = output + " to:" + temporal.getTo() + ", ";
+        	}
+            log.debug(output);
+        }
+
         return (Temporal[]) this.fTemporal.toArray(new Temporal[this.fTemporal.size()]);
     }
 
@@ -349,6 +360,19 @@ public class SNSIndexingInterface {
     public Wgs84Box[] getReferencesToSpace() throws Exception {
         if (this.fWgs84Box == null) {
             getReferences();
+        }
+
+        if (log.isDebugEnabled()) {
+        	String output = "     space (-> \"x1\", \"y1\", \"x2\", \"y2\", \"areaid\"(=Gemeindekennziffer) index fields, coordinates will be padded): ";
+        	for (Wgs84Box bbox : this.fWgs84Box) {
+        		output = output + "name:'" + bbox.getTopicName() + "'";
+        		output = output + " x1:" + bbox.getX1();
+        		output = output + " y1:" + bbox.getY1();
+        		output = output + " x2:" + bbox.getX2();
+        		output = output + " y2:" + bbox.getY2();
+        		output = output + " communityCode:" + bbox.getGemeindekennziffer() + ", ";
+        	}
+            log.debug(output);
         }
 
         return (Wgs84Box[]) this.fWgs84Box.toArray(new Wgs84Box[this.fWgs84Box.size()]);
@@ -373,11 +397,11 @@ public class SNSIndexingInterface {
         }
 
         if (log.isDebugEnabled()) {
-        	String output = "     \"location\" index field SE: ";
+        	String output = "     locations (-> \"location\" index field): ";
         	for (String location : ret) {
         		output = output + location + ", ";
         	}
-            log.debug("     " + output);
+            log.debug(output);
         }
 
         return ret;
