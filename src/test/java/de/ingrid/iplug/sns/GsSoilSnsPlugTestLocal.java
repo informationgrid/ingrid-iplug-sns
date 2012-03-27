@@ -56,7 +56,7 @@ public class GsSoilSnsPlugTestLocal extends TestCase {
     public void testTOPIC_FROM_TEXT() throws Exception {
         SnsPlug plug = new SnsPlug(fPlugDescription);
         
-        String term = "Lisbon";
+        String term = "Lissabon";
 
     	// enclose term in '"' if the term has a space, otherwise no results will be returned from SNS
     	if (term.indexOf(" ") != -1 && !term.startsWith("\"") && !term.endsWith("\"")) {
@@ -74,7 +74,7 @@ public class GsSoilSnsPlugTestLocal extends TestCase {
         assertTrue(hitsArray.length > 0);
 
         // now lower case ! SET CASE SENSITIVITY IN sns.properties !
-        term = "lisbon";
+        term = "lissabon";
 
     	query = QueryStringParser.parse(term);
         query.addField(new FieldQuery(true, false, "datatype", IDataTypes.SNS));
@@ -85,9 +85,9 @@ public class GsSoilSnsPlugTestLocal extends TestCase {
         hits = plug.search(query, 0, 10);
         hitsArray = hits.getHits();
         assertNotNull(hitsArray);
-        // if gazetteerService.getLocationsFromText.ignoreCase=false in sns.properties
+        // if gazetteerService.getLocationsFromText.ignoreCase=false in external-services.xml
 //        assertTrue(hitsArray.length == 0);
-        // if gazetteerService.getLocationsFromText.ignoreCase=true in sns.properties
+        // if gazetteerService.getLocationsFromText.ignoreCase=true in external-services.xml
         assertTrue(hitsArray.length > 0);
     }
 

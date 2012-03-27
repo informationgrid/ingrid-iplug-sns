@@ -72,11 +72,15 @@ public class GsSoilIndexingInterfaceTestLocal extends TestCase {
         res = fullClassify.autoClassifyURL(new URL(url), 1000, true, FilterType.ONLY_LOCATIONS, new Locale("pt"));
         assertTrue(res.getLocations() != null);
         assertTrue(res.getLocations().size() > 0);
-        // DO NOT IGNORE CASE
-        res = fullClassify.autoClassifyURL(new URL(url), 1000, false, FilterType.ONLY_LOCATIONS, new Locale("en"));
+        // DO NOT IGNORE CASE, results with "de"
+        res = fullClassify.autoClassifyURL(new URL(url), 1000, false, FilterType.ONLY_LOCATIONS, new Locale("de"));
         assertTrue(res.getLocations() != null);
         assertTrue(res.getLocations().size() > 0);
-        // get all in "en"
+        // DO NOT IGNORE CASE, NO results with "en" (only uppercase "Berlin" on page !
+        res = fullClassify.autoClassifyURL(new URL(url), 1000, false, FilterType.ONLY_LOCATIONS, new Locale("en"));
+        assertTrue(res.getLocations() != null);
+//        assertTrue(res.getLocations().size() == 0);
+        // get all in "en", IGNORE CASE
         res = fullClassify.autoClassifyURL(new URL(url), 1000, true, null, new Locale("en"));
         assertTrue(res.getTerms() != null);
         assertTrue(res.getTerms().size() > 0);
