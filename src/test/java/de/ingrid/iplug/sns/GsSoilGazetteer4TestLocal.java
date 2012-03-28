@@ -109,16 +109,14 @@ public class GsSoilGazetteer4TestLocal extends TestCase {
         // NOTICE: Passed Name of location and language must match, e.g. "Lisbon"<->"en" or "Lisboa"<->"pt" ... 
 
         locations = gazetteer.findLocationsFromQueryTerm("lisbon", QueryType.ALL_LOCATIONS, MatchingType.EXACT, new Locale("en"));
-        // TODO
-/*
         assertTrue(locations.length > 0);
         assertTrue(locations[0].getId().equals(idLisbonDistrict));
         assertTrue(locations[0].getName().equals("Lisbon"));
-*/
 
-        locations = gazetteer.findLocationsFromQueryTerm("Lisbon", QueryType.ALL_LOCATIONS, MatchingType.EXACT, new Locale("de"));
-        // TODO
-//        assertTrue(locations.length > 0);
+        locations = gazetteer.findLocationsFromQueryTerm("Lissabon", QueryType.ALL_LOCATIONS, MatchingType.EXACT, new Locale("de"));
+        assertTrue(locations.length > 0);
+        assertTrue(locations[0].getId().equals(idLisbonDistrict));
+        assertTrue(locations[0].getName().equals("Lissabon"));
 
         locations = gazetteer.findLocationsFromQueryTerm("Berlin", QueryType.ALL_LOCATIONS, MatchingType.CONTAINS, new Locale("de"));
         assertTrue(locations.length > 0);
@@ -139,8 +137,7 @@ public class GsSoilGazetteer4TestLocal extends TestCase {
         Location location = gazetteer.getLocation(idLisbonDistrict, new Locale("en"));
         assertTrue(location != null);
         assertTrue(location.getId().equals(idLisbonDistrict));
-        // TODO
-        //assertTrue(location.getName().equals("Lisbon"));
+        assertTrue(location.getName().equals("Lisbon"));
 
         location = gazetteer.getLocation(idBerlinStadt, new Locale("de"));
         assertTrue(location != null);
@@ -160,7 +157,7 @@ public class GsSoilGazetteer4TestLocal extends TestCase {
         location = gazetteer.getLocation(idPortugal, new Locale("pt"));
         assertTrue(location != null);
         assertTrue(location.getId().equals(idPortugal));
-        assertTrue(location.getName().equals("Portugal"));
+        assertTrue(location.getName().contains("Portuguesa"));
 
         location = gazetteer.getLocation(idPorto, new Locale("en"));
         assertTrue(location != null);
@@ -205,8 +202,7 @@ public class GsSoilGazetteer4TestLocal extends TestCase {
         DetailedTopic dt = controller.getTopicDetail(topic, "/location", "en");
         assertNotNull(dt);
         assertTrue(dt.getTopicID().indexOf(idLisbonDistrict) != -1);
-        // TODO
-        //assertTrue(dt.getTitle().indexOf("Lisbon") != -1);
+        assertTrue(dt.getTitle().indexOf("Lisbon") != -1);
 
         // ALWAYS empty definitions cause using GazetterService API
         String[] array = dt.getDefinitions();

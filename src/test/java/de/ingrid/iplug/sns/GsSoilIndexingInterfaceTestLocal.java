@@ -317,6 +317,7 @@ public class GsSoilIndexingInterfaceTestLocal extends TestCase {
 
         final String[] result = this.fSnsInterface.getTopicIds();
         assertNotNull(result);
+        // sometimes fails ?
         assertTrue(result.length > 0);
     }
 
