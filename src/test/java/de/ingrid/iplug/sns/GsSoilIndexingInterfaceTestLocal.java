@@ -5,19 +5,28 @@
 package de.ingrid.iplug.sns;
 
 import java.net.URL;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
 import junit.framework.TestCase;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import de.ingrid.external.FullClassifyService;
 import de.ingrid.external.FullClassifyService.FilterType;
 import de.ingrid.external.om.FullClassifyResult;
+import de.ingrid.external.om.Location;
+import de.ingrid.external.om.Term;
 import de.ingrid.utils.tool.SpringUtil;
 
 /**
  * 
  */
 public class GsSoilIndexingInterfaceTestLocal extends TestCase {
+
+    private static Log log = LogFactory.getLog(GsSoilIndexingInterfaceTestLocal.class);
 
     private SNSIndexingInterface fSnsInterface;
 
@@ -65,33 +74,82 @@ public class GsSoilIndexingInterfaceTestLocal extends TestCase {
 //        String url = "http://www.visitlisboa.com";
         String url = "http://www.berlin.de/";
 
+        log.info("START -> autoClassifyURL 1000 ONLY_TERMS ignoreCase=true 'en' " + url);
         res = fullClassify.autoClassifyURL(new URL(url), 1000, true, FilterType.ONLY_TERMS, new Locale("en"));
+        log.info("END -> autoClassifyURL " + url);
         assertTrue(res.getTerms() != null);
         assertTrue(res.getTerms().size() > 0);
+        log.info("res.getTerms().size() " + res.getTerms().size());
+        log.info("res.getTerms() " + getTermListOutput(res.getTerms()));
+        System.out.println();
+
         // ignore case
+        log.info("START -> autoClassifyURL 1000 ONLY_LOCATIONS ignoreCase=true 'pt' " + url);
         res = fullClassify.autoClassifyURL(new URL(url), 1000, true, FilterType.ONLY_LOCATIONS, new Locale("pt"));
+        log.info("END -> autoClassifyURL " + url);
         assertTrue(res.getLocations() != null);
         assertTrue(res.getLocations().size() > 0);
+        log.info("res.getLocations().size() " + res.getLocations().size());
+        log.info("res.getLocations() " + getLocationListOutput(res.getLocations()));
+        System.out.println();
+
+        // IGNORE CASE, results with "de"
+        log.info("START -> autoClassifyURL 1000 ONLY_LOCATIONS ignoreCase=true 'de' " + url);
+        res = fullClassify.autoClassifyURL(new URL(url), 1000, true, FilterType.ONLY_LOCATIONS, new Locale("de"));
+        log.info("END -> autoClassifyURL " + url);
+        assertTrue(res.getLocations() != null);
+        assertTrue(res.getLocations().size() > 0);
+        log.info("res.getLocations().size() " + res.getLocations().size());
+        log.info("res.getLocations() " + getLocationListOutput(res.getLocations()));
+        System.out.println();
+
         // DO NOT IGNORE CASE, results with "de"
+        log.info("START -> autoClassifyURL 1000 ONLY_LOCATIONS ignoreCase=FALSE 'de' " + url);
         res = fullClassify.autoClassifyURL(new URL(url), 1000, false, FilterType.ONLY_LOCATIONS, new Locale("de"));
+        log.info("END -> autoClassifyURL " + url);
         assertTrue(res.getLocations() != null);
         assertTrue(res.getLocations().size() > 0);
+        log.info("res.getLocations().size() " + res.getLocations().size());
+        log.info("res.getLocations() " + getLocationListOutput(res.getLocations()));
+        System.out.println();
+
         // DO NOT IGNORE CASE, NO results with "en" (only uppercase "Berlin" on page !
+        log.info("START -> autoClassifyURL 1000 ONLY_LOCATIONS ignoreCase=FALSE 'en' " + url);
         res = fullClassify.autoClassifyURL(new URL(url), 1000, false, FilterType.ONLY_LOCATIONS, new Locale("en"));
+        log.info("END -> autoClassifyURL " + url);
         assertTrue(res.getLocations() != null);
 //        assertTrue(res.getLocations().size() == 0);
+        log.info("res.getLocations().size() " + res.getLocations().size());
+        log.info("res.getLocations() " + getLocationListOutput(res.getLocations()));
+        System.out.println();
+
         // get all in "en", IGNORE CASE
+        log.info("START -> autoClassifyURL 1000 ALL ignoreCase=true 'en' " + url);
         res = fullClassify.autoClassifyURL(new URL(url), 1000, true, null, new Locale("en"));
+        log.info("END -> autoClassifyURL " + url);
         assertTrue(res.getTerms() != null);
         assertTrue(res.getTerms().size() > 0);
         assertTrue(res.getLocations() != null);
         assertTrue(res.getLocations().size() > 0);
+        log.info("res.getTerms().size() " + res.getTerms().size());
+        log.info("res.getTerms() " + getTermListOutput(res.getTerms()));
+        log.info("res.getLocations().size() " + res.getLocations().size());
+        log.info("res.getLocations() " + getLocationListOutput(res.getLocations()));
+        System.out.println();
+
         // get all in "de"
+        log.info("START -> autoClassifyURL 1000 ALL ignoreCase=true 'de' " + url);
         res = fullClassify.autoClassifyURL(new URL(url), 1000, true, null, new Locale("de"));
+        log.info("END -> autoClassifyURL " + url);
         assertTrue(res.getTerms() != null);
         assertTrue(res.getTerms().size() > 0);
         assertTrue(res.getLocations() != null);
         assertTrue(res.getLocations().size() > 0);
+        log.info("res.getTerms().size() " + res.getTerms().size());
+        log.info("res.getTerms() " + getTermListOutput(res.getTerms()));
+        log.info("res.getLocations().size() " + res.getLocations().size());
+        log.info("res.getLocations() " + getLocationListOutput(res.getLocations()));
+        System.out.println();
     }
 
     /**
@@ -393,5 +451,28 @@ public class GsSoilIndexingInterfaceTestLocal extends TestCase {
             System.out.println("topicId: " + topicId);
         }
         System.out.println();
+    }
+    
+    private String getTermListOutput(List<Term> terms) {
+    	String result = "";
+    	for (Term term : terms) {
+    		result += getTermOutput(term);
+    		result += ", ";
+    	}
+    	return result;
+    }
+    private String getTermOutput(Term term) {
+    	return term.getName();
+    }
+    private String getLocationListOutput(List<Location> locations) {
+    	String result = "";
+    	for (Location location : locations) {
+    		result += getLocationOutput(location);
+    		result += ", ";
+    	}
+    	return result;
+    }
+    private String getLocationOutput(Location location) {
+    	return location.getName();
     }
 }
