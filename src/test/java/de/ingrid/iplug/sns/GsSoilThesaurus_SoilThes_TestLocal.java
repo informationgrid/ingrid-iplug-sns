@@ -22,15 +22,15 @@ import de.ingrid.utils.tool.SpringUtil;
 
 /**
  * Tests of GSSoil implementations of Thesaurus/Gazetteer/FullClassify APi !!!
- * GEMET VERSION !!!
+ * SOIL THES VERSION !!!
  */
-public class GsSoilThesaurusTestLocal extends TestCase {
+public class GsSoilThesaurus_SoilThes_TestLocal extends TestCase {
 
     private static SNSClient fClient;
 
     private boolean fToStdout;
 
-    private final static String VALID_TOPIC_ID = "http://www.eionet.europa.eu/gemet/concept/8167";
+    private final static String VALID_TOPIC_ID = "https://secure.umweltbundesamt.at/soil/8167";
 
     public void setSNSClient(SNSClient client) throws Exception {
         fClient = client;
@@ -45,17 +45,24 @@ public class GsSoilThesaurusTestLocal extends TestCase {
         this.fToStdout = true;
     }
 
-    public void testThesaurusDirectly() throws Exception {
+    public void testThesaurusDirectlySoilThes() throws Exception {
         SpringUtil springUtil = new SpringUtil("spring/external-services.xml");
         final Class<ThesaurusService> _thesaurusService = null;
         ThesaurusService thesaurus = springUtil.getBean("thesaurusService", _thesaurusService);
 
         // getTerm
         // --------------------
-        String topicID = "http://www.eionet.europa.eu/gemet/concept/7843"; // Boden
+        String topicID = "https://secure.umweltbundesamt.at/soil/7843"; // Boden
         Term term = thesaurus.getTerm(topicID, new Locale("en"));
         assertTrue(term != null);
         assertTrue(term.getName().equals("soil"));
+        assertTrue(term.getType().equals(Term.TermType.DESCRIPTOR));
+
+        topicID = "https://secure.umweltbundesamt.at/soil/4070"; // humus
+        term = thesaurus.getTerm(topicID, new Locale("en"));
+        assertTrue(term != null);
+        assertTrue(term.getName().equals("humus"));
+        assertTrue(term.getType().equals(Term.TermType.DESCRIPTOR));
 
         // getHierarchyNextLevel
         // --------------------
@@ -63,13 +70,17 @@ public class GsSoilThesaurusTestLocal extends TestCase {
         assertTrue(treeTerms != null);
         assertTrue(treeTerms.length > 0);
 
-        topicID = "http://www.eionet.europa.eu/gemet/supergroup/5499";
+        topicID = "https://secure.umweltbundesamt.at/soil/SuperGroup_5499"; // NATURAL ENVIRONMENT, ANTHROPIC ENVIRONMENT
+        treeTerms = thesaurus.getHierarchyNextLevel(topicID, new Locale("en"));
+        assertTrue(treeTerms.length > 0);
+
+        topicID = "https://secure.umweltbundesamt.at/soil/Group_4856"; // LITHOSPHERE (soil, geological processes)
         treeTerms = thesaurus.getHierarchyNextLevel(topicID, new Locale("en"));
         assertTrue(treeTerms.length > 0);
 
         // getHierarchyPathToTop
         // --------------------
-        topicID = "http://www.eionet.europa.eu/gemet/concept/7843"; // Boden
+        topicID = "https://secure.umweltbundesamt.at/soil/7843"; // Boden
         TreeTerm treeTerm = thesaurus.getHierarchyPathToTop(topicID, new Locale("en"));
         assertNotNull(treeTerm);
 
@@ -81,6 +92,7 @@ public class GsSoilThesaurusTestLocal extends TestCase {
 
         // getRelatedTermsFromTerm
         // --------------------     
+        topicID = "https://secure.umweltbundesamt.at/soil/7843"; // Boden
         RelatedTerm[] relTerms = thesaurus.getRelatedTermsFromTerm(topicID, new Locale("en"));
         assertNotNull(relTerms);
         assertTrue(relTerms.length > 0);
@@ -94,7 +106,7 @@ public class GsSoilThesaurusTestLocal extends TestCase {
 
         // getTermsFromText
         // --------------------
-        terms = thesaurus.getTermsFromText("soil water lisbon", 10, true, new Locale("en"));
+        terms = thesaurus.getTermsFromText("soil", 10, true, new Locale("en"));
         assertNotNull(terms);
         assertTrue(terms.length > 0);
     }
@@ -122,7 +134,7 @@ public class GsSoilThesaurusTestLocal extends TestCase {
 
         // (THESA)
         // ---------------
-        String id = "http://www.eionet.europa.eu/gemet/supergroup/5499";
+        String id = "https://secure.umweltbundesamt.at/soil/SuperGroup_5499"; // NATURAL ENVIRONMENT, ANTHROPIC ENVIRONMENT
         topic.setTopicID(id);
 
         dt = controller.getTopicDetail(topic, "/thesa", "en");
@@ -159,7 +171,7 @@ public class GsSoilThesaurusTestLocal extends TestCase {
         SNSController controller = new SNSController(fClient, "ags:");
         int[] totalSize = new int[1];
 
-        String id = "http://www.eionet.europa.eu/gemet/supergroup/5499";
+        String id = "https://secure.umweltbundesamt.at/soil/SuperGroup_5499"; // NATURAL ENVIRONMENT, ANTHROPIC ENVIRONMENT
         DetailedTopic[] topicsForId = controller.getTopicForId(id, "/thesa", "plugId", "en", totalSize);
 
         assertTrue(topicsForId.length == 1);
@@ -232,7 +244,7 @@ public class GsSoilThesaurusTestLocal extends TestCase {
         
         // TODO:
         // INDEX OUT OF BOUNDS !
-//        topics = controller.getTopicsForTopic("subsoil", 23, "/thesa", "aId", "en", totalSize, false);
+//        topics = controller.getTopicsForTopic("blabla", 23, "/thesa", "aId", "en", totalSize, false);
 //        assertNull(topics);
         
         topics = controller.getTopicsForTopic(VALID_TOPIC_ID, 23, "/thesa", "aId", "en", totalSize, false);
@@ -302,7 +314,7 @@ public class GsSoilThesaurusTestLocal extends TestCase {
         // printHierachy(topicsHierachy[0].getSuccessors(), 1);
 
         // up
-        topicID = "http://www.eionet.europa.eu/gemet/concept/11007";
+        topicID = "https://secure.umweltbundesamt.at/soil/11007";
         topicsHierachy = controller.getTopicHierachy(totalSize, "narrowerTermAssoc", 5, "up", false, "en", topicID,
                 false, "pid");
         assertNotNull(topicsHierachy);
@@ -314,11 +326,11 @@ public class GsSoilThesaurusTestLocal extends TestCase {
 
         assertTrue(resultList.contains("public function"));
         assertTrue(resultList.contains("ADMINISTRATION, MANAGEMENT, POLICY, POLITICS, INSTITUTIONS, PLANNING"));
-        assertTrue(resultList.contains("http://www.eionet.europa.eu/gemet/concept/95"));
-        assertTrue(resultList.contains("http://www.eionet.europa.eu/gemet/supergroup/2894"));
+        assertTrue(resultList.contains("https://secure.umweltbundesamt.at/soil/95"));
+        assertTrue(resultList.contains("https://secure.umweltbundesamt.at/soil/SuperGroup_2894"));
 
         // top node up
-        topicID = "http://www.eionet.europa.eu/gemet/supergroup/5306";
+        topicID = "https://secure.umweltbundesamt.at/soil/SuperGroup_5306";
         topicsHierachy = controller.getTopicHierachy(totalSize, "narrowerTermAssoc", 5, "up", false, "en", topicID,
                 false, "pid");
         assertNotNull(topicsHierachy);
@@ -327,7 +339,7 @@ public class GsSoilThesaurusTestLocal extends TestCase {
         assertNull(topicsHierachy[0]);
 
         // down
-        topicID = "http://www.eionet.europa.eu/gemet/supergroup/5499";
+        topicID = "https://secure.umweltbundesamt.at/soil/SuperGroup_5499";
         topicsHierachy = controller.getTopicHierachy(totalSize, "narrowerTermAssoc", 2, "down", false, "en", topicID,
                 false, "pid");
         assertNotNull(topicsHierachy);
@@ -339,11 +351,11 @@ public class GsSoilThesaurusTestLocal extends TestCase {
 
         assertTrue(resultList.contains("ATMOSPHERE (air, climate)"));
         assertTrue(resultList.contains("TIME (chronology)"));
-        assertTrue(resultList.contains("http://www.eionet.europa.eu/gemet/group/4856"));
-        assertTrue(resultList.contains("http://www.eionet.europa.eu/gemet/group/1062"));
+        assertTrue(resultList.contains("https://secure.umweltbundesamt.at/soil/Group_4856"));
+        assertTrue(resultList.contains("https://secure.umweltbundesamt.at/soil/Group_1062"));
 
         // leaf down
-        topicID = "http://www.eionet.europa.eu/gemet/group/14979"; // TIME (chronology)
+        topicID = "https://secure.umweltbundesamt.at/soil/Group_14979"; // TIME (chronology)
         topicsHierachy = controller.getTopicHierachy(totalSize, "narrowerTermAssoc", 2, "down", false, "en", topicID,
                 false, "pid");
         assertNotNull(topicsHierachy);
