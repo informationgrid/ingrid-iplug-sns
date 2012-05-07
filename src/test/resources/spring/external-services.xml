@@ -15,7 +15,7 @@
     <bean id="gazetteerService" class="org.edisoft.eu.gssoil.semanticservice.gazetteer.GazetteerServiceImpl" />
     <bean id="fullClassifyService" class="org.edisoft.eu.gssoil.semanticservice.classify.FullClassifyServiceImpl" /-->
 
-    <!-- Properties for services above ! -->
+    <!-- Properties for services above ! ONLY USED IN SNS IPLUG ! -->
     <util:map id="servicesProperties">
         <!-- Portal "Advanced Search/Gazetteer initial lookup", search case insensitive or not -->
         <!-- PortalU.SNS:false / GS Soil.gazetteerService:true -> always commit false to svn ! -->
