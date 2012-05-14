@@ -1007,7 +1007,7 @@ public class SNSController {
      * ATTENTION: This method had a bug when using the old controller before introducing the ThesaurusService API !
      * top and label topics were treated as descriptors !!! But not non descriptor topics !
      * WE STILL SIMULATE THIS BUG HERE !!! Cause don't know where this query is called ! 
-     * @return just one matching topic, in case more topics match or no topic match we return null
+     * @return just one matching topic, in case more topics match we return the FIRST ONE ! If no topic match we return null.
      * @throws Exception
      */
     private de.ingrid.iplug.sns.utils.Topic getThesaurusDescriptorTopic(String queryTerm, int[] totalSize, String lang,
@@ -1053,9 +1053,9 @@ public class SNSController {
         	duplicateList.add(term.getId());        	
         }
 
-        // only return result if exactly ONE topic found !
+        // RETURN FIRST TOPIC !
         de.ingrid.iplug.sns.utils.Topic result = null;
-        if (filteredTerms.size() == 1) {
+        if (filteredTerms.size() > 0) {
         	result = buildTopicFromTerm(filteredTerms.get(0), plugId, lang);
         	totalSize[0] = 1;
         }
