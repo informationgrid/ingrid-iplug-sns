@@ -174,12 +174,12 @@ public class SnsPlug implements IPlug {
                 max = Math.min((hits.length - start), length);
                 IngridHit[] finalHits = new IngridHit[max];
                 System.arraycopy(hits, start, finalHits, 0, max);
-                if (log.isDebugEnabled()) {
-                    log.debug("hits: " + totalSize[0]);
-                }
 
                 if ((0 == totalSize[0]) && (hits.length > 0)) {
                     totalSize[0] = hits.length;
+                }
+                if (log.isDebugEnabled()) {
+                    log.debug("hits: " + totalSize[0]);
                 }
                 ret = new IngridHits(this.fPlugId, totalSize[0], finalHits,
 						false);

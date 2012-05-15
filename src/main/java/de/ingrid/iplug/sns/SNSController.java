@@ -1541,7 +1541,11 @@ public class SNSController {
                 log.debug("     !!!!!!!!!! calling API thesaurusService.getHierarchyNextLevel: " + topicId + " " + lang);
             }
         	TreeTerm[] childTerms = thesaurusService.getHierarchyNextLevel(topicId, new Locale(lang));
-        	
+
+            if (log.isDebugEnabled()) {
+                log.debug("num childTerms: " + childTerms.length);
+            }
+
         	// set up root topic encapsulating children
     		// NOTICE: default is null ! If no children ! Evaluated in Test.
         	de.ingrid.iplug.sns.utils.Topic rootTopic = null;
