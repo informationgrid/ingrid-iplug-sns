@@ -57,12 +57,29 @@ public class GsSoilThesaurus_SoilThes_TestLocal extends TestCase {
         assertTrue(term != null);
         assertTrue(term.getName().equals("soil"));
         assertTrue(term.getType().equals(Term.TermType.DESCRIPTOR));
+        // SoilThes terms encapsulate now Thesaurus identificator in their alternateId !
+        // Was planned as "GEMET", "SoilThes" ... but seems to be always SoilThes ...
+        // ALWAYS "SoilThes" !!!!!!!!? Although this is normal GEMET hierarchy !
+        assertTrue(term.getAlternateId().equals("SoilThes"));
+        assertNull(term.getAlternateName());
+
+        topicID = "https://secure.umweltbundesamt.at/soil/Theme_35"; // Boden unter COLLECTIONS !
+        term = thesaurus.getTerm(topicID, new Locale("en"));
+        assertTrue(term != null);
+        assertTrue(term.getName().equals("soil"));
+        assertTrue(term.getType().equals(Term.TermType.DESCRIPTOR));
+        // This SoilThes ! ok
+        assertTrue(term.getAlternateId().equals("SoilThes"));
+        assertNull(term.getAlternateName());
 
         topicID = "https://secure.umweltbundesamt.at/soil/4070"; // humus
         term = thesaurus.getTerm(topicID, new Locale("en"));
         assertTrue(term != null);
         assertTrue(term.getName().equals("humus"));
         assertTrue(term.getType().equals(Term.TermType.DESCRIPTOR));
+        // ALWAYS "SoilThes" !!!!!!!!? Although this is normal GEMET hierarchy !
+        assertTrue(term.getAlternateId().equals("SoilThes"));
+        assertNull(term.getAlternateName());
 
         // getHierarchyNextLevel
         // --------------------
