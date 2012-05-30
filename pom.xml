@@ -135,14 +135,14 @@
                 <artifactItem>
                   <groupId>gssoil</groupId>
                   <artifactId>thesaurus-gazetteer-resources</artifactId>
-                  <version>2.0.1</version>
+                  <version>4.0.1</version>
                   <type>zip</type>
                   <outputDirectory>${project.build.directory}/gssoil/conf</outputDirectory>
                 </artifactItem>
                 <artifactItem>
                   <groupId>gssoil</groupId>
                   <artifactId>thesaurus-gazetteer-libs</artifactId>
-                  <version>2.0.1</version>
+                  <version>4.0.1</version>
                   <type>zip</type>
                   <outputDirectory>${project.build.directory}/gssoil/lib</outputDirectory>
                 </artifactItem>

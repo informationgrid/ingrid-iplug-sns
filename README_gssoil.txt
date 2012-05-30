@@ -14,6 +14,7 @@ To run the GS Soil unit tests you have to add the gs soil stuff under target/gss
 (present if "mvn -Pgssoil ..." is executed !) to your eclipse classpath and libs.
 - add jars in target/gssoil/lib to your libraries
 - add directory target/gssoil/conf as source path (NOTICE: this one includes the properties files for settings !)
+  NOTICE: ADAPT gadm.dbuser AND gadm.dbpass IN FILE props.properties for accessing your postgres
 
 Further changes for GS Soil:
 - set property "gazetteerService.getLocationsFromText.ignoreCase" to "true" in spring/external-services.xml (initial lookup in extended search)
