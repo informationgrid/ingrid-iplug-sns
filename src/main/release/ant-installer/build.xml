@@ -16,6 +16,8 @@
 		<move toDir="${installDir}">
 			<fileset dir="${installDir}/${iPlugName}"/>
 		</move>
+        
+        <mkdir dir="${installDir}/webapp/WEB-INF/work"/>
 	</target>
 	
 	<target name="ibus" description="Set configuration correctly for the iBus.">
