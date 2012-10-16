@@ -168,7 +168,7 @@ startIplug()
   fi
 
   export CLASSPATH="$CLASSPATH"
-  INGRID_OPTS="$INGRID_OPTS -Dingrid_home=$INGRID_HOME"
+  INGRID_OPTS="$INGRID_OPTS -Dingrid_home=$INGRID_HOME -Dfile.encoding=UTF8"
   CLASS=de.ingrid.iplug.PlugServer
   
   # run it
