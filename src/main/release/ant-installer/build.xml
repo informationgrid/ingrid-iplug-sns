@@ -1,42 +1,78 @@
-<project name="PortalU Installation">
+<project name="PortalU Installation" basedir=".">
     <description>
         iPlug-SNS Installation Script
     </description>
-	<!-- set global properties for this build -->
-	<property name="iPlugName" 			value="${project.artifactId}-${project.version}"/>
-	<property name="xml-communication" 	value="${installDir}/conf/communication.xml"/>
-	
-	<target name="extract" description="Extract all files to the installation directory.">
-		<unzip src="${antinstaller.jar}" dest="${installDir}">
-			<patternset>
-				<include name="${iPlugName}/**/*.*"/>
-			</patternset>
-		</unzip>
-		
-		<move toDir="${installDir}">
-			<fileset dir="${installDir}/${iPlugName}"/>
-		</move>
+    <!-- set global properties for this build -->
+    <property name="iPlugName"          value="${project.artifactId}-${project.version}"/>
+    <property name="xml-communication"  value="${installDir}/conf/communication.xml"/>
+
+    <!-- THESE PORPERTIES ARE NECESSARY FOR UPDATES -->
+    <property name="libraryDir"         value="lib" />
+    <property name="libraryIdent"       value="ingrid-iplug-sns-" />
+    <!-- <property name="libraryIdent"       value="MANIFEST.MF" /> -->
+    <property name="versionsWithConfigurations"  value="" />
+    <property name="minSupportedVersion" value="3.3.0" />
+
+    <import file="build-installer-utils.xml"  as="utils" />
+    <import file="build-patch.xml"            as="patch" />
+
+    <target name="setUpdateProperty" depends="checkPreconditionsForUpdate, extractUpdate">
+        <property name="installType" value="update" />
+        <property name="updateProcedure" value="true" />
+    </target>
+    
+    <target name="setInstallProperty" depends="extract">
+        <property name="installProcedure" value="true" />
+    </target>
+
+    <target name="extract" description="Extract all files to the installation directory.">
+        <unzip src="${antinstaller.jar}" dest="${installDir}">
+            <patternset>
+                <include name="${iPlugName}/**/*.*"/>
+            </patternset>
+        </unzip>
+        
+        <move toDir="${installDir}">
+            <fileset dir="${installDir}/${iPlugName}"/>
+        </move>
         
         <mkdir dir="${installDir}/webapp/WEB-INF/work"/>
-	</target>
-	
-	<target name="ibus" description="Set configuration correctly for the iBus.">
-		<echo>Schreibe iBus Konfiguration in communication.xml</echo>
-		<xmlproperty file="${xml-communication}" prefix="plugXML"/>
-		<replace file="${xml-communication}" token="${plugXML.communication.client(name)}" 								value="${clientName}-admin"/>
-		<replace file="${xml-communication}" token="${plugXML.communication.client.connections.server(name)}" 			value="${serverName}"/>
-		<replace file="${xml-communication}" token="${plugXML.communication.client.connections.server.socket(ip)}" 		value="${serverIp}"/>
-		<replace file="${xml-communication}" token="${plugXML.communication.client.connections.server.socket(port)}" 	value="${serverPort}"/>		
-	</target>
-	
-	<target name="startIPlug">
-		<echo>
+    </target>
+    
+    <target name="extractUpdate">
+        <unzip src="${antinstaller.jar}" dest=".">
+            <patternset>
+                <include name="**/*.*"/>
+                <exclude name="${iPlugName}/conf/communication.xml" />
+            </patternset>
+        </unzip>
+        
+        <delete>
+            <fileset dir="${installDir}/lib" includes="**/*"/>
+        </delete>
+        
+        <move toDir="${installDir}">
+            <fileset dir="./${iPlugName}"/>
+        </move>
+    </target>
+
+    <target name="ibus" description="Set configuration correctly for the iBus.">
+        <echo>Schreibe iBus Konfiguration in communication.xml</echo>
+        <xmlproperty file="${xml-communication}" prefix="plugXML"/>
+        <replace file="${xml-communication}" token="${plugXML.communication.client(name)}"                              value="${clientName}-admin"/>
+        <replace file="${xml-communication}" token="${plugXML.communication.client.connections.server(name)}"           value="${serverName}"/>
+        <replace file="${xml-communication}" token="${plugXML.communication.client.connections.server.socket(ip)}"      value="${serverIp}"/>
+        <replace file="${xml-communication}" token="${plugXML.communication.client.connections.server.socket(port)}"    value="${serverPort}"/>     
+    </target>
+    
+    <target name="startIPlug">
+        <echo>
 =================
 Weiteres Vorgehen
 =================
 
-		</echo>
-		<echo>
+        </echo>
+        <echo>
 Gehen Sie ins Verzeichnis:
 ${installDir}
 und rufen sie von der Kommandozeile folgendes auf
@@ -56,7 +92,7 @@ Administration (im Portal) eingeschaltet werden.
 Weitere Informationen entnehmen Sie bitte dem
 Online-Handbuch unter 
 http://www.kst.portalu.de/wiki/index.php/InGrid_Installation.
-		</echo>
-	</target>
-	
+        </echo>
+    </target>
+    
 </project>
