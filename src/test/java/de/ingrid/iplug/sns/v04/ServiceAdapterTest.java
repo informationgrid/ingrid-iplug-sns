@@ -34,7 +34,5 @@ public class ServiceAdapterTest extends TestCase {
 
         new SNSServiceClientTest().testAutoClassify();
         new SNSServiceClientTest().testFindTopics();
-        new SNSServiceClientTest().testGetPSI();
-        new SNSServiceClientTest().testGetTypes();
     }
 }

@@ -61,7 +61,7 @@ public class SNSControllerTest extends TestCase {
         int[] totalSize = new int[1];
         // NOTICE: "Wasser" is LABEL topic !!!
         Topic[] topicsForTerm = controller.getTopicsForTerm("Wasser", 0, 1000, "aId", totalSize, "de", false, false);
-        assertTrue(topicsForTerm.length == 26);
+        assertTrue(topicsForTerm.length == 7);
         for (int i = 0; i < topicsForTerm.length; i++) {
             Topic topic = topicsForTerm[i];
             if (this.fToStdout) {
@@ -71,18 +71,18 @@ public class SNSControllerTest extends TestCase {
 
         // DESCRIPTOR topic !
         topicsForTerm = controller.getTopicsForTerm("Hydrosph\u00E4re", 0, 1000, "aId", totalSize, "de", false, false);
-        assertTrue(topicsForTerm.length == 2);
+        assertTrue(topicsForTerm.length == 5);
 
         // case insensitive !!!
         topicsForTerm = controller.getTopicsForTerm("hydrosph\u00E4re", 0, 1000, "aId", totalSize, "de", false, false);
-        assertTrue(topicsForTerm.length == 2);
+        assertTrue(topicsForTerm.length == 5);
 
         // NON DESCRIPTOR topic ! Here we do NOT get results !!!
         topicsForTerm = controller.getTopicsForTerm("Waldsterben", 0, 1000, "aId", totalSize, "de", false, false);
         assertTrue(topicsForTerm.length == 0);
 
         // TOP topic !!!
-        topicsForTerm = controller.getTopicsForTerm("Hydrosph\u00E4re - Wasser und Gew\u00E4sser", 0, 1000, "aId", totalSize, "de", false, false);
+        topicsForTerm = controller.getTopicsForTerm("[Hydrosphäre - Wasser und Gewässer]", 0, 1000, "aId", totalSize, "de", false, false);
         assertTrue(topicsForTerm.length == 5);
 
         topicsForTerm = controller.getTopicsForTerm("no thesa topic available", 0, 1000, "aId", totalSize, "de", false, false);
@@ -185,7 +185,7 @@ public class SNSControllerTest extends TestCase {
         int[] totalSize = new int[1];
         // #legalType (EVENT)
         // ---------------
-        DetailedTopic[] topicsForId = controller.getTopicForId("t47098a_10220d1bc3e_4ee1", "/event", "plugId", "de", totalSize);
+        DetailedTopic[] topicsForId = controller.getTopicForId("http://iqvoc-chronicle.innoq.com/t47098a_10220d1bc3e_4ee1", "/event", "plugId", "de", totalSize);
         assertTrue(topicsForId.length == 1);
         DetailedTopic dt = topicsForId[0];
 
@@ -204,7 +204,7 @@ public class SNSControllerTest extends TestCase {
             System.out.println(array[i]);
         }
 
-        array = dt.getSamples();
+        /*array = dt.getSamples();
         assertEquals(2, array.length);
         System.out.println("Sam:");
         for (int i = 0; i < array.length; i++) {
@@ -221,19 +221,19 @@ public class SNSControllerTest extends TestCase {
         System.out.println("Ass:");
         String bla = (String) dt.get(DetailedTopic.ASSOCIATED_OCC);
         System.out.println(bla);
-
+		*/
         System.out.println("Des:");
-        bla = (String) dt.get(DetailedTopic.DESCRIPTION_OCC);
+        String bla = (String) dt.get(DetailedTopic.DESCRIPTION_OCC);
         System.out.println(bla);
 
         // #descriptorType (THESA) Waldschaden
         // ---------------
-        topicsForId = controller.getTopicForId("uba_thes_27061", "/thesa", "plugId", "de", totalSize);
+        topicsForId = controller.getTopicForId("http://umthes.innoq.com/_00027061", "/thesa", "plugId", "de", totalSize);
         assertTrue(topicsForId.length == 1);
         dt = topicsForId[0];
 
         assertNotNull(dt);
-        assertEquals("uba_thes_27061", dt.getTopicID());
+        assertEquals("http://umthes.innoq.com/_00027061", dt.getTopicID());
         assertEquals("Waldschaden", dt.getTitle());
 
         // ALWAYS empty definitions cause using ThesaurusService API
@@ -262,16 +262,16 @@ public class SNSControllerTest extends TestCase {
 
         // #use6Type (LOCATION) Frankfurt am Main
         // ---------------
-        topicsForId = controller.getTopicForId("GEMEINDE0641200000", "/location", "plugId", "de", totalSize);
+        topicsForId = controller.getTopicForId("http://iqvoc-gazetteer.innoq.com/GEMEINDE0641200000", "/location", "plugId", "de", totalSize);
         assertTrue(topicsForId.length == 1);
         dt = topicsForId[0];
 
         assertNotNull(dt);
-        assertEquals("GEMEINDE0641200000", dt.getTopicID());
+        assertEquals("http://iqvoc-gazetteer.innoq.com/GEMEINDE0641200000", dt.getTopicID());
         assertEquals("Frankfurt am Main", dt.getTitle());
         assertTrue(dt.getTopicNativeKey().indexOf("06412000") != -1);
-        assertEquals("GEMEINDE0641200000", dt.getAdministrativeID());
-        assertTrue(dt.getSummary().indexOf("use6Type") != -1);
+        assertEquals("http://iqvoc-gazetteer.innoq.com/GEMEINDE0641200000", dt.getAdministrativeID());
+        assertTrue(dt.getSummary().indexOf("use6") != -1);
 
         // ALWAYS empty definitions cause using GazetterService API
         array = dt.getDefinitions();
@@ -281,6 +281,7 @@ public class SNSControllerTest extends TestCase {
         array = dt.getDefinitionTitles();
         assertEquals(0, array.length);
 
+        /*
         // ALWAYS empty samples cause using GazetterService API
         array = dt.getSamples();
         assertEquals(0, array.length);
@@ -291,7 +292,7 @@ public class SNSControllerTest extends TestCase {
 
         // NO associations cause using GazetterService API
         bla = (String) dt.get(DetailedTopic.ASSOCIATED_OCC);
-        assertNull(bla);
+        assertNull(bla);*/
 
         // NO descriptionOcc cause using GazetterService API
         bla = (String) dt.get(DetailedTopic.DESCRIPTION_OCC);
@@ -306,7 +307,7 @@ public class SNSControllerTest extends TestCase {
         Topic topic = new Topic();
         // #legalType (EVENT)
         // ---------------
-        topic.setTopicID("t47098a_10220d1bc3e_4ee1");
+        topic.setTopicID("http://iqvoc-chronicle.innoq.com/t47098a_10220d1bc3e_4ee1");
 
         DetailedTopic dt = controller.getTopicDetail(topic, "de");
 
@@ -381,7 +382,7 @@ public class SNSControllerTest extends TestCase {
 
         // #use6Type (LOCATION) Frankfurt am Main
         // ---------------
-        topic.setTopicID("GEMEINDE0641200000");
+        topic.setTopicID("http://iqvoc-gazetteer.innoq.com/GEMEINDE0641200000");
 
         dt = controller.getTopicDetail(topic, "/location", "de");
         assertNotNull(dt);
@@ -423,14 +424,14 @@ public class SNSControllerTest extends TestCase {
         SNSController controller = new SNSController(fClient, "ags:");
         int[] totalSize = new int[1];
         // WITH INTRODUCTION OF GAZETTEER API NEVER RETURNS EXPIRED ONES !!!
-        Topic[] topicsForTopic = controller.getTopicSimilarLocationsFromTopic("GEMEINDE0325300005", 1000, "aId",
+        Topic[] topicsForTopic = controller.getTopicSimilarLocationsFromTopic("http://iqvoc-gazetteer.innoq.com/GEMEINDE0325300005", 1000, "aId",
                 totalSize, "de");
 //                totalSize, false, "de");
         assertNotNull(topicsForTopic);
         assertEquals(9, topicsForTopic.length);
 
         // WITH INTRODUCTION OF GAZETTEER API NEVER RETURNS EXPIRED ONES !!!
-        topicsForTopic = controller.getTopicSimilarLocationsFromTopic("GEMEINDE0325300005", 1000, "aId", totalSize,
+        topicsForTopic = controller.getTopicSimilarLocationsFromTopic("http://iqvoc-gazetteer.innoq.com/GEMEINDE0325300005", 1000, "aId", totalSize,
                 "de");
 //                true, "de");
         assertNotNull(topicsForTopic);
@@ -454,7 +455,7 @@ public class SNSControllerTest extends TestCase {
         // printHierachy(topicsHierachy[0].getSuccessors(), 1);
 
         // up
-        topicID = "uba_thes_40282";
+        topicID = "http://umthes.innoq.com/_00040282";
         topicsHierachy = controller.getTopicHierachy(totalSize, "narrowerTermAssoc", 5, "up", false, "de", topicID,
                 false, "pid");
         assertNotNull(topicsHierachy);
@@ -466,11 +467,11 @@ public class SNSControllerTest extends TestCase {
 
         assertTrue(resultList.contains("Atmosph\u00E4re und Klima"));
         assertTrue(resultList.contains("Luft"));
-        assertTrue(resultList.contains("uba_thes_49251"));
-        assertTrue(resultList.contains("uba_thes_40282"));
+        assertTrue(resultList.contains("http://umthes.innoq.com/_00049251"));
+        assertTrue(resultList.contains("http://umthes.innoq.com/_00040282"));
 
         // top node up
-        topicID = "uba_thes_49251";
+        topicID = "http://umthes.innoq.com/_00049251";
         topicsHierachy = controller.getTopicHierachy(totalSize, "narrowerTermAssoc", 5, "up", false, "de", topicID,
                 false, "pid");
         assertNotNull(topicsHierachy);
@@ -479,7 +480,7 @@ public class SNSControllerTest extends TestCase {
         assertNull(topicsHierachy[0]);
 
         // down
-        topicID = "uba_thes_49251";
+        topicID = "http://umthes.innoq.com/_00049251";
         topicsHierachy = controller.getTopicHierachy(totalSize, "narrowerTermAssoc", 2, "down", false, "de", topicID,
                 false, "pid");
         assertNotNull(topicsHierachy);
@@ -491,8 +492,8 @@ public class SNSControllerTest extends TestCase {
 
         assertTrue(resultList.contains("Atmosph\u00E4re und Klima"));
         assertTrue(resultList.contains("Luft"));
-        assertTrue(resultList.contains("uba_thes_49251"));
-        assertTrue(resultList.contains("uba_thes_40282"));
+        assertTrue(resultList.contains("http://umthes.innoq.com/_00049251"));
+        assertTrue(resultList.contains("http://umthes.innoq.com/_00040282"));
 
         // leaf down
         topicID = "uba_thes_40787"; // Kleinmenge
@@ -511,7 +512,7 @@ public class SNSControllerTest extends TestCase {
 		// NOTICE: has 2 paths to top !
 		// 1. uba_thes_13093 / uba_thes_47403 / uba_thes_47404 / uba_thes_49276
 		// 2. uba_thes_13093 / uba_thes_13133 / uba_thes_49268
-		String topicID = "uba_thes_13093"; // Immissionsdaten
+		String topicID = "http://umthes.innoq.com/_00013093"; // Immissionsdaten
 //        String topicID = "uba_thes_27118";
         int[] totalSize = new int[1];
         Topic[] topicsHierachy = controller.getTopicHierachy(totalSize, "narrowerTermAssoc", 200, "up", true, "de",
@@ -526,8 +527,8 @@ public class SNSControllerTest extends TestCase {
 
         assertTrue(resultList.contains("Messergebnis"));
         assertTrue(resultList.contains("Immissionssituation"));
-        assertTrue(resultList.contains("uba_thes_47403"));
-        assertTrue(resultList.contains("uba_thes_13133"));
+        assertTrue(resultList.contains("http://umthes.innoq.com/_00047403"));
+        assertTrue(resultList.contains("http://umthes.innoq.com/_00013133"));
     }
 
     /**

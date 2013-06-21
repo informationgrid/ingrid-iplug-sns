@@ -1,12 +1,8 @@
 package de.ingrid.iplug.sns;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-
-import com.slb.taxi.webservice.xtm.stubs.xtm.Topic;
 
 public class TopicTypClassifier {
 
@@ -14,6 +10,7 @@ public class TopicTypClassifier {
             "catchmentAreaType", "islandType", "landscapeType", "archipelagoType", "mountainType", "mountainsType", "naturalLandscapeType", "biosphereType", "nationalParkType", "naturalParkType",
             "protectedAreaType", "channelType", "lakeType", "reservoirType", "riverType", "seaType"));
 
+    /*
     public List<Topic> getLocationTopics(Topic[] topics) {
         if (topics != null) {
             return getLocationTypes(topics, _locationTypeIds);
@@ -37,4 +34,5 @@ public class TopicTypClassifier {
         }
         return ret;
     }
+    */
 }

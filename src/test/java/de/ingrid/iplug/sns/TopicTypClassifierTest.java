@@ -1,15 +1,6 @@
 package de.ingrid.iplug.sns;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import junit.framework.TestCase;
-
-import com.slb.taxi.webservice.xtm.stubs.xtm.BaseName;
-import com.slb.taxi.webservice.xtm.stubs.xtm.BaseNameString;
-import com.slb.taxi.webservice.xtm.stubs.xtm.InstanceOf;
-import com.slb.taxi.webservice.xtm.stubs.xtm.Topic;
-import com.slb.taxi.webservice.xtm.stubs.xtm.TopicRef;
 
 public class TopicTypClassifierTest extends TestCase {
 
@@ -21,6 +12,7 @@ public class TopicTypClassifierTest extends TestCase {
             "/location/waters/lake", "/location/waters/reservoir", "/location/waters/river", "/location/waters/sea", "/thesa/descriptor", "/thesa/descriptor/nodeLabel",
             "/thesa/descriptor/nodeLabel/topTerm", "/thesa/nonDescriptor" };
 
+    /*
     private List<Topic> _testTopics;
     
     public void setUp() {
@@ -47,5 +39,5 @@ public class TopicTypClassifierTest extends TestCase {
         List<Topic> locationTopics = topicTypeClassifier.getLocationTopics(_testTopics.toArray(new Topic[0]));
 
         assertEquals(24, locationTopics.size());
-    }
+    }*/
 }
