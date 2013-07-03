@@ -31,7 +31,7 @@ public class SNSControllerTest extends TestCase {
 
     private boolean fToStdout;
 
-    private final static String VALID_TOPIC_ID = "uba_thes_19054";
+    private final static String VALID_TOPIC_ID = "http://umthes.innoq.com/_00019054";
 
     /**
      * @param client
@@ -57,7 +57,7 @@ public class SNSControllerTest extends TestCase {
      * @throws Exception
      */
     public void testTopicsForTerm() throws Exception {
-        SNSController controller = new SNSController(fClient, "ags:");
+        SNSController controller = new SNSController(fClient, "agsNotation");
         int[] totalSize = new int[1];
         // NOTICE: "Wasser" is LABEL topic !!!
         Topic[] topicsForTerm = controller.getTopicsForTerm("Wasser", 0, 1000, "aId", totalSize, "de", false, false);
@@ -93,7 +93,7 @@ public class SNSControllerTest extends TestCase {
      * @throws Exception
      */
     public void testGetAssociatedTopics() throws Exception {
-        SNSController controller = new SNSController(fClient, "ags:");
+        SNSController controller = new SNSController(fClient, "agsNotation");
         int[] totalSize = new int[1];
         
         // THESA
@@ -109,7 +109,7 @@ public class SNSControllerTest extends TestCase {
         }
 
         // LOCATION
-		String locationId = "GEMEINDE0641200000"; // Frankfurt am Main
+		String locationId = "http://iqvoc-gazetteer.innoq.com/GEMEINDE0641200000"; // Frankfurt am Main
         topics = controller.getTopicsForTopic(locationId, 23, "/location", "aId", "de", totalSize, false);
         assertEquals(23, topics.length);
 
@@ -122,7 +122,7 @@ public class SNSControllerTest extends TestCase {
      * @throws Exception
      */
     public void testGetDocumentRelatedTopics() throws Exception {
-        SNSController controller = new SNSController(fClient, "ags:");
+        SNSController controller = new SNSController(fClient, "agsNotation");
         int[] totalSize = new int[1];
         String text = "Tschernobyl liegt in Halle gefunden";
         DetailedTopic[] topics = controller.getTopicsForText(text, 100, "aPlugId", "de", totalSize, false);
@@ -181,7 +181,7 @@ public class SNSControllerTest extends TestCase {
      * @throws Exception
      */
     public void testTopicForId() throws Exception {
-        SNSController controller = new SNSController(fClient, "ags:");
+        SNSController controller = new SNSController(fClient, "agsNotation");
         int[] totalSize = new int[1];
         // #legalType (EVENT)
         // ---------------
@@ -191,7 +191,7 @@ public class SNSControllerTest extends TestCase {
 
         assertNotNull(dt);
         String[] array = dt.getDefinitions();
-        assertEquals(1, array.length);
+        /*assertEquals(1, array.length);
         System.out.println("Defs:");
         for (int i = 0; i < array.length; i++) {
             System.out.println(array[i]);
@@ -202,7 +202,7 @@ public class SNSControllerTest extends TestCase {
         System.out.println("DefTit:");
         for (int i = 0; i < array.length; i++) {
             System.out.println(array[i]);
-        }
+        }*/
 
         /*array = dt.getSamples();
         assertEquals(2, array.length);
@@ -303,7 +303,7 @@ public class SNSControllerTest extends TestCase {
      * @throws Exception
      */
     public void testGetDetails() throws Exception {
-        SNSController controller = new SNSController(fClient, "ags:");
+        SNSController controller = new SNSController(fClient, "agsNotation");
         Topic topic = new Topic();
         // #legalType (EVENT)
         // ---------------
@@ -312,7 +312,7 @@ public class SNSControllerTest extends TestCase {
         DetailedTopic dt = controller.getTopicDetail(topic, "de");
 
         String[] array = dt.getDefinitions();
-        assertEquals(1, array.length);
+        /*assertEquals(1, array.length);
         System.out.println("Defs:");
         for (int i = 0; i < array.length; i++) {
             System.out.println(array[i]);
@@ -323,17 +323,17 @@ public class SNSControllerTest extends TestCase {
         System.out.println("DefTit:");
         for (int i = 0; i < array.length; i++) {
             System.out.println(array[i]);
-        }
+        }*/
 
         array = dt.getSamples();
-        assertEquals(2, array.length);
+        assertEquals(3, array.length);
         System.out.println("Sam:");
         for (int i = 0; i < array.length; i++) {
             System.out.println(array[i]);
         }
 
         array = dt.getSampleTitles();
-        assertEquals(2, array.length);
+        assertEquals(3, array.length);
         System.out.println("SamTit:");
         for (int i = 0; i < array.length; i++) {
             System.out.println(array[i]);
@@ -349,11 +349,11 @@ public class SNSControllerTest extends TestCase {
 
         // #descriptorType (THESA) Waldschaden
         // ---------------
-        topic.setTopicID("uba_thes_27061");
+        topic.setTopicID("http://umthes.innoq.com/_00027061");
 
         dt = controller.getTopicDetail(topic, "/thesa", "de");
         assertNotNull(dt);
-        assertEquals("uba_thes_27061", dt.getTopicID());
+        assertEquals("http://umthes.innoq.com/_00027061", dt.getTopicID());
         assertEquals("Waldschaden", dt.getTitle());
 
         // ALWAYS empty definitions cause using ThesaurusService API
@@ -386,11 +386,11 @@ public class SNSControllerTest extends TestCase {
 
         dt = controller.getTopicDetail(topic, "/location", "de");
         assertNotNull(dt);
-        assertEquals("GEMEINDE0641200000", dt.getTopicID());
+        assertEquals("http://iqvoc-gazetteer.innoq.com/GEMEINDE0641200000", dt.getTopicID());
         assertEquals("Frankfurt am Main", dt.getTitle());
         assertTrue(dt.getTopicNativeKey().indexOf("06412000") != -1);
-        assertEquals("GEMEINDE0641200000", dt.getAdministrativeID());
-        assertTrue(dt.getSummary().indexOf("use6Type") != -1);
+        assertEquals("http://iqvoc-gazetteer.innoq.com/GEMEINDE0641200000", dt.getAdministrativeID());
+        assertTrue(dt.getSummary().indexOf("location-admin-use6") != -1);
 
         // ALWAYS empty definitions cause using GazetterService API
         array = dt.getDefinitions();
@@ -421,28 +421,28 @@ public class SNSControllerTest extends TestCase {
      * @throws Exception
      */
     public void testGetAssociatedTopicsExpired() throws Exception {
-        SNSController controller = new SNSController(fClient, "ags:");
+        SNSController controller = new SNSController(fClient, "agsNotation");
         int[] totalSize = new int[1];
         // WITH INTRODUCTION OF GAZETTEER API NEVER RETURNS EXPIRED ONES !!!
         Topic[] topicsForTopic = controller.getTopicSimilarLocationsFromTopic("http://iqvoc-gazetteer.innoq.com/GEMEINDE0325300005", 1000, "aId",
                 totalSize, "de");
 //                totalSize, false, "de");
         assertNotNull(topicsForTopic);
-        assertEquals(9, topicsForTopic.length);
+        assertEquals(1, topicsForTopic.length);
 
         // WITH INTRODUCTION OF GAZETTEER API NEVER RETURNS EXPIRED ONES !!!
-        topicsForTopic = controller.getTopicSimilarLocationsFromTopic("http://iqvoc-gazetteer.innoq.com/GEMEINDE0325300005", 1000, "aId", totalSize,
+        /*topicsForTopic = controller.getTopicSimilarLocationsFromTopic("http://iqvoc-gazetteer.innoq.com/GEMEINDE0325300005", 1000, "aId", totalSize,
                 "de");
 //                true, "de");
         assertNotNull(topicsForTopic);
-//        assertEquals(17, topicsForTopic.length);
+        */
     }
 
     /**
      * @throws Exception
      */
     public void testGetHierachy() throws Exception {
-        SNSController controller = new SNSController(fClient, "ags:");
+        SNSController controller = new SNSController(fClient, "agsNotation");
 
         // toplevel
         String topicID = "toplevel";
@@ -465,7 +465,7 @@ public class SNSControllerTest extends TestCase {
         resultList.add(topicsHierachy[0].getTopicName());
         fill(topicsHierachy[0].getSuccessors(), resultList);
 
-        assertTrue(resultList.contains("Atmosph\u00E4re und Klima"));
+        assertTrue(resultList.contains("[Atmosph\u00E4re und Klima]"));
         assertTrue(resultList.contains("Luft"));
         assertTrue(resultList.contains("http://umthes.innoq.com/_00049251"));
         assertTrue(resultList.contains("http://umthes.innoq.com/_00040282"));
@@ -490,13 +490,13 @@ public class SNSControllerTest extends TestCase {
         resultList.add(topicsHierachy[0].getTopicName());
         fill(topicsHierachy[0].getSuccessors(), resultList);
 
-        assertTrue(resultList.contains("Atmosph\u00E4re und Klima"));
+        assertTrue(resultList.contains("[Atmosph\u00E4re und Klima]"));
         assertTrue(resultList.contains("Luft"));
         assertTrue(resultList.contains("http://umthes.innoq.com/_00049251"));
         assertTrue(resultList.contains("http://umthes.innoq.com/_00040282"));
 
         // leaf down
-        topicID = "uba_thes_40787"; // Kleinmenge
+        topicID = "http://umthes.innoq.com/de/concepts/_00040787"; // Kleinmenge
         topicsHierachy = controller.getTopicHierachy(totalSize, "narrowerTermAssoc", 2, "down", false, "de", topicID,
                 false, "pid");
         assertNotNull(topicsHierachy);
@@ -506,7 +506,7 @@ public class SNSControllerTest extends TestCase {
     }
 
     public void testGetHierachyIncludeSiblings() throws Exception {
-        SNSController controller = new SNSController(fClient, "ags:");
+        SNSController controller = new SNSController(fClient, "agsNotation");
 
 		// PATH OF SUB TERM in german
 		// NOTICE: has 2 paths to top !
@@ -521,11 +521,11 @@ public class SNSControllerTest extends TestCase {
         // NOT VALID ANYMORE ! NEVER ADD SIBLINGS ! 
 //        assertEquals(83, topicsHierachy.length);
         assertEquals(1, topicsHierachy.length);
-        assertEquals(2, topicsHierachy[0].getSuccessors().size());
+        assertEquals(3, topicsHierachy[0].getSuccessors().size());
         List<String> resultList = new ArrayList<String>();
         fill(topicsHierachy[0].getSuccessors(), resultList);
 
-        assertTrue(resultList.contains("Messergebnis"));
+        assertTrue(resultList.contains("Messergebnis [benutze Unterbegriffe]"));
         assertTrue(resultList.contains("Immissionssituation"));
         assertTrue(resultList.contains("http://umthes.innoq.com/_00047403"));
         assertTrue(resultList.contains("http://umthes.innoq.com/_00013133"));
@@ -535,11 +535,11 @@ public class SNSControllerTest extends TestCase {
      * @throws Exception
      */
     public void testGetSimilarTerms() throws Exception {
-        SNSController controller = new SNSController(fClient, "ags:");
+        SNSController controller = new SNSController(fClient, "agsNotation");
         int[] totalSize = new int[1];
         Topic[] topicsForTopic = controller.getSimilarTermsFromTopic("Abfall", 200, "pid", totalSize, "de");
         assertNotNull(topicsForTopic);
-        assertEquals(24, topicsForTopic.length);
+        assertEquals(4, topicsForTopic.length);
         // for (int i = 0; i < topicsForTopic.length; i++) {
         // System.out.println(topicsForTopic[i].getTopicID());
         // }
@@ -550,7 +550,7 @@ public class SNSControllerTest extends TestCase {
      */
     public void testGetTopicFromText() throws Exception {
     	// test terms
-        SNSController controller = new SNSController(fClient, "ags:");
+        SNSController controller = new SNSController(fClient, "agsNotation");
         String text = "Waldsterben Wesertal Explosion";
         int[] totalSize = new int[1];
         DetailedTopic[] topics = controller.getTopicsForText(text, 100, "/thesa", "aPlugId", "de", totalSize, false);        
@@ -596,7 +596,7 @@ public class SNSControllerTest extends TestCase {
      * @throws Exception
      */
     public void testGetTopicFromTextNoNativeKey() throws Exception {
-        SNSController controller = new SNSController(fClient, "ags:");
+        SNSController controller = new SNSController(fClient, "agsNotation");
         String text = "Wesertal";
         DetailedTopic[] topics = controller.getTopicsForText(text, 100, "aPlugId", "de", new int[1], false);
         assertNotNull(topics);
@@ -609,11 +609,11 @@ public class SNSControllerTest extends TestCase {
      * @throws Exception
      */
     public void testGetSimilarLocationsFromTopicNativeKeyHasLawaPrefix() throws Exception {
-        SNSController controller = new SNSController(fClient, "ags:");
-        String text = "NATURRAUM583";
-        Topic[] topics = controller.getTopicSimilarLocationsFromTopic(text, 100, "aPlugId", new int[1], "de");
+        SNSController controller = new SNSController(fClient, "agsNotation");
+        String topicId = "http://iqvoc-gazetteer.innoq.com/NATURRAUM583";
+        Topic[] topics = controller.getTopicSimilarLocationsFromTopic(topicId, 100, "aPlugId", new int[1], "de");
         assertNotNull(topics);
-        assertEquals(90, topics.length);
+        assertEquals(82, topics.length);
         for (int i = 0; i < topics.length; i++) {
             assertTrue("Does contain 'lawa:'.", !topics[i].getTopicNativeKey().startsWith("lawa:"));
         }

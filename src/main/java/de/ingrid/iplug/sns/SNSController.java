@@ -13,8 +13,6 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.hp.hpl.jena.rdf.model.Resource;
-
 import de.ingrid.external.ChronicleService;
 import de.ingrid.external.FullClassifyService;
 import de.ingrid.external.GazetteerService;
@@ -22,6 +20,7 @@ import de.ingrid.external.ThesaurusService;
 import de.ingrid.external.ThesaurusService.MatchingType;
 import de.ingrid.external.om.Event;
 import de.ingrid.external.om.FullClassifyResult;
+import de.ingrid.external.om.Link;
 import de.ingrid.external.om.Location;
 import de.ingrid.external.om.RelatedTerm;
 import de.ingrid.external.om.RelatedTerm.RelationType;
@@ -48,17 +47,9 @@ public class SNSController {
 
     private static Log log = LogFactory.getLog(SNSController.class);
 
-    private static final String SNS_INSTANCE_OF_URL = "http://www.semantic-network.de/xmlns/XTM/2005/2.0/sns-classes_2.0.xtm";
+    //private static final String SNS_INSTANCE_OF_URL = "http://www.semantic-network.de/xmlns/XTM/2005/2.0/sns-classes_2.0.xtm";
     
-    private static final String TEMPORAL_TOOccurrence = "temporalToOcc";
-
-    private static final String TEMPORAL_FROMOccurrence = "temporalFromOcc";
-
-    private static final String TEMPORAL_ATOccurrence = "temporalAtOcc";
-
-    private static final SimpleDateFormat expiredDateParser = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
-
-    private SNSClient fServiceClient;
+    //private static final SimpleDateFormat expiredDateParser = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
 
     private final Class<ThesaurusService> _thesaurusService = null;
     private ThesaurusService thesaurusService;
@@ -68,14 +59,6 @@ public class SNSController {
     private ChronicleService chronicleService;
     private final Class<FullClassifyService> _fullClassifyService = null;
     private FullClassifyService fullClassifyService;
-
-    private static final String[] fTypeFilters = new String[] { "narrowerTermAssoc", "synonymAssoc",
-            "relatedTermsAssoc" };
-
-    private static final String[] fAdministrativeTypes = new String[] { "communityType", "districtType", "quarterType",
-            "stateType", "nationType",
-            // extend with newest types !
-            "use6Type", "use4Type", "use2Type"};
 
     private String fNativeKeyPrefix;
 
@@ -89,7 +72,6 @@ public class SNSController {
      * @param nativeKeyPrefix
      */
     public SNSController(SNSClient client, String nativeKeyPrefix) {
-        this.fServiceClient = client;
         this.fNativeKeyPrefix = nativeKeyPrefix;
 
         SpringUtil springUtil = new SpringUtil("spring/external-services.xml");
@@ -402,15 +384,18 @@ public class SNSController {
     }
 
     /**
+     * @param length TODO
      * @return An array of ingrid detailed topics from an Event array.
      */
-    private DetailedTopic[] toDetailedTopicArray(Event[] events, String plugId, String lang) {
+    private DetailedTopic[] toDetailedTopicArray(Event[] events, String plugId, String lang, int length) {
         final List<DetailedTopic> returnList = new ArrayList<DetailedTopic>();
-        for (Event event : events) {
-        	returnList.add(buildDetailedTopicFromEvent(event, plugId, lang));
+        int count = Math.min(length, events.length);
+        for (int i = 0; i < count; i++) {
+        	returnList.add(buildDetailedTopicFromEvent(events[i], plugId, lang));
         }
 
-        return returnList.toArray(new DetailedTopic[returnList.size()]);
+//        return returnList.toArray(new DetailedTopic[returnList.size()]);
+        return returnList.toArray(new DetailedTopic[events.length]);
     }
 
     /**
@@ -438,7 +423,7 @@ public class SNSController {
 
         List<Event> classifyEvents = classifyResult.getEvents();
         if (classifyEvents != null && classifyEvents.size() > 0) {
-            topics = toDetailedTopicArray(classifyEvents.toArray(new Event[classifyEvents.size()]), plugId, lang);
+            topics = toDetailedTopicArray(classifyEvents.toArray(new Event[classifyEvents.size()]), plugId, lang, 10);
             if (topics.length > 0) {
                 returnList.addAll(Arrays.asList(topics));        	
             }        	
@@ -519,8 +504,9 @@ public class SNSController {
 
         // we push the stuff which IS ALWAYS ADDED, even if empty
         // NOTICE: Further this converts the DetailedTopic to an IngridDocument !!!!?
-        pushDefinitions(result, lang);
-        pushSamples(result, lang);
+        //pushDefinitions(result, lang);
+        pushSamples(result, event.getLinks(), lang);
+        
         // NO TERM ASSOCIATIONS MAPPED in EVENT SO FAR !!!
 //        pushOccurensie(DetailedTopic.ASSOCIATED_OCC, topic, metaData, lang);
         
@@ -550,7 +536,7 @@ public class SNSController {
         // we push the stuff which IS ALWAYS ADDED, even if empty
         // NOTICE: Further this converts the DetailedTopic to an IngridDocument !!!!?
         pushDefinitions(result, lang);
-        pushSamples(result, lang);
+        // TODO: pushSamples(result, lang);
 
         if (location.getNativeKey() != null) {
         	result.setTopicNativeKey(SNSUtil.transformSpacialReference(this.fNativeKeyPrefix, location.getNativeKey()));
@@ -592,7 +578,7 @@ public class SNSController {
         // we push the stuff which IS ALWAYS ADDED, even if empty
         // NOTICE: Further this converts the DetailedTopic to an IngridDocument !!!!?
         pushDefinitions(result, lang);
-        pushSamples(result, lang);
+        // TODO: pushSamples(result, lang);
 
         pushGemetDataFromTerm(result, term);
         result.setTopicNativeKey(topicId);
@@ -617,21 +603,28 @@ public class SNSController {
         List<String> titles = new ArrayList<String>();
         List<String> definitions = new ArrayList<String>();
 
-        if (metaData.getString(DetailedTopic.DESCRIPTION_OCC) != null) {
+        // just add empty definitions as long as there are none defined
+        
+        /*if (metaData.getString(DetailedTopic.DESCRIPTION_OCC) != null) {
         	definitions.add(metaData.getString(DetailedTopic.DESCRIPTION_OCC));
         	titles.add(metaData.getTitle());
-        }
+        }*/
 
         metaData.setDefinitions((String[]) definitions.toArray(new String[definitions.size()]));
         metaData.setDefinitionTitles((String[]) titles.toArray(new String[titles.size()]));
     }
     
-    private void pushSamples(DetailedTopic metaData, String lang) {
-        List<String> titles = new ArrayList<String>();
-        List<String> samples = new ArrayList<String>();
+    private void pushSamples(DetailedTopic metaData, List<Link> links, String lang) {
+        String[] titles = new String[links.size()];
+        String[] samples = new String[links.size()];
+        
+        for (int i = 0; i < links.size(); i++) {
+			titles[i] = links.get(i).getTitle();
+			samples[i] = links.get(i).getLinkAddress();
+		}
 
-        metaData.setSamples((String[]) samples.toArray(new String[samples.size()]));
-        metaData.setSampleTitles((String[]) titles.toArray(new String[titles.size()]));
+        metaData.setSamples(samples);
+        metaData.setSampleTitles(titles);
     }
     
 
@@ -845,7 +838,8 @@ public class SNSController {
 
     /** Extract SNS instanceOf href from location ! */
     private static String getSNSInstanceOf(Location location) {
-		return SNS_INSTANCE_OF_URL + "#" + location.getTypeId();
+    	String base = location.getId().substring(location.getId().lastIndexOf('/'));
+		return base + location.getTypeId();
     }
 
     /** Extract SNS instanceOf href from term ! */
@@ -873,7 +867,7 @@ public class SNSController {
 	    	}			
 		}
 
-		return SNS_INSTANCE_OF_URL + snsInstanceOf;
+		return snsInstanceOf;
     }
 
     /** Extract SNS assoziation member type from related term ! */
@@ -895,7 +889,7 @@ public class SNSController {
     		}
     	}
 			
-		return SNS_INSTANCE_OF_URL + snsMemberType;
+		return snsMemberType;
     }
 
     /**
@@ -1101,6 +1095,7 @@ public class SNSController {
         if (null != terms) {
             int count = Math.min(maxResults, terms.length);
             for (int i = 0; i < count; i++) {
+            	// for synonyms the Id is the label because they all have the same Id!
                 final String topicId = terms[i].getId();
                 if (!duplicateList.contains(topicId)) {
                 	ingridTopics.add(buildTopicFromTerm(terms[i], plugId, lang));
@@ -1163,8 +1158,8 @@ public class SNSController {
      */
     public Topic[] getEventFromTopic(String searchTerm, String[] eventTypes, String atDate,
             int start, int length, String plugId, int[] totalSize, String lang) throws Exception {
-        Topic[] result = new Topic[0];
-        String[] eventPath = null;
+        //Topic[] result = new Topic[0];
+        //String[] eventPath = null;
 
         // TODO: map event types to collection names where the events shall be included (OR-pattern!)
         
@@ -1178,10 +1173,9 @@ public class SNSController {
         }*/
 
         // now always "contains" like default on http://www.semantic-network.de/doc_findevents.html?lang=de
-        String searchType = "contains";
+        //String searchType = "contains";
 
-        Resource topicMapFragment = this.fServiceClient.findEvents(searchTerm, searchType,
-                null, start, atDate, lang, length);
+        //Resource topicMapFragment = this.fServiceClient.findEvents(searchTerm, searchType, null, start, atDate, lang, length);
         // TODO: implement
         
         
@@ -1193,7 +1187,7 @@ public class SNSController {
         }
         */
 
-        return result;
+        return getEventFromTopic(searchTerm, eventTypes, atDate, atDate, start, length, plugId, totalSize, lang); //result;
     }
 
     /**
@@ -1263,7 +1257,7 @@ public class SNSController {
     public Topic[] getAnniversaryFromTopic(String searchTerm, String lang, int length, String plugId,
             int[] totalSize) throws Exception {
         Event[] anniversaries = chronicleService.getAnniversaries(searchTerm, new Locale(lang));
-        return toDetailedTopicArray(anniversaries, plugId, lang);
+        return toDetailedTopicArray(anniversaries, plugId, lang, 10);
     }
 /*
     private Topic mapAnniversary(Resource anniversary, String plugId, String lang) {
@@ -1282,7 +1276,7 @@ public class SNSController {
      * @param searchTerm
      *            The given search term.
      * @param eventTypes
-     *            Array with one or more types of events.
+     *            Array with one or more types of events (mapped to collections).
      * @param fromDate
      *            A date after that an event occured.
      * @param toDate
@@ -1303,22 +1297,12 @@ public class SNSController {
     public Topic[] getEventFromTopic(String searchTerm, String[] eventTypes, String fromDate,
             String toDate, int start, int length, String plugId, int[] totalSize, String lang) throws Exception {
         Topic[] result = new Topic[0];
-        String[] eventPath = null;
-
-        if (null != eventTypes) {
-            eventPath = new String[eventTypes.length];
-            for (int i = 0; i < eventPath.length; i++) {
-                eventPath[i] = "/event/" + eventTypes[i] + '/';
-            }
-        } else {
-            eventPath = new String[] { "/event/" };
-        }
 
         // now always "contains" like default on http://www.semantic-network.de/doc_findevents.html?lang=de
         //String searchType = "contains";
 
-        Event[] res = chronicleService.findEventsFromQueryTerm(searchTerm, de.ingrid.external.ChronicleService.MatchingType.CONTAINS, fromDate, toDate, new Locale(lang));
-        result = toDetailedTopicArray(res, plugId, lang);
+        Event[] res = chronicleService.findEventsFromQueryTerm(searchTerm, de.ingrid.external.ChronicleService.MatchingType.CONTAINS, eventTypes, fromDate, toDate, new Locale(lang), start, length);
+        result = toDetailedTopicArray(res, plugId, lang, length);
 
         return result;
     }
@@ -1411,24 +1395,6 @@ public class SNSController {
             if (event!= null) {
             	result = buildDetailedTopicFromEvent(event, plugId, lang);
             }
-            
-            /*TopicMapFragment mapFragment = null;
-        	try {
-        		mapFragment = this.fServiceClient.getPSI(topicID, 0, filter);
-        	} catch (Exception e) {
-            	log.error("Error calling snsClient.getPSI (topicId=" + topicID
-                		+ ", filter=" + filter + "), we return null Details", e);
-    	    }
-            if (null != mapFragment) {
-                Topic[] topics = mapFragment.getTopicMap().getTopic();
-
-                for (int i = 0; i < topics.length; i++) {
-                    if (topics[i].getId().equals(topicID)) {
-                        result = buildDetailedTopicFromTopic(topics[0], plugId, lang);
-                    }
-                }
-            }
-            */
     	}
 
         return result;

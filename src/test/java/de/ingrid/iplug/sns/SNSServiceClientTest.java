@@ -124,13 +124,13 @@ public class SNSServiceClientTest extends TestCase {
      */
     public void testFindEventsAt() throws Exception {
         Resource eventsRes = adapter.findEvents("query", "contains", 
-        		"", 0, "1976-08-31", "de", 10);
+        		null, 0, "1976-08-31", "de", 10);
         assertNotNull(eventsRes);
     }
     
     public void testFindEventsFromTo() throws Exception {
         Resource eventsRes = adapter.findEvents("query", "contains", 
-        		"", 0, "1976-08-31", "1978-08-31", "de", 10);
+        		null, 0, "1976-08-31", "1978-08-31", "de", 10);
         assertNotNull(eventsRes);
     }
 

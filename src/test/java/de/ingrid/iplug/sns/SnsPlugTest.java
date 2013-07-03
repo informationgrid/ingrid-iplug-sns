@@ -158,7 +158,7 @@ public class SnsPlugTest extends TestCase {
             assertNotNull(detail);
             assertNotNull(detail.get(DetailedTopic.DESCRIPTION_OCC));
             // assertNotNull(detail.get(DetailedTopic.SAMPLE_OCC));
-            assertNotNull(detail.get(DetailedTopic.ASSOCIATED_OCC));
+            //TODO: assertNotNull(detail.get(DetailedTopic.ASSOCIATED_OCC));
         }
 
     }
