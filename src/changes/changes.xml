@@ -5,6 +5,12 @@
     <author email="joachim@wemove.com">Joachim Müller</author>
   </properties>
   <body>
+    <release version="3.4.0" date="2014-02-25" description="Release InGrid 3.4.0">
+	  <action type="update" dev="wemove">
+		Update installer for update procedure.
+      </action>
+    </release>
+	
   	<release version="3.3.0" date="2013-03-05" description="Release InGrid 3.3">
       <action type="add" dev="wemove" issue="INGRID-2150">
         Add java parameter "-Dfile.encoding=UTF8" to start script.
