@@ -49,8 +49,7 @@
             ifTarget    ="setInstallProperty"
             type        ="input"
             name        ="iPlugOptions"
-            displayText ="Einstellungen fuer den iBus"
-            >
+            displayText ="Einstellungen fuer das iPlug.">
             
             <text property="clientName" displayText="Client ID:" defaultValue="/ingrid-group:iplug-sns-'Ihr-Name'"/>
             
