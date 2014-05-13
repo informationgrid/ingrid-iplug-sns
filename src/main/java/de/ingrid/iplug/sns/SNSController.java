@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.ResourceBundle;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -16,6 +17,7 @@ import org.apache.commons.logging.LogFactory;
 import de.ingrid.external.ChronicleService;
 import de.ingrid.external.FullClassifyService;
 import de.ingrid.external.GazetteerService;
+import de.ingrid.external.GazetteerService.QueryType;
 import de.ingrid.external.ThesaurusService;
 import de.ingrid.external.ThesaurusService.MatchingType;
 import de.ingrid.external.om.Event;
@@ -65,6 +67,8 @@ public class SNSController {
     /** Can be set from spring/external-services.xml, default is false */
     private boolean getLocationsFromText_ignoreCase = false;
 
+    private static ResourceBundle mappingBundle;
+
     /**
      * Constructor for SNS controller.
      * 
@@ -79,6 +83,8 @@ public class SNSController {
         this.gazetteerService = springUtil.getBean("gazetteerService", _gazetteerService);
         this.chronicleService = springUtil.getBean("chronicleService", _chronicleService);
         this.fullClassifyService = springUtil.getBean("fullClassifyService", _fullClassifyService);
+        
+        mappingBundle = ResourceBundle.getBundle("mapping");
         
         // change default parameters e.g. query case sensitive or not ! (in GS Soil different than in PortalU)
     	try {
@@ -257,8 +263,10 @@ public class SNSController {
             if (log.isDebugEnabled()) {
                 log.debug("     !!!!!!!!!! calling API gazetteerService.getLocationsFromText " + lang);
             }
-        	Location[] locations = gazetteerService.getLocationsFromText(documentText, maxToAnalyzeWords,
-        			getLocationsFromText_ignoreCase, new Locale(lang));
+//        	Location[] locations = gazetteerService.getLocationsFromText(documentText, maxToAnalyzeWords,
+//        			getLocationsFromText_ignoreCase, new Locale(lang));
+        	
+        	Location[] locations = gazetteerService.findLocationsFromQueryTerm( documentText, QueryType.ALL_LOCATIONS, de.ingrid.external.GazetteerService.MatchingType.CONTAINS, new Locale(lang) );
 
             if (locations != null) {
             	totalSize[0] = locations.length;
@@ -839,7 +847,8 @@ public class SNSController {
     /** Extract SNS instanceOf href from location ! */
     private static String getSNSInstanceOf(Location location) {
     	String base = location.getId().substring(location.getId().lastIndexOf('/'));
-		return base + location.getTypeId();
+        String mappedType = mappingBundle.getString("gazetteer.de." + location.getTypeId());
+		return base + "#" + mappedType;
     }
 
     /** Extract SNS instanceOf href from term ! */
