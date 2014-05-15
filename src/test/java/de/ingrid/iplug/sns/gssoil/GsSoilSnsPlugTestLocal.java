@@ -4,9 +4,10 @@
  * $Source: /cvs/asp-search/src/java/com/ms/aspsearch/PermissionDeniedException.java,v $
  */
 
-package de.ingrid.iplug.sns;
+package de.ingrid.iplug.sns.gssoil;
 
 import junit.framework.TestCase;
+import de.ingrid.iplug.sns.SnsPlug;
 import de.ingrid.iplug.sns.utils.Topic;
 import de.ingrid.utils.IngridHit;
 import de.ingrid.utils.IngridHits;

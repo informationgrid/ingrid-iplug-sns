@@ -88,9 +88,15 @@ public class SNSServiceClientTest extends TestCase {
             assertTrue(e instanceof IllegalArgumentException);
         }
         maxWords = 0;
-        assertNotNull(adapter.autoClassify(document, maxWords, null, false, "de"));
+        try {
+            assertNotNull(adapter.autoClassify(document, maxWords, null, false, "de"));
+            fail("Should throw an exception");
+        } catch (Exception e) {
+            assertTrue(e instanceof IllegalArgumentException);
+        }
+        assertNotNull(adapter.autoClassify(document, maxWords, FilterType.ONLY_TERMS, false, "de"));
         maxWords = Integer.MAX_VALUE;
-        assertNotNull(adapter.autoClassify(document, maxWords, null, false, "de"));
+        assertNotNull(adapter.autoClassify(document, maxWords, FilterType.ONLY_TERMS, false, "de"));
     }
 
     /**

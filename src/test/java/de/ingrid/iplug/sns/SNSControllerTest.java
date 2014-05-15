@@ -271,7 +271,7 @@ public class SNSControllerTest extends TestCase {
         assertEquals("Frankfurt am Main", dt.getTitle());
         assertTrue(dt.getTopicNativeKey().indexOf("06412000") != -1);
         assertEquals("http://iqvoc-gazetteer.innoq.com/GEMEINDE0641200000", dt.getAdministrativeID());
-        assertTrue(dt.getSummary().indexOf("use6") != -1);
+        assertTrue(dt.getSummary().indexOf("Gemeinde") != -1);
 
         // ALWAYS empty definitions cause using GazetterService API
         array = dt.getDefinitions();
@@ -390,7 +390,8 @@ public class SNSControllerTest extends TestCase {
         assertEquals("Frankfurt am Main", dt.getTitle());
         assertTrue(dt.getTopicNativeKey().indexOf("06412000") != -1);
         assertEquals("http://iqvoc-gazetteer.innoq.com/GEMEINDE0641200000", dt.getAdministrativeID());
-        assertTrue(dt.getSummary().indexOf("location-admin-use6") != -1);
+        //assertTrue(dt.getSummary().indexOf("location-admin-use6") != -1);
+        assertTrue(dt.getSummary().indexOf("Gemeinde") != -1);
 
         // ALWAYS empty definitions cause using GazetterService API
         array = dt.getDefinitions();
@@ -551,23 +552,24 @@ public class SNSControllerTest extends TestCase {
     public void testGetTopicFromText() throws Exception {
     	// test terms
         SNSController controller = new SNSController(fClient, "agsNotation");
-        String text = "Waldsterben Wesertal Explosion";
+        String text = "Waldsterben Weser Explosion";
         int[] totalSize = new int[1];
         DetailedTopic[] topics = controller.getTopicsForText(text, 100, "/thesa", "aPlugId", "de", totalSize, false);        
         assertEquals(2, totalSize[0]);
         assertNotNull(topics);
         assertEquals(2, topics.length);
-        assertEquals("Waldschaden", topics[0].getTitle());
-        assertEquals("Explosion", topics[1].getTitle());
+        assertEquals("Explosion", topics[0].getTitle());
+        assertEquals("Waldschaden", topics[1].getTitle());
 
     	// test locations
         topics = controller.getTopicsForText(text, 100, "/location", "aPlugId", "de", totalSize, false);
         assertEquals(2, totalSize[0]);
         assertNotNull(topics);
         assertEquals(2, topics.length);
-        assertEquals("NATURRAUM583", topics[0].getTopicNativeKey());
-        assertEquals("NATURRAUM620", topics[1].getTopicNativeKey());
+        assertEquals("http://iqvoc-gazetteer.innoq.com/FLUSS4", topics[0].getTopicNativeKey());
+        assertEquals("http://iqvoc-gazetteer.innoq.com/WASSEREINZUGSGEBIET496", topics[1].getTopicNativeKey());
 
+        // BUG: https://github.com/innoq/iqvoc_gazetteer/issues/13
         topics = controller.getTopicsForText("Frankfurt", 100, "/location", "aPlugId", "de", new int[1], false);
         assertNotNull(topics);
         assertEquals(4, topics.length);
@@ -575,10 +577,11 @@ public class SNSControllerTest extends TestCase {
         assertEquals("12053000", topics[1].getTopicNativeKey());
 
     	// test events
-        topics = controller.getTopicsForText(text, 100, "/event", "aPlugId", "de", totalSize, false);
-        assertTrue(totalSize[0] > 0);
-        assertNotNull(topics);
-        assertTrue(topics.length > 0);
+        // -> NOT SUPPORTED WITH INNOQ-SNS
+        // topics = controller.getTopicsForText(text, 100, "/event", "aPlugId", "de", totalSize, false);
+        // assertTrue(totalSize[0] > 0);
+        // assertNotNull(topics);
+        // assertTrue(topics.length > 0);
 /*
         assertEquals("Chemieexplosion in Toulouse", topics[0].getTitle());
         assertEquals("Explosion im Stickstoffwerk Oppau", topics[1].getTitle());
@@ -586,9 +589,9 @@ public class SNSControllerTest extends TestCase {
 */
     	// test ALL TOPICS
         topics = controller.getTopicsForText(text, 100, null, "aPlugId", "de", totalSize, false);
-        assertTrue(totalSize[0] > 4);
+        assertTrue(totalSize[0] >= 4);
         assertNotNull(topics);
-        assertTrue(topics.length > 4);
+        assertTrue(topics.length >= 4);
     }
 
 
@@ -597,12 +600,12 @@ public class SNSControllerTest extends TestCase {
      */
     public void testGetTopicFromTextNoNativeKey() throws Exception {
         SNSController controller = new SNSController(fClient, "agsNotation");
-        String text = "Wesertal";
+        String text = "Weser";
         DetailedTopic[] topics = controller.getTopicsForText(text, 100, "aPlugId", "de", new int[1], false);
         assertNotNull(topics);
         assertEquals(2, topics.length);
-        assertEquals("NATURRAUM583", topics[0].getTopicNativeKey());
-        assertEquals("NATURRAUM620", topics[1].getTopicNativeKey());
+        assertEquals("http://iqvoc-gazetteer.innoq.com/FLUSS4", topics[0].getTopicNativeKey());
+        assertEquals("http://iqvoc-gazetteer.innoq.com/WASSEREINZUGSGEBIET496", topics[1].getTopicNativeKey());
     }
 
     /**

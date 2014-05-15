@@ -263,10 +263,14 @@ public class SNSController {
             if (log.isDebugEnabled()) {
                 log.debug("     !!!!!!!!!! calling API gazetteerService.getLocationsFromText " + lang);
             }
-//        	Location[] locations = gazetteerService.getLocationsFromText(documentText, maxToAnalyzeWords,
-//        			getLocationsFromText_ignoreCase, new Locale(lang));
+            
+            // TODO: prefer OR although it still delivers less results due to a bug
+            // -> https://github.com/innoq/iqvoc_gazetteer/issues/13
+            // search for all words in document (OR)
+        	Location[] locations = gazetteerService.getLocationsFromText(documentText, maxToAnalyzeWords, getLocationsFromText_ignoreCase, new Locale(lang));
         	
-        	Location[] locations = gazetteerService.findLocationsFromQueryTerm( documentText, QueryType.ALL_LOCATIONS, de.ingrid.external.GazetteerService.MatchingType.CONTAINS, new Locale(lang) );
+        	// all words have to be in search result (AND)
+        	//Location[] locations = gazetteerService.findLocationsFromQueryTerm( documentText, QueryType.ALL_LOCATIONS, de.ingrid.external.GazetteerService.MatchingType.CONTAINS, new Locale(lang) );
 
             if (locations != null) {
             	totalSize[0] = locations.length;

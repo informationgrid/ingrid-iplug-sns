@@ -2,7 +2,7 @@
  * Copyright (c) 2010 wemove digital solutions. All rights reserved.
  */
 
-package de.ingrid.iplug.sns;
+package de.ingrid.iplug.sns.gssoil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +16,7 @@ import de.ingrid.external.om.RelatedTerm;
 import de.ingrid.external.om.Term;
 import de.ingrid.external.om.TreeTerm;
 import de.ingrid.external.sns.SNSClient;
+import de.ingrid.iplug.sns.SNSController;
 import de.ingrid.iplug.sns.utils.DetailedTopic;
 import de.ingrid.iplug.sns.utils.Topic;
 import de.ingrid.utils.tool.SpringUtil;

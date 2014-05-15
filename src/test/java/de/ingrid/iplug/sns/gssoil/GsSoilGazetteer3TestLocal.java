@@ -2,9 +2,12 @@
  * Copyright (c) 2010 wemove digital solutions. All rights reserved.
  */
 
-package de.ingrid.iplug.sns;
+package de.ingrid.iplug.sns.gssoil;
 
 import java.util.Locale;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import junit.framework.TestCase;
 import de.ingrid.external.GazetteerService;
@@ -12,6 +15,7 @@ import de.ingrid.external.GazetteerService.MatchingType;
 import de.ingrid.external.GazetteerService.QueryType;
 import de.ingrid.external.om.Location;
 import de.ingrid.external.sns.SNSClient;
+import de.ingrid.iplug.sns.SNSController;
 import de.ingrid.iplug.sns.utils.DetailedTopic;
 import de.ingrid.iplug.sns.utils.Topic;
 import de.ingrid.utils.tool.SpringUtil;
@@ -19,14 +23,18 @@ import de.ingrid.utils.tool.SpringUtil;
 /**
  * Tests of GSSoil implementations of Thesaurus/Gazetteer/FullClassify APi !!!
  */
-public class GsSoilGazetteer2TestLocal extends TestCase {
+public class GsSoilGazetteer3TestLocal extends TestCase {
+
+    private static Log log = LogFactory.getLog(GsSoilGazetteer3TestLocal.class);
 
     private static SNSClient fClient;
 
     String idLisbon = "2267057";
+    String idLisboa = "6458923";
     String idPortugal = "2264397";
     String idPorto = "2735943";
-    String idBerlin = "2950157";
+    String idBerlinStadt = "6547383";
+    String idBerlinLand = "2950157";
     String idDeutschland = "2921044";
 
     public void setSNSClient(SNSClient client) throws Exception {
@@ -55,21 +63,41 @@ public class GsSoilGazetteer2TestLocal extends TestCase {
         assertTrue(locations[0].getId().equals(idLisbon));
         assertTrue(locations[0].getName().equals("Lisbon"));
 
-        // pass wrong language of text -> no results !
+        // pass wrong language of text -> still a result!
         locations = gazetteer.getLocationsFromText("Lisbon", 100, false, new Locale("de"));
-        assertTrue(locations.length == 0);
+        assertTrue(locations.length > 0);
+        assertTrue(locations[0].getId().equals(idLisbon));
+        assertTrue(locations[0].getName().equals("Lisbon"));
+
+        // pass wrong language of text -> still a result!
+        locations = gazetteer.getLocationsFromText("Lisboa", 100, false, new Locale("de"));
+        assertTrue(locations.length > 0);
+        assertTrue(locations[0].getId().equals(idLisboa));
+        assertTrue(locations[0].getName().equals("Lisboa"));
 
         locations = gazetteer.getLocationsFromText("Lisboa", 100, false, new Locale("pt"));
         assertTrue(locations.length > 0);
-        assertTrue(locations[0].getId().equals(idLisbon));
+        assertTrue(locations[0].getId().equals(idLisboa));
         assertTrue(locations[0].getName().equals("Lisboa"));
 
         locations = gazetteer.getLocationsFromText("Berlin", 100, false, new Locale("de"));
         assertTrue(locations.length > 0);
-        assertTrue(locations[0].getName().contains("Berlin"));
+        assertTrue(locations[0].getId().equals(idBerlinStadt));
+        assertTrue(locations[0].getName().equals("Berlin, Stadt"));
+
+        // case sensitive ! NOTICE: can be set now in sns.properties for controller
+        locations = gazetteer.getLocationsFromText("berlin", 100, false, new Locale("de"));
+        assertTrue(locations.length == 0);
+
+        // case insensitive ! NOTICE: can be set now in sns.properties for controller
+        locations = gazetteer.getLocationsFromText("berlin", 100, true, new Locale("de"));
+        assertTrue(locations.length > 0);
+        assertTrue(locations[0].getId().equals(idBerlinStadt));
+        assertTrue(locations[0].getName().equals("Berlin, Stadt"));
 
         locations = gazetteer.getLocationsFromText("ruhlsdorf", 100, false, new Locale("de"));
-        assertTrue(locations.length > 0);
+//        assertTrue(locations.length > 0);
+        assertTrue(locations.length == 0);
         
         locations = gazetteer.getLocationsFromText("Brief Porto nach Berlin, Deutschland", 100, false, new Locale("de"));
         assertTrue(locations.length > 1);
@@ -88,7 +116,7 @@ public class GsSoilGazetteer2TestLocal extends TestCase {
         assertTrue(locations[0].getName().equals("Lisbon"));
 
         locations = gazetteer.findLocationsFromQueryTerm("Lisbon", QueryType.ALL_LOCATIONS, MatchingType.EXACT, new Locale("de"));
-        assertTrue(locations.length == 0);
+        assertTrue(locations.length > 0);
 
         locations = gazetteer.findLocationsFromQueryTerm("Berlin", QueryType.ALL_LOCATIONS, MatchingType.CONTAINS, new Locale("de"));
         assertTrue(locations.length > 0);
@@ -96,7 +124,7 @@ public class GsSoilGazetteer2TestLocal extends TestCase {
 
         locations = gazetteer.findLocationsFromQueryTerm("Lisboa", QueryType.ALL_LOCATIONS, MatchingType.BEGINS_WITH, new Locale("pt"));
         assertTrue(locations.length > 0);
-        assertTrue(locations[0].getId().equals(idLisbon));
+        assertTrue(locations[0].getId().equals(idLisboa));
         assertTrue(locations[0].getName().equals("Lisboa"));
 
         locations = gazetteer.findLocationsFromQueryTerm("ruhlsdorf", QueryType.ALL_LOCATIONS, MatchingType.CONTAINS, new Locale("de"));
@@ -111,10 +139,15 @@ public class GsSoilGazetteer2TestLocal extends TestCase {
         assertTrue(location.getId().equals(idLisbon));
         assertTrue(location.getName().equals("Lisbon"));
 
-        location = gazetteer.getLocation(idBerlin, new Locale("de"));
+        location = gazetteer.getLocation(idBerlinStadt, new Locale("de"));
         assertTrue(location != null);
-        assertTrue(location.getId().equals(idBerlin));
-        assertTrue(location.getName().equals("Berlin"));
+        assertTrue(location.getId().equals(idBerlinStadt));
+        assertTrue(location.getName().equals("Berlin, Stadt"));
+
+        location = gazetteer.getLocation(idBerlinLand, new Locale("de"));
+        assertTrue(location != null);
+        assertTrue(location.getId().equals(idBerlinLand));
+        assertTrue(location.getName().equals("Land Berlin"));
 
         location = gazetteer.getLocation(idPortugal, new Locale("pt"));
         assertTrue(location != null);
@@ -221,12 +254,20 @@ public class GsSoilGazetteer2TestLocal extends TestCase {
         topics = controller.getTopicsForText("Lisbon", 100, "/location", "aPlugId", "en", totalSize, false);
         assertTrue(topics.length > 0);
 
-    	// test invalid text
+        // pass wrong language of text -> still results
+        topics = controller.getTopicsForText("Lisbon", 100, "/location", "aPlugId", "de", totalSize, false);
+        assertTrue(topics.length > 0);
+
+        // test invalid text
         topics = controller.getTopicsForText("yyy xxx zzz", 100, "/location", "aPlugId", "en", totalSize, false);
         assertTrue(topics.length == 0);
 
     	// test ALL TOPICS
         topics = controller.getTopicsForText("Lisbon", 100, null, "aPlugId", "en", totalSize, false);
+        assertTrue(topics.length > 0);
+
+        // pass wrong language of text -> still results
+        topics = controller.getTopicsForText("Lisbon", 100, null, "aPlugId", "de", totalSize, false);
         assertTrue(topics.length > 0);
     }
 
@@ -255,7 +296,9 @@ public class GsSoilGazetteer2TestLocal extends TestCase {
 		assertTrue(numAllTopics > 0);
 */
 		// only locations
+        log.info("START -> getTopicsForURL http://www.visitlisboa.com");
         topics = controller.getTopicsForURL("http://www.visitlisboa.com", 1000, "/location", "aPlugId", "pt", totalSize);
+        log.info("END -> getTopicsForURL http://www.visitlisboa.com");
         assertNotNull(topics);
 		assertTrue(topics.length > 0);
     }
