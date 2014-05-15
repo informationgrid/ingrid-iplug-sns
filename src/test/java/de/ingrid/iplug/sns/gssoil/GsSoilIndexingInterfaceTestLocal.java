@@ -2,7 +2,7 @@
  * Copyright (c) 1997-2006 by media style GmbH
  */
 
-package de.ingrid.iplug.sns;
+package de.ingrid.iplug.sns.gssoil;
 
 import java.net.URL;
 import java.util.List;
@@ -19,6 +19,9 @@ import de.ingrid.external.FullClassifyService.FilterType;
 import de.ingrid.external.om.FullClassifyResult;
 import de.ingrid.external.om.Location;
 import de.ingrid.external.om.Term;
+import de.ingrid.iplug.sns.SNSIndexingInterface;
+import de.ingrid.iplug.sns.Temporal;
+import de.ingrid.iplug.sns.Wgs84Box;
 import de.ingrid.utils.tool.SpringUtil;
 
 /**

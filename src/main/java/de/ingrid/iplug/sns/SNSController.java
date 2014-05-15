@@ -2,36 +2,26 @@ package de.ingrid.iplug.sns;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.ResourceBundle;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.slb.taxi.webservice.xtm.stubs.FieldsType;
-import com.slb.taxi.webservice.xtm.stubs.SearchType;
-import com.slb.taxi.webservice.xtm.stubs.TopicMapFragment;
-import com.slb.taxi.webservice.xtm.stubs.xtm.Association;
-import com.slb.taxi.webservice.xtm.stubs.xtm.BaseName;
-import com.slb.taxi.webservice.xtm.stubs.xtm.InstanceOf;
-import com.slb.taxi.webservice.xtm.stubs.xtm.Member;
-import com.slb.taxi.webservice.xtm.stubs.xtm.Occurrence;
-import com.slb.taxi.webservice.xtm.stubs.xtm.Scope;
-import com.slb.taxi.webservice.xtm.stubs.xtm.Topic;
-
+import de.ingrid.external.ChronicleService;
 import de.ingrid.external.FullClassifyService;
 import de.ingrid.external.GazetteerService;
 import de.ingrid.external.ThesaurusService;
 import de.ingrid.external.ThesaurusService.MatchingType;
 import de.ingrid.external.om.Event;
 import de.ingrid.external.om.FullClassifyResult;
+import de.ingrid.external.om.Link;
 import de.ingrid.external.om.Location;
 import de.ingrid.external.om.RelatedTerm;
 import de.ingrid.external.om.RelatedTerm.RelationType;
@@ -40,6 +30,7 @@ import de.ingrid.external.om.Term.TermType;
 import de.ingrid.external.om.TreeTerm;
 import de.ingrid.external.sns.SNSClient;
 import de.ingrid.iplug.sns.utils.DetailedTopic;
+import de.ingrid.iplug.sns.utils.Topic;
 import de.ingrid.utils.IngridHit;
 import de.ingrid.utils.tool.SNSUtil;
 import de.ingrid.utils.tool.SpringUtil;
@@ -57,37 +48,23 @@ public class SNSController {
 
     private static Log log = LogFactory.getLog(SNSController.class);
 
-    private static final String SNS_INSTANCE_OF_URL = "http://www.semantic-network.de/xmlns/XTM/2005/2.0/sns-classes_2.0.xtm";
-    
-    private static final String TEMPORAL_TOOccurrence = "temporalToOcc";
-
-    private static final String TEMPORAL_FROMOccurrence = "temporalFromOcc";
-
-    private static final String TEMPORAL_ATOccurrence = "temporalAtOcc";
-
-    private static final SimpleDateFormat expiredDateParser = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
-
-    private SNSClient fServiceClient;
+    //private static final SimpleDateFormat expiredDateParser = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
 
     private final Class<ThesaurusService> _thesaurusService = null;
     private ThesaurusService thesaurusService;
     private final Class<GazetteerService> _gazetteerService = null;
     private GazetteerService gazetteerService;
+    private final Class<ChronicleService> _chronicleService = null;
+    private ChronicleService chronicleService;
     private final Class<FullClassifyService> _fullClassifyService = null;
     private FullClassifyService fullClassifyService;
-
-    private static final String[] fTypeFilters = new String[] { "narrowerTermAssoc", "synonymAssoc",
-            "relatedTermsAssoc" };
-
-    private static final String[] fAdministrativeTypes = new String[] { "communityType", "districtType", "quarterType",
-            "stateType", "nationType",
-            // extend with newest types !
-            "use6Type", "use4Type", "use2Type"};
 
     private String fNativeKeyPrefix;
 
     /** Can be set from spring/external-services.xml, default is false */
     private boolean getLocationsFromText_ignoreCase = false;
+
+    private static ResourceBundle mappingBundle;
 
     /**
      * Constructor for SNS controller.
@@ -96,13 +73,15 @@ public class SNSController {
      * @param nativeKeyPrefix
      */
     public SNSController(SNSClient client, String nativeKeyPrefix) {
-        this.fServiceClient = client;
         this.fNativeKeyPrefix = nativeKeyPrefix;
 
         SpringUtil springUtil = new SpringUtil("spring/external-services.xml");
         this.thesaurusService = springUtil.getBean("thesaurusService", _thesaurusService);
         this.gazetteerService = springUtil.getBean("gazetteerService", _gazetteerService);
+        this.chronicleService = springUtil.getBean("chronicleService", _chronicleService);
         this.fullClassifyService = springUtil.getBean("fullClassifyService", _fullClassifyService);
+        
+        mappingBundle = ResourceBundle.getBundle("mapping");
         
         // change default parameters e.g. query case sensitive or not ! (in GS Soil different than in PortalU)
     	try {
@@ -132,11 +111,11 @@ public class SNSController {
      * @return an array of associated topics or null in case the term itself is not found as topic
      * @throws Exception
      */
-    public synchronized de.ingrid.iplug.sns.utils.Topic[] getTopicsForTerm(String queryTerm, int start, int maxResults,
+    public synchronized Topic[] getTopicsForTerm(String queryTerm, int start, int maxResults,
             String plugId, int[] totalSize, String lang, boolean expired, boolean includeUse) throws Exception {
-        de.ingrid.iplug.sns.utils.Topic[] result = new de.ingrid.iplug.sns.utils.Topic[0];
+        Topic[] result = new Topic[0];
 
-        de.ingrid.iplug.sns.utils.Topic ingridTopic =
+        Topic ingridTopic =
         	getThesaurusDescriptorTopic(queryTerm, totalSize, lang, includeUse, plugId);
         if (ingridTopic != null) {
             result = getTopicsForTopic(ingridTopic.getTopicID(), maxResults,
@@ -164,7 +143,7 @@ public class SNSController {
      * @return an array of associated topics for a type identified by id
      * @throws Exception
      */
-    public synchronized de.ingrid.iplug.sns.utils.Topic[] getTopicsForTopic(String topicId, int maxResults,
+    public synchronized Topic[] getTopicsForTopic(String topicId, int maxResults,
     		String filter, String plugId, String lang, int[] totalSize, boolean expired) throws Exception {
         if (log.isDebugEnabled()) {
             log.debug("getTopicsForTopic: filter=" + filter + ", lang=" + lang);
@@ -177,7 +156,7 @@ public class SNSController {
             }
             RelatedTerm[] terms = thesaurusService.getRelatedTermsFromTerm(topicId, new Locale(lang));
 
-        	List<de.ingrid.iplug.sns.utils.Topic> resultList = new ArrayList<de.ingrid.iplug.sns.utils.Topic>();
+        	List<Topic> resultList = new ArrayList<Topic>();
             List<String> duplicateList = new ArrayList<String>();
             for (RelatedTerm term : terms) {
             	if (!duplicateList.contains(term.getId())) {
@@ -190,7 +169,7 @@ public class SNSController {
             }
             if (resultList.size() > 0) {
             	totalSize[0] = resultList.size(); 
-            	return resultList.toArray(new de.ingrid.iplug.sns.utils.Topic[resultList.size()]);
+            	return resultList.toArray(new Topic[resultList.size()]);
             }
 
            	// LOCATIONS
@@ -199,13 +178,14 @@ public class SNSController {
 
     	} else  {
     		// IS THIS EVER CALLED FOR ANOTHER TOPIC TYPE ? All Topics (filter null) ? Then this is executed.
-            Map associationTypes = new HashMap();
+            /*Map associationTypes = new HashMap();
             Topic topic = new Topic();
             topic.setId(topicId);
             Topic[] associatedTopics = getAssociatedTopics(topic, fTypeFilters, associationTypes, totalSize, expired);
             if (associatedTopics != null) {
                 return copyToTopicArray(associatedTopics, associationTypes, maxResults, plugId, "bla");
             }
+            */
     	}
 
         return null;
@@ -280,8 +260,14 @@ public class SNSController {
             if (log.isDebugEnabled()) {
                 log.debug("     !!!!!!!!!! calling API gazetteerService.getLocationsFromText " + lang);
             }
-        	Location[] locations = gazetteerService.getLocationsFromText(documentText, maxToAnalyzeWords,
-        			getLocationsFromText_ignoreCase, new Locale(lang));
+            
+            // TODO: prefer OR although it still delivers less results due to a bug
+            // -> https://github.com/innoq/iqvoc_gazetteer/issues/13
+            // search for all words in document (OR)
+        	Location[] locations = gazetteerService.getLocationsFromText(documentText, maxToAnalyzeWords, getLocationsFromText_ignoreCase, new Locale(lang));
+        	
+        	// all words have to be in search result (AND)
+        	//Location[] locations = gazetteerService.findLocationsFromQueryTerm( documentText, QueryType.ALL_LOCATIONS, de.ingrid.external.GazetteerService.MatchingType.CONTAINS, new Locale(lang) );
 
             if (locations != null) {
             	totalSize[0] = locations.length;
@@ -407,15 +393,18 @@ public class SNSController {
     }
 
     /**
+     * @param length TODO
      * @return An array of ingrid detailed topics from an Event array.
      */
-    private DetailedTopic[] toDetailedTopicArray(Event[] events, String plugId, String lang) {
+    private DetailedTopic[] toDetailedTopicArray(Event[] events, String plugId, String lang, int length) {
         final List<DetailedTopic> returnList = new ArrayList<DetailedTopic>();
-        for (Event event : events) {
-        	returnList.add(buildDetailedTopicFromEvent(event, plugId, lang));
+        int count = Math.min(length, events.length);
+        for (int i = 0; i < count; i++) {
+        	returnList.add(buildDetailedTopicFromEvent(events[i], plugId, lang));
         }
 
-        return returnList.toArray(new DetailedTopic[returnList.size()]);
+//        return returnList.toArray(new DetailedTopic[returnList.size()]);
+        return returnList.toArray(new DetailedTopic[events.length]);
     }
 
     /**
@@ -443,70 +432,13 @@ public class SNSController {
 
         List<Event> classifyEvents = classifyResult.getEvents();
         if (classifyEvents != null && classifyEvents.size() > 0) {
-            topics = toDetailedTopicArray(classifyEvents.toArray(new Event[classifyEvents.size()]), plugId, lang);
+            topics = toDetailedTopicArray(classifyEvents.toArray(new Event[classifyEvents.size()]), plugId, lang, 10);
             if (topics.length > 0) {
                 returnList.addAll(Arrays.asList(topics));        	
             }        	
         }
 
         return returnList.toArray(new DetailedTopic[returnList.size()]);
-    }
-
-    /**
-     * Build a detailed metadata index for a given topic.
-     * 
-     * @param topic
-     *            A given topic.
-     * @param plugId
-     *            The plugId as String
-     * @param lang
-     *            Is used to specify the preferred language for requests.
-     * @return A detailed topic from Topic.
-     */
-    private synchronized DetailedTopic buildDetailedTopicFromTopic(Topic topic, String plugId, String lang) {
-        String topicId = topic.getId();
-        BaseName[] bn = topic.getBaseName();
-        String title = "";
-        for (int i = 0; i < bn.length; i++) {
-            final String href = bn[i].getScope().getTopicRef()[0].getHref();
-            if (href.endsWith('#' + lang)) {
-                title = bn[i].getBaseNameString().get_value();
-                break;
-            }
-        }
-        // SNS workaround ! sometimes SNS delivers english title tagged as german ("language.xtm#de" in scope)
-        // we always take the last title found, this can be german (if NO english title) or english (if
-        // english title tagged as german, normally the last one !)
-        if (title.isEmpty() && bn.length > 0) {
-        	title =  bn[bn.length-1].getBaseNameString().get_value();
-        }
-
-        String summary = title + ' ' + topic.getInstanceOf()[0].getTopicRef().getHref();
-        DetailedTopic metaData = new DetailedTopic(plugId, topicId.hashCode(), topicId, title, summary, null);
-        InstanceOf[] instanceOfs = topic.getInstanceOf();
-        for (int i = 0; i < instanceOfs.length; i++) {
-            String href = instanceOfs[i].getTopicRef().getHref();
-            metaData.addToList(DetailedTopic.INSTANCE_OF, href);
-        }
-        pushTimes(metaData, topic);
-        pushDefinitions(metaData, topic, lang);
-        pushSamples(metaData, topic, lang);
-        pushOccurensie(DetailedTopic.DESCRIPTION_OCC, topic, metaData, lang);
-        pushOccurensie(DetailedTopic.ASSOCIATED_OCC, topic, metaData, lang);
-        pushOccurensie(DetailedTopic.GEMET_OCC, topic, metaData, lang);
-        pushOccurensie(de.ingrid.iplug.sns.utils.Topic.NATIVEKEY_OCC, topic, metaData, lang);
-        String topicNativeKey = metaData.getTopicNativeKey();
-        if (null != topicNativeKey) {
-            metaData.setTopicNativeKey(SNSUtil.transformSpacialReference(this.fNativeKeyPrefix, topicNativeKey));
-        } else {
-            metaData.setTopicNativeKey(topicId);
-        }
-
-        if (containsTypes(fAdministrativeTypes, topic.getInstanceOf()[0].getTopicRef().getHref())) {
-            metaData.setAdministrativeID(topic.getId());
-        }
-
-        return metaData;
     }
 
     /** Build A detailed topic from Event.
@@ -519,15 +451,17 @@ public class SNSController {
 
         DetailedTopic result = new DetailedTopic(plugId, topicId.hashCode(), topicId, title, summary, null);
         result.addToList(DetailedTopic.INSTANCE_OF, snsInstanceOf);
+        result.put(DetailedTopic.DESCRIPTION_OCC, event.getDescription());
 
         // we push the stuff which IS ALWAYS ADDED, even if empty
         // NOTICE: Further this converts the DetailedTopic to an IngridDocument !!!!?
-        pushDefinitions(result, null, lang);
-        pushSamples(result, null, lang);
+        //pushDefinitions(result, lang);
+        pushSamples(result, event.getLinks(), lang);
+        
         // NO TERM ASSOCIATIONS MAPPED in EVENT SO FAR !!!
 //        pushOccurensie(DetailedTopic.ASSOCIATED_OCC, topic, metaData, lang);
+        
 
-        result.put(DetailedTopic.DESCRIPTION_OCC, event.getDescription());
         if (event.getTimeAt() != null) {
         	String at = getSNSDateString(event.getTimeAt());
            	result.setFrom(at);
@@ -552,8 +486,8 @@ public class SNSController {
 
         // we push the stuff which IS ALWAYS ADDED, even if empty
         // NOTICE: Further this converts the DetailedTopic to an IngridDocument !!!!?
-        pushDefinitions(result, null, lang);
-        pushSamples(result, null, lang);
+        pushDefinitions(result, lang);
+        // TODO: pushSamples(result, lang);
 
         if (location.getNativeKey() != null) {
         	result.setTopicNativeKey(SNSUtil.transformSpacialReference(this.fNativeKeyPrefix, location.getNativeKey()));
@@ -563,11 +497,8 @@ public class SNSController {
 
         // if administrative location, also set topic id as administrative id !?
         String locationType = location.getTypeId();
-        for (String adminType : fAdministrativeTypes) {
-        	if (adminType.equals(locationType)) {
-        		result.setAdministrativeID(topicId);
-        		break;
-        	}
+        if (isAdministrationType(locationType)) {
+       		result.setAdministrativeID(topicId);
         }
         
         // NO BBox !!!? was never delivered !
@@ -575,7 +506,17 @@ public class SNSController {
         return result;
     }
 
-    /** Build A detailed topic from Term */
+    /**
+     * Determine if the type is and administration type, which is identified by its
+     * name. This SNS must contain the String "admin-".
+     * @param locationType
+     * @return
+     */
+    private boolean isAdministrationType(String locationType) {
+		return locationType != null && locationType.indexOf("admin-") != -1;
+	}
+
+	/** Build A detailed topic from Term */
     private synchronized DetailedTopic buildDetailedTopicFromTerm(Term term, String plugId, String lang) {
         String topicId = term.getId();
         String title = term.getName();
@@ -587,8 +528,8 @@ public class SNSController {
 
         // we push the stuff which IS ALWAYS ADDED, even if empty
         // NOTICE: Further this converts the DetailedTopic to an IngridDocument !!!!?
-        pushDefinitions(result, null, lang);
-        pushSamples(result, null, lang);
+        pushDefinitions(result, lang);
+        // TODO: pushSamples(result, lang);
 
         pushGemetDataFromTerm(result, term);
         result.setTopicNativeKey(topicId);
@@ -597,7 +538,7 @@ public class SNSController {
     }
 
     /** If GEMET data set in term, adapt topic */
-    private void pushGemetDataFromTerm(de.ingrid.iplug.sns.utils.Topic topic, Term term) {
+    private void pushGemetDataFromTerm(Topic topic, Term term) {
         if (term.getAlternateId() != null) {
         	String gemetOcc = term.getAlternateId() + "@" + term.getName();
         	topic.put(DetailedTopic.GEMET_OCC, gemetOcc);
@@ -608,182 +549,44 @@ public class SNSController {
         }
     }
 
-    private void pushDefinitions(DetailedTopic metaData, Topic topic, String lang) {
-        List titles = new ArrayList();
-        List definitions = new ArrayList();
+    
+    private void pushDefinitions(DetailedTopic metaData, String lang) {
+        List<String> titles = new ArrayList<String>();
+        List<String> definitions = new ArrayList<String>();
 
-        Occurrence[] occurrences = null;
-        if (topic != null) {
-        	occurrences = topic.getOccurrence();
-        }
-        if (occurrences != null) {
-            String type = null;
-            for (int i = 0; i < occurrences.length; i++) {
-                if (occurrences[i].getInstanceOf() != null) {
-                    // Only compare the scope to the language if the element has one set.
-                    String scope = '#' + lang;
-                    if (occurrences[i].getScope() != null) {
-                        scope = occurrences[i].getScope().getTopicRef(0).getHref();
-                    }
-                    type = occurrences[i].getInstanceOf().getTopicRef().getHref();
-                    if (type.endsWith(DetailedTopic.DESCRIPTION_OCC) && occurrences[i].getResourceRef() != null &&
-                            scope.endsWith('#' + lang)) {
-                        definitions.add(occurrences[i].getResourceRef().getHref().toString());
-                        titles.add(occurrences[i].getResourceRef().getTitle());
-                    }
-                }
-            }
-        }
+        // just add empty definitions as long as there are none defined
+        
+        /*if (metaData.getString(DetailedTopic.DESCRIPTION_OCC) != null) {
+        	definitions.add(metaData.getString(DetailedTopic.DESCRIPTION_OCC));
+        	titles.add(metaData.getTitle());
+        }*/
 
         metaData.setDefinitions((String[]) definitions.toArray(new String[definitions.size()]));
         metaData.setDefinitionTitles((String[]) titles.toArray(new String[titles.size()]));
     }
+    
+    private void pushSamples(DetailedTopic metaData, List<Link> links, String lang) {
+        String[] titles = new String[links.size()];
+        String[] samples = new String[links.size()];
+        
+        for (int i = 0; i < links.size(); i++) {
+			titles[i] = links.get(i).getTitle();
+			samples[i] = links.get(i).getLinkAddress();
+		}
 
-    private void pushSamples(DetailedTopic metaData, Topic topic, String lang) {
-        List titles = new ArrayList();
-        List samples = new ArrayList();
-
-        Occurrence[] occurrences = null;
-        if (topic != null) {
-        	occurrences = topic.getOccurrence();
-        }
-        if (occurrences != null) {
-            String type = null;
-            for (int i = 0; i < occurrences.length; i++) {
-                if (occurrences[i].getInstanceOf() != null) {
-                    // Only compare the scope to the language if the element has one set.
-                    String scope = '#' + lang;
-                    if (occurrences[i].getScope() != null) {
-                        scope = occurrences[i].getScope().getTopicRef(0).getHref();
-                    }
-                    type = occurrences[i].getInstanceOf().getTopicRef().getHref();
-                    if (type.endsWith(DetailedTopic.SAMPLE_OCC) && occurrences[i].getResourceRef() != null &&
-                            scope.endsWith('#' + lang)) {
-                        samples.add(occurrences[i].getResourceRef().getHref().toString());
-                        titles.add(occurrences[i].getResourceRef().getTitle());
-                    }
-                }
-            }
-        }
-
-        metaData.setSamples((String[]) samples.toArray(new String[samples.size()]));
-        metaData.setSampleTitles((String[]) titles.toArray(new String[titles.size()]));
+        metaData.setSamples(samples);
+        metaData.setSampleTitles(titles);
     }
-
-    /**
-     * Pushs the time data in to the detailed topic.
-     * 
-     * @param metaData
-     *            The detailed topic for which the time data should be set.
-     * @param topic
-     *            A given topic.
-     */
-    private void pushTimes(DetailedTopic metaData, Topic topic) {
-        Occurrence[] occurrences = null;
-        if (topic != null) {
-        	occurrences = topic.getOccurrence();
-        }
-        if (occurrences != null) {
-            String type = null;
-            for (int i = 0; i < occurrences.length; i++) {
-                if (occurrences[i].getInstanceOf() != null) {
-                    type = occurrences[i].getInstanceOf().getTopicRef().getHref();
-                    if (type.endsWith(TEMPORAL_ATOccurrence)) {
-                        final String at = occurrences[i].getResourceData().get_value();
-                        metaData.setFrom(at);
-                        metaData.setTo(at);
-                        break;
-                    }
-                    if (type.endsWith(TEMPORAL_FROMOccurrence)) {
-                        metaData.setFrom(occurrences[i].getResourceData().get_value());
-                    }
-                    if (type.endsWith(TEMPORAL_TOOccurrence)) {
-                        metaData.setTo(occurrences[i].getResourceData().get_value());
-                    }
-                }
-            }
-        }
-    }
-
-    private synchronized void pushOccurensie(String occType, Topic topic,
-            de.ingrid.iplug.sns.utils.Topic detailedTopic, String lang) {
-        Occurrence[] occurrences = null;
-        if (topic != null) {
-        	occurrences = topic.getOccurrence();
-        }
-        if (occurrences != null) {
-            String type = null;
-            for (int i = 0; i < occurrences.length; i++) {
-                if (occurrences[i].getInstanceOf() != null) {
-                    // Only compare the scope to the language if the element has one set.
-                    String scope = '#' + lang;
-                    if (occurrences[i].getScope() != null) {
-                        scope = occurrences[i].getScope().getTopicRef(0).getHref();
-                    }
-                    type = occurrences[i].getInstanceOf().getTopicRef().getHref();
-                    if (type.endsWith(occType) && occurrences[i].getResourceData() != null &&
-                            scope.endsWith('#' + lang)) {
-                        detailedTopic.put(occType, occurrences[i].getResourceData().get_value());
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * @param topic
-     * @param plugId
-     * @param associationType
-     * @param lang
-     * @return A ingrid topic from a Topic.
-     */
-    private synchronized de.ingrid.iplug.sns.utils.Topic buildTopicFromTopic(Topic topic, String plugId,
-            String associationType, String lang) {
-        BaseName[] baseNames = topic.getBaseName();
-        // Set a default if for the selected language nothing exists.
-        String title = baseNames[0].getBaseNameString().get_value();
-        String topicLang = "en";
-        for (int i = 0; i < baseNames.length; i++) {
-            final Scope scope = baseNames[i].getScope();
-            if (scope != null) {
-                final String href = scope.getTopicRef()[0].getHref();
-                if (href.endsWith('#' + lang)) {
-                    title = baseNames[i].getBaseNameString().get_value();
-                    topicLang = lang;
-                    break;
-                }
-            }
-        }
-
-        String summary = title + ' ' + topic.getInstanceOf()[0].getTopicRef().getHref();
-        String topicId = topic.getId();
-        de.ingrid.iplug.sns.utils.Topic result = new de.ingrid.iplug.sns.utils.Topic(plugId, topicId.hashCode(),
-                topicId, title, summary, associationType, null);
-        pushOccurensie(de.ingrid.iplug.sns.utils.Topic.NATIVEKEY_OCC, topic, result, lang);
-        pushOccurensie(DetailedTopic.GEMET_OCC, topic, result, lang);
-        String topicNativeKey = result.getTopicNativeKey();
-        if (null != topicNativeKey) {
-            String ags = SNSUtil.transformSpacialReference(this.fNativeKeyPrefix, topicNativeKey);
-            if (ags.startsWith("lawa:")) {
-                ags = SNSUtil.transformSpacialReference("lawa:", topicNativeKey);
-            }
-            result.setTopicNativeKey(ags);
-        } else {
-            result.setTopicNativeKey(topicId);
-        }
-        result.setLanguage(topicLang);
-        return result;
-    }
-
+    
     /**
      * @return A ingrid topic from a Term.
      */
-    private de.ingrid.iplug.sns.utils.Topic buildTopicFromTerm(Term term, String plugId, String lang) {
+    private Topic buildTopicFromTerm(Term term, String plugId, String lang) {
         String title = term.getName();
         String summary = title + ' ' + getSNSInstanceOf(term);
         String topicId = term.getId();
         String associationType = "";
-        de.ingrid.iplug.sns.utils.Topic result = new de.ingrid.iplug.sns.utils.Topic(plugId, topicId.hashCode(),
+        Topic result = new Topic(plugId, topicId.hashCode(),
                 topicId, title, summary, associationType, null);
         pushGemetDataFromTerm(result, term);
         result.setLanguage(lang);
@@ -794,12 +597,12 @@ public class SNSController {
     /**
      * @return A ingrid topic from a Location.
      */
-    private de.ingrid.iplug.sns.utils.Topic buildTopicFromLocation(Location location, String plugId, String lang) {
+    private Topic buildTopicFromLocation(Location location, String plugId, String lang) {
         String title = location.getName();
         String summary = title + ' ' + getSNSInstanceOf(location);
         String topicId = location.getId();
         String associationType = "";
-        de.ingrid.iplug.sns.utils.Topic result = new de.ingrid.iplug.sns.utils.Topic(plugId, topicId.hashCode(),
+        Topic result = new Topic(plugId, topicId.hashCode(),
                 topicId, title, summary, associationType, null);
 
         if (location.getNativeKey() != null) {
@@ -824,9 +627,9 @@ public class SNSController {
      * 		false = the children of passed term are added as successors
      * @return A ingrid topic from a TreeTerm. Also sets up successors in topic !
      */
-    private de.ingrid.iplug.sns.utils.Topic buildTopicFromTreeTerm(TreeTerm term, String plugId, String lang,
+    private Topic buildTopicFromTreeTerm(TreeTerm term, String plugId, String lang,
     		boolean addParentsAsSuccessors) {
-    	de.ingrid.iplug.sns.utils.Topic resultTopic = buildTopicFromTerm(term, plugId, lang);
+    	Topic resultTopic = buildTopicFromTerm(term, plugId, lang);
     	
     	// add children or parents as successors dependent from flag
     	List<TreeTerm> successorTerms = term.getChildren();
@@ -836,7 +639,7 @@ public class SNSController {
 
     	if (successorTerms != null) {
         	for (TreeTerm successorTerm : successorTerms) {
-        		de.ingrid.iplug.sns.utils.Topic successorTopic =
+        		Topic successorTopic =
         			buildTopicFromTreeTerm(successorTerm, plugId, lang, addParentsAsSuccessors);
         		resultTopic.addSuccessor(successorTopic);
         	}
@@ -849,8 +652,8 @@ public class SNSController {
      * Also adds relation information to ingrid topic !
      * @return A ingrid topic from a RelatedTerm. Also sets up relation info in topic !
      */
-    private de.ingrid.iplug.sns.utils.Topic buildTopicFromRelatedTerm(RelatedTerm term, String plugId, String lang) {
-    	de.ingrid.iplug.sns.utils.Topic resultTopic = buildTopicFromTerm(term, plugId, lang);
+    private Topic buildTopicFromRelatedTerm(RelatedTerm term, String plugId, String lang) {
+    	Topic resultTopic = buildTopicFromTerm(term, plugId, lang);
 
     	// add association type dependent from relation
     	String memberType = getSNSAssociationMemberType(term);
@@ -870,12 +673,15 @@ public class SNSController {
 
     /** Extract SNS instanceOf href from event ! */
     private static String getSNSInstanceOf(Event event) {
-		return SNS_INSTANCE_OF_URL + "#" + event.getTypeId();
+    	String base = event.getId().substring(event.getId().lastIndexOf('/'));
+		return base + "collections/" + event.getTypeId();
     }
 
     /** Extract SNS instanceOf href from location ! */
     private static String getSNSInstanceOf(Location location) {
-		return SNS_INSTANCE_OF_URL + "#" + location.getTypeId();
+    	String base = location.getId().substring(location.getId().lastIndexOf('/'));
+        String mappedType = mappingBundle.getString("gazetteer.de." + location.getTypeId());
+		return base + "#" + mappedType;
     }
 
     /** Extract SNS instanceOf href from term ! */
@@ -903,7 +709,7 @@ public class SNSController {
 	    	}			
 		}
 
-		return SNS_INSTANCE_OF_URL + snsInstanceOf;
+		return snsInstanceOf;
     }
 
     /** Extract SNS assoziation member type from related term ! */
@@ -925,82 +731,7 @@ public class SNSController {
     		}
     	}
 			
-		return SNS_INSTANCE_OF_URL + snsMemberType;
-    }
-
-    /**
-     * @param baseTopic
-     * @param typePattern
-     * @param associationTypes
-     * @param totalSize
-     * @param expired return also expired topics ?
-     * @return Topic array of associated topics filter by the given patterns
-     * @throws Exception
-     */
-    private Topic[] getAssociatedTopics(Topic baseTopic, String[] typePattern, Map associationTypes, int[] totalSize,
-            boolean expired) throws Exception {
-        List resultList = new ArrayList();
-
-        final TopicMapFragment mapFragment = this.fServiceClient.getPSI(baseTopic.getId(), 1, null);
-        final Topic[] topics = mapFragment.getTopicMap().getTopic();
-        if (null != mapFragment.getListExcerpt()) {
-            if (null != mapFragment.getListExcerpt().getTotalSize()) {
-                totalSize[0] = mapFragment.getListExcerpt().getTotalSize().intValue();
-            }
-        }
-        final Association[] associations = mapFragment.getTopicMap().getAssociation();
-        // iterate through associations to find the correct association types
-        if (associations != null) {
-            for (int i = 0; i < associations.length; i++) {
-                final Association association = associations[i];
-                // association type
-                final String assocType = association.getInstanceOf().getTopicRef().getHref();
-                if (containsTypes(typePattern, assocType)) {
-                    // association members are the basetopic and it association
-                    final Member[] members = association.getMember();
-                    for (int j = 0; j < members.length; j++) {
-                        final Member member = members[j];
-                        // here is only the topic id available
-                        final String topicId = member.getTopicRef()[0].getHref();
-                        final String assocMember = member.getRoleSpec().getTopicRef().getHref();
-                        if (!topicId.equals(baseTopic.getId())) {
-                            final Topic topicById = getTopicById(topics, topicId);
-                            if (topicById != null) {
-                                if (!expired) {
-                                    Date expiredDate = getExpiredDate(topicById);
-                                    if ((null != expiredDate) && expiredDate.before(new Date())) {
-                                        continue;
-                                    }
-                                }
-                                if (null != associationTypes) {
-                                    associationTypes.put(topicById.getId(), assocMember);
-                                }
-                                resultList.add(topicById);
-                            }
-                        }
-                    }
-                }
-            }
-
-            return (Topic[]) resultList.toArray(new Topic[resultList.size()]);
-        }
-
-        return null;
-    }
-
-    /**
-     * @param topics
-     * @param topicId
-     * @return the topic that match the topicId from the given Topic array
-     */
-    private Topic getTopicById(Topic[] topics, String topicId) {
-        for (int k = 0; k < topics.length; k++) {
-            if (topicId.equals(topics[k].getId())) {
-                return topics[k];
-            }
-        }
-
-        return null;
+		return snsMemberType;
     }
 
     /**
@@ -1010,7 +741,7 @@ public class SNSController {
      * @return just one matching topic, in case more topics match we return the FIRST ONE ! If no topic match we return null.
      * @throws Exception
      */
-    private de.ingrid.iplug.sns.utils.Topic getThesaurusDescriptorTopic(String queryTerm, int[] totalSize, String lang,
+    private Topic getThesaurusDescriptorTopic(String queryTerm, int[] totalSize, String lang,
             boolean includeUse, String plugId) throws Exception {
         if (log.isDebugEnabled()) {
             log.debug("getTopic: " + queryTerm + ", lang=" + lang);
@@ -1054,7 +785,7 @@ public class SNSController {
         }
 
         // RETURN FIRST TOPIC !
-        de.ingrid.iplug.sns.utils.Topic result = null;
+        Topic result = null;
         if (filteredTerms.size() > 0) {
         	result = buildTopicFromTerm(filteredTerms.get(0), plugId, lang);
         	totalSize[0] = 1;
@@ -1064,66 +795,18 @@ public class SNSController {
     }
 
     /**
-     * @param patterns
-     * @param pattern
-     * @return true in case the pattern is one of the given patterns
-     */
-    private boolean containsTypes(String[] patterns, String pattern) {
-        for (int i = 0; i < patterns.length; i++) {
-            if (pattern.endsWith(patterns[i])) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * @param maxResults
-     * @param topics
-     * @param associationTypes
-     * @param plugId
-     * @param lang
-     * @return An array of Topic with the given length.
-     * @throws Exception
-     */
-    private de.ingrid.iplug.sns.utils.Topic[] copyToTopicArray(Topic[] topics, Map associationTypes, int maxResults,
-            String plugId, String lang) throws Exception {
-        final List ingridTopics = new ArrayList();
-        final List duplicateList = new ArrayList();
-
-        if (null != topics) {
-            int count = Math.min(maxResults, topics.length);
-            for (int i = 0; i < count; i++) {
-                final String topicId = topics[i].getId();
-                if (!duplicateList.contains(topicId)) {
-                    if (!topicId.startsWith("_Interface")) {
-                        String associationType = "";
-                        if ((null != associationTypes) && (associationTypes.containsKey(topicId))) {
-                            associationType = (String) associationTypes.get(topicId);
-                        }
-                        ingridTopics.add(buildTopicFromTopic(topics[i], plugId, associationType, lang));
-                    }
-                    duplicateList.add(topicId);
-                }
-            }
-        }
-        return (de.ingrid.iplug.sns.utils.Topic[]) ingridTopics
-                .toArray(new de.ingrid.iplug.sns.utils.Topic[ingridTopics.size()]);
-    }
-
-    /**
      * @return ingrid Topics from Terms.
      */
-    private de.ingrid.iplug.sns.utils.Topic[] copyToTopicArray(Term[] terms, int maxResults,
+    private Topic[] copyToTopicArray(Term[] terms, int maxResults,
             String plugId, String lang) throws Exception {
-        final List<de.ingrid.iplug.sns.utils.Topic> ingridTopics =
-        	new ArrayList<de.ingrid.iplug.sns.utils.Topic>();
+        final List<Topic> ingridTopics =
+        	new ArrayList<Topic>();
         final List<String> duplicateList = new ArrayList<String>();
 
         if (null != terms) {
             int count = Math.min(maxResults, terms.length);
             for (int i = 0; i < count; i++) {
+            	// for synonyms the Id is the label because they all have the same Id!
                 final String topicId = terms[i].getId();
                 if (!duplicateList.contains(topicId)) {
                 	ingridTopics.add(buildTopicFromTerm(terms[i], plugId, lang));
@@ -1131,17 +814,17 @@ public class SNSController {
                 }
             }
         }
-        return (de.ingrid.iplug.sns.utils.Topic[]) ingridTopics
-                .toArray(new de.ingrid.iplug.sns.utils.Topic[ingridTopics.size()]);
+        return (Topic[]) ingridTopics
+                .toArray(new Topic[ingridTopics.size()]);
     }
 
     /**
      * @return ingrid Topics from Locations.
      */
-    private de.ingrid.iplug.sns.utils.Topic[] copyToTopicArray(Location[] locations, int maxResults,
+    private Topic[] copyToTopicArray(Location[] locations, int maxResults,
             String plugId, String lang) throws Exception {
-        final List<de.ingrid.iplug.sns.utils.Topic> ingridTopics =
-        	new ArrayList<de.ingrid.iplug.sns.utils.Topic>();
+        final List<Topic> ingridTopics =
+        	new ArrayList<Topic>();
         final List<String> duplicateList = new ArrayList<String>();
 
         if (null != locations) {
@@ -1158,8 +841,8 @@ public class SNSController {
                 }
             }
         }
-        return (de.ingrid.iplug.sns.utils.Topic[]) ingridTopics
-                .toArray(new de.ingrid.iplug.sns.utils.Topic[ingridTopics.size()]);
+        return (Topic[]) ingridTopics
+                .toArray(new Topic[ingridTopics.size()]);
     }
 
     /**
@@ -1184,38 +867,10 @@ public class SNSController {
      * @return A topic array of events.
      * @throws Exception
      */
-    public de.ingrid.iplug.sns.utils.Topic[] getEventFromTopic(String searchTerm, String[] eventTypes, String atDate,
+    public Topic[] getEventFromTopic(String searchTerm, String[] eventTypes, String atDate,
             int start, int length, String plugId, int[] totalSize, String lang) throws Exception {
-        de.ingrid.iplug.sns.utils.Topic[] result = new de.ingrid.iplug.sns.utils.Topic[0];
-        String[] eventPath = null;
 
-        if (null != eventTypes) {
-            eventPath = new String[eventTypes.length];
-            for (int i = 0; i < eventPath.length; i++) {
-                eventPath[i] = "/event/" + eventTypes[i] + '/';
-            }
-        } else {
-            eventPath = new String[] { "/event/" };
-        }
-
-        // now always "contains" like default on http://www.semantic-network.de/doc_findevents.html?lang=de
-        SearchType searchType = SearchType.contains;
-/*
-        SearchType searchType = SearchType.exact;
-        if ((null == searchTerm) || (searchTerm.trim().equals(""))) {
-            searchType = SearchType.contains;
-        }
-*/
-        TopicMapFragment topicMapFragment = this.fServiceClient.findEvents(searchTerm, true, searchType, eventPath,
-                FieldsType.captors, start, atDate, lang, length);
-        Topic[] topic = topicMapFragment.getTopicMap().getTopic();
-        totalSize[0] = topicMapFragment.getListExcerpt().getTotalSize().intValue();
-        if (topic != null) {
-            de.ingrid.iplug.sns.utils.Topic[] topics = copyToTopicArray(topic, null, length, plugId, lang);
-            result = topics;
-        }
-
-        return result;
+        return getEventFromTopic(searchTerm, eventTypes, atDate, atDate, start, length, plugId, totalSize, lang); //result;
     }
 
     /**
@@ -1234,7 +889,7 @@ public class SNSController {
      * @return Topics to similar terms.
      * @throws Exception
      */
-    public de.ingrid.iplug.sns.utils.Topic[] getSimilarTermsFromTopic(String searchTerm, int length, String plugId,
+    public Topic[] getSimilarTermsFromTopic(String searchTerm, int length, String plugId,
             int[] totalSize, String lang) throws Exception {
         return getSimilarTermsFromTopic(new String[] { searchTerm }, length, plugId, totalSize, lang);
     }
@@ -1248,7 +903,7 @@ public class SNSController {
      * @return Topics to similar terms.
      * @throws Exception
      */
-    public de.ingrid.iplug.sns.utils.Topic[] getSimilarTermsFromTopic(String[] searchTerm, int length, String plugId,
+    public Topic[] getSimilarTermsFromTopic(String[] searchTerm, int length, String plugId,
             int[] totalSize, String lang) throws Exception {
         if (log.isDebugEnabled()) {
             log.debug("getSimilarTermsFromTopic: searchTerm[]=" + searchTerm + ", lang=" + lang);
@@ -1260,7 +915,7 @@ public class SNSController {
         }
     	Term[] terms = thesaurusService.getSimilarTermsFromNames(searchTerm, true, new Locale(lang));
 
-        de.ingrid.iplug.sns.utils.Topic[] result = new de.ingrid.iplug.sns.utils.Topic[0];
+        Topic[] result = new Topic[0];
         if (terms != null) {
         	result = copyToTopicArray(terms, length, plugId, lang);
         }
@@ -1282,28 +937,19 @@ public class SNSController {
      * @return Topics to an anniversary.
      * @throws Exception
      */
-    public de.ingrid.iplug.sns.utils.Topic[] getAnniversaryFromTopic(String searchTerm, int length, String plugId,
+    public Topic[] getAnniversaryFromTopic(String searchTerm, String lang, int length, String plugId,
             int[] totalSize) throws Exception {
-        de.ingrid.iplug.sns.utils.Topic[] result = new de.ingrid.iplug.sns.utils.Topic[0];
-
-        TopicMapFragment topicMapFragment = this.fServiceClient.anniversary(searchTerm);
-        Topic[] topic = topicMapFragment.getTopicMap().getTopic();
-        totalSize[0] = topicMapFragment.getListExcerpt().getTotalSize().intValue();
-        if (topic != null) {
-            de.ingrid.iplug.sns.utils.Topic[] topics = copyToTopicArray(topic, null, length, plugId, "bla");
-            result = topics;
-        }
-
-        return result;
+        Event[] anniversaries = chronicleService.getAnniversaries(searchTerm, new Locale(lang));
+        return toDetailedTopicArray(anniversaries, plugId, lang, 10);
     }
 
-    /**
+	/**
      * Returns all events between two dates.
      * 
      * @param searchTerm
      *            The given search term.
      * @param eventTypes
-     *            Array with one or more types of events.
+     *            Array with one or more types of events (mapped to collections).
      * @param fromDate
      *            A date after that an event occured.
      * @param toDate
@@ -1321,36 +967,15 @@ public class SNSController {
      * @return Topics to an event.
      * @throws Exception
      */
-    public de.ingrid.iplug.sns.utils.Topic[] getEventFromTopic(String searchTerm, String[] eventTypes, String fromDate,
+    public Topic[] getEventFromTopic(String searchTerm, String[] eventTypes, String fromDate,
             String toDate, int start, int length, String plugId, int[] totalSize, String lang) throws Exception {
-        de.ingrid.iplug.sns.utils.Topic[] result = new de.ingrid.iplug.sns.utils.Topic[0];
-        String[] eventPath = null;
-
-        if (null != eventTypes) {
-            eventPath = new String[eventTypes.length];
-            for (int i = 0; i < eventPath.length; i++) {
-                eventPath[i] = "/event/" + eventTypes[i] + '/';
-            }
-        } else {
-            eventPath = new String[] { "/event/" };
-        }
+        Topic[] result = new Topic[0];
 
         // now always "contains" like default on http://www.semantic-network.de/doc_findevents.html?lang=de
-        SearchType searchType = SearchType.contains;
-/*
-        SearchType searchType = SearchType.exact;
-        if ((null == searchTerm) || (searchTerm.trim().equals(""))) {
-            searchType = SearchType.contains;
-        }
-*/
-        TopicMapFragment topicMapFragment = this.fServiceClient.findEvents(searchTerm, true, searchType, eventPath,
-                FieldsType.captors, start, fromDate, toDate, lang, length);
-        Topic[] topic = topicMapFragment.getTopicMap().getTopic();
-        totalSize[0] = topicMapFragment.getListExcerpt().getTotalSize().intValue();
-        if (topic != null) {
-            de.ingrid.iplug.sns.utils.Topic[] topics = copyToTopicArray(topic, null, length, plugId, lang);
-            result = topics;
-        }
+        //String searchType = "contains";
+
+        Event[] res = chronicleService.findEventsFromQueryTerm(searchTerm, de.ingrid.external.ChronicleService.MatchingType.CONTAINS, eventTypes, fromDate, toDate, new Locale(lang), start, length);
+        result = toDetailedTopicArray(res, plugId, lang, length);
 
         return result;
     }
@@ -1385,7 +1010,7 @@ public class SNSController {
      * @throws Exception
      */
     public DetailedTopic getTopicDetail(IngridHit hit, String filter, String lang) throws Exception {
-        de.ingrid.iplug.sns.utils.Topic topic = (de.ingrid.iplug.sns.utils.Topic) hit;
+        Topic topic = (Topic) hit;
         return getTopicDetail(topic.getTopicID(), filter, lang, hit.getPlugId());
     }
 
@@ -1437,21 +1062,11 @@ public class SNSController {
 
     	} else  {
     		// filter: "/event" or null
-            TopicMapFragment mapFragment = null;
-        	try {
-        		mapFragment = this.fServiceClient.getPSI(topicID, 0, filter);
-        	} catch (Exception e) {
-            	log.error("Error calling snsClient.getPSI (topicId=" + topicID
-                		+ ", filter=" + filter + "), we return null Details", e);
-    	    }
-            if (null != mapFragment) {
-                Topic[] topics = mapFragment.getTopicMap().getTopic();
-
-                for (int i = 0; i < topics.length; i++) {
-                    if (topics[i].getId().equals(topicID)) {
-                        result = buildDetailedTopicFromTopic(topics[0], plugId, lang);
-                    }
-                }
+    		// TODO: implement else call 
+    		Event event = chronicleService.getEvent(topicID, new Locale(lang));
+    		
+            if (event!= null) {
+            	result = buildDetailedTopicFromEvent(event, plugId, lang);
             }
     	}
 
@@ -1469,9 +1084,9 @@ public class SNSController {
     * @return A topic array from similar location topics (NOT EXPIRED) or null !
     * @throws Exception
     */
-    public de.ingrid.iplug.sns.utils.Topic[] getTopicSimilarLocationsFromTopic(String topicId, int length,
+    public Topic[] getTopicSimilarLocationsFromTopic(String topicId, int length,
             String plugId, int[] totalSize, String lang) throws Exception {
-        de.ingrid.iplug.sns.utils.Topic[] result = null;
+        Topic[] result = null;
 
         if (log.isDebugEnabled()) {
             log.debug("     !!!!!!!!!! calling API gazetteerService.getRelatedLocationsFromLocation" + topicId + " " + lang);
@@ -1482,27 +1097,6 @@ public class SNSController {
             result = copyToTopicArray(locations, length, plugId, lang);
         }
 
-        return result;
-    }
-
-    private Date getExpiredDate(Topic topic) {
-        Date result = null;
-        Occurrence[] occurrences = topic.getOccurrence();
-        if (null != occurrences) {
-            for (int i = 0; i < occurrences.length; i++) {
-                final InstanceOf instanceOf = occurrences[i].getInstanceOf();
-                if (instanceOf != null) {
-                    final String type = instanceOf.getTopicRef().getHref();
-                    if (type.endsWith("expiredOcc")) {
-                        try {
-                            result = expiredDateParser.parse(occurrences[i].getResourceData().get_value());
-                        } catch (ParseException e) {
-                            log.error("Not expected date format in sns expiredOcc.", e);
-                        }
-                    }
-                }
-            }
-        }
         return result;
     }
 
@@ -1521,14 +1115,14 @@ public class SNSController {
      * @return structure of ingrid topics
      * @throws Exception
      */
-    public de.ingrid.iplug.sns.utils.Topic[] getTopicHierachy(int[] totalSize, String associationName, long depth,
+    public Topic[] getTopicHierachy(int[] totalSize, String associationName, long depth,
             String direction, boolean includeSiblings, String lang, String root, boolean expired, String plugId)
             throws Exception {
         if (log.isDebugEnabled()) {
             log.debug("getTopicHierachy: topicID=" + root + ", direction=" + direction + ", lang=" + lang);
         }
 
-    	List<de.ingrid.iplug.sns.utils.Topic> resultList = new ArrayList<de.ingrid.iplug.sns.utils.Topic>();
+    	List<Topic> resultList = new ArrayList<Topic>();
 
     	if ("down".equals(direction)) {
     		String topicId = root;
@@ -1548,10 +1142,10 @@ public class SNSController {
 
         	// set up root topic encapsulating children
     		// NOTICE: default is null ! If no children ! Evaluated in Test.
-        	de.ingrid.iplug.sns.utils.Topic rootTopic = null;
+        	Topic rootTopic = null;
         	if (topicId == null) {
         		// toplevel nodes, we create dummy parent
-        		rootTopic = new de.ingrid.iplug.sns.utils.Topic(plugId, -1, root, null, null, null, null);
+        		rootTopic = new Topic(plugId, -1, root, null, null, null, null);
         	} else {
         		// start node is existing topic
         		if (childTerms.length > 0) {
@@ -1563,7 +1157,7 @@ public class SNSController {
         	
         	// set up children structure
         	for (TreeTerm childTerm : childTerms) {
-        		de.ingrid.iplug.sns.utils.Topic childTopic = buildTopicFromTreeTerm(childTerm, plugId, lang, false);
+        		Topic childTopic = buildTopicFromTreeTerm(childTerm, plugId, lang, false);
         		rootTopic.addSuccessor(childTopic);
         	}
         	
@@ -1577,7 +1171,7 @@ public class SNSController {
 
         	// set up root topic encapsulating parents as successors
     		// NOTICE: default is null ! If no parents ! Evaluated in Test.
-        	de.ingrid.iplug.sns.utils.Topic rootTopic = null;
+        	Topic rootTopic = null;
     		// start node is existing topic
     		if (startTerm.getParents() != null) {
     			// we have parents ! build topic structure with parents as successors !
@@ -1586,7 +1180,7 @@ public class SNSController {
         	resultList.add(rootTopic);
         }
 
-        return resultList.toArray(new de.ingrid.iplug.sns.utils.Topic[resultList.size()]);
+        return resultList.toArray(new Topic[resultList.size()]);
     }
 
 	/** Create URL from url String. Returns null if problems !!! */
