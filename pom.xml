@@ -41,12 +41,12 @@
         <dependency>
           <groupId>de.ingrid</groupId>
           <artifactId>ingrid-external-services-api</artifactId>
-          <version>3.5.0-SNAPSHOT</version>
+          <version>3.3.0</version>
         </dependency>
         <dependency>
           <groupId>de.ingrid</groupId>
           <artifactId>ingrid-external-service-sns</artifactId>
-          <version>3.5.0-SNAPSHOT</version>
+          <version>3.3.0</version>
         </dependency>
     </dependencies>
   </dependencyManagement>
@@ -74,7 +74,7 @@
     <dependency>
       <groupId>de.ingrid</groupId>
       <artifactId>ingrid-external-service-sns</artifactId>
-      <version>3.5.0-SNAPSHOT</version>
+      <version>3.3.0</version>
     </dependency>
     <!-- JENA libs for RDF support -->
     <dependency>
@@ -93,6 +93,7 @@
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>3.8.1</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
   <!-- NEVER DELETE: InGrid repo needed for download of parent pom if not present ! -->
