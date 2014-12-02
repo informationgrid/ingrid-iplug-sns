@@ -7,7 +7,7 @@
 
     <!-- PortalU: always commit these ones to svn due to tests ! -->
     <bean id="thesaurusService" class="de.ingrid.external.sns.SNSService" />
-	<bean id="gazetteerService" class="de.ingrid.external.sns.SNSService" />
+	<bean id="gazetteerService" class="de.ingrid.external.wfs.WFSService" />
 	<bean id="fullClassifyService" class="de.ingrid.external.sns.SNSService" />
 	<bean id="chronicleService" class="de.ingrid.external.sns.SNSService" />
 

@@ -278,10 +278,13 @@ public class SNSController {
     	} else if ("/location".equals(filter)) {
 
             if (log.isDebugEnabled()) {
-                log.debug("     !!!!!!!!!! calling API gazetteerService.getLocationsFromText " + lang);
+                log.debug("     !!!!!!!!!! calling API gazetteerService.findLocationsFromQueryTerm " + lang);
             }
-        	Location[] locations = gazetteerService.getLocationsFromText(documentText, maxToAnalyzeWords,
-        			getLocationsFromText_ignoreCase, new Locale(lang));
+            // use find method, since autoClassify is not supported by WFS and the given text
+            // normally should be a single word
+        	// Location[] locations = gazetteerService.getLocationsFromText(documentText, maxToAnalyzeWords,
+        	//		getLocationsFromText_ignoreCase, new Locale(lang));
+            Location[] locations = gazetteerService.findLocationsFromQueryTerm( documentText, null, de.ingrid.external.GazetteerService.MatchingType.CONTAINS, new Locale(lang));
 
             if (locations != null) {
             	totalSize[0] = locations.length;

@@ -35,9 +35,9 @@ public class SnsPlugTest extends TestCase {
         fPlugDescription.put("username", "ms");
         fPlugDescription.put("password", "m3d1asyl3");
         fPlugDescription.put("language", "de");
-        fPlugDescription.put("serviceUrl.thesaurus", ResourceBundle.getBundle("sns").getString("sns.serviceURL.thesaurus"));
-        fPlugDescription.put("serviceUrl.gazetteer", ResourceBundle.getBundle("sns").getString("sns.serviceURL.gazetteer"));
-        fPlugDescription.put("serviceUrl.chronicle", ResourceBundle.getBundle("sns").getString("sns.serviceURL.chronicle"));
+        fPlugDescription.put("serviceUrl.thesaurus", ResourceBundle.getBundle("sns").getString("sns.serviceURL"));
+        // fPlugDescription.put("serviceUrl.gazetteer", ResourceBundle.getBundle("sns").getString("sns.serviceURL.gazetteer"));
+        // fPlugDescription.put("serviceUrl.chronicle", ResourceBundle.getBundle("sns").getString("sns.serviceURL.chronicle"));
         fPlugDescription.putInt("maxWordAnalyzing", 100);
     }
 
