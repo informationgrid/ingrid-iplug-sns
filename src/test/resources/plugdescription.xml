@@ -1,0 +1,174 @@
+<!--
+  **************************************************-
+  Ingrid iPlug SNS
+  ==================================================
+  Copyright (C) 2014 wemove digital solutions GmbH
+  ==================================================
+  Licensed under the EUPL, Version 1.1 or – as soon they will be
+  approved by the European Commission - subsequent versions of the
+  EUPL (the "Licence");
+  
+  You may not use this work except in compliance with the Licence.
+  You may obtain a copy of the Licence at:
+  
+  http://ec.europa.eu/idabc/eupl5
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the Licence is distributed on an "AS IS" basis,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the Licence for the specific language governing permissions and
+  limitations under the Licence.
+  **************************************************#
+  -->
+<de.ingrid.utils.PlugDescription>
+  <int>27</int>
+  <string>maxWordAnalyzing</string>
+  <int>1000</int>
+  <string>IPLUG_ADMIN_GUI_PORT</string>
+  <int>9905</int>
+  <string>busUrls</string>
+  <list>
+    <string>/ingrid-group:ibus-test</string>
+  </list>
+  <string>organisationAbbr</string>
+  <string>bu_kug</string>
+  <string>password</string>
+  <string>ingrid_test</string>
+  <string>dataSourceDescription</string>
+  <string>IPlug SNS wemove ingrid-testserver</string>
+  <string>md5Hash</string>
+  <string>/ingrid-group:iplug-sns-test</string>
+  <string>personName</string>
+  <string>wemove</string>
+  <string>personMail</string>
+  <string>ingrid-wemove@wemove.com</string>
+  <string>username</string>
+  <string>ingrid_test</string>
+  <string>personPhone</string>
+  <string>1111</string>
+  <string>partner</string>
+  <list>
+    <string>bund</string>
+  </list>
+  <string>workingDirectory</string>
+  <string>./</string>
+  <string>IPLUG_ADMIN_GUI_URL</string>
+  <string>http://192.168.0.247/iplug-admin-sns/step1</string>
+  <string>fields</string>
+  <list>
+    <string>lang</string>
+    <string>t0</string>
+    <string>t1</string>
+    <string>t2</string>
+    <string>eventtype</string>
+    <string>filter</string>
+    <string>sns_request_type</string>
+    <string>expired</string>
+    <string>association</string>
+    <string>depth</string>
+    <string>direction</string>
+    <string>includeSiblings</string>
+    <string>lang</string>
+    <string>t0</string>
+    <string>t1</string>
+    <string>t2</string>
+    <string>eventtype</string>
+    <string>filter</string>
+    <string>sns_request_type</string>
+    <string>expired</string>
+    <string>association</string>
+    <string>depth</string>
+    <string>direction</string>
+    <string>includeSiblings</string>
+    <string>lang</string>
+    <string>t0</string>
+    <string>t1</string>
+    <string>t2</string>
+    <string>eventtype</string>
+    <string>filter</string>
+    <string>sns_request_type</string>
+    <string>expired</string>
+    <string>association</string>
+    <string>depth</string>
+    <string>direction</string>
+    <string>includeSiblings</string>
+    <string>lang</string>
+    <string>t0</string>
+    <string>t1</string>
+    <string>t2</string>
+    <string>eventtype</string>
+    <string>filter</string>
+    <string>sns_request_type</string>
+    <string>expired</string>
+    <string>association</string>
+    <string>depth</string>
+    <string>direction</string>
+    <string>includeSiblings</string>
+    <string>lang</string>
+    <string>t0</string>
+    <string>t1</string>
+    <string>t2</string>
+    <string>eventtype</string>
+    <string>filter</string>
+    <string>sns_request_type</string>
+    <string>expired</string>
+    <string>association</string>
+    <string>depth</string>
+    <string>direction</string>
+    <string>includeSiblings</string>
+    <string>lang</string>
+    <string>t0</string>
+    <string>t1</string>
+    <string>t2</string>
+    <string>eventtype</string>
+    <string>filter</string>
+    <string>sns_request_type</string>
+    <string>expired</string>
+    <string>association</string>
+    <string>depth</string>
+    <string>direction</string>
+    <string>includeSiblings</string>
+    <string>lang</string>
+    <string>t0</string>
+    <string>t1</string>
+    <string>t2</string>
+    <string>eventtype</string>
+    <string>filter</string>
+    <string>sns_request_type</string>
+    <string>expired</string>
+    <string>association</string>
+    <string>depth</string>
+    <string>direction</string>
+    <string>includeSiblings</string>
+  </list>
+  <string>proxyServiceUrl</string>
+  <string>/ingrid-group:iplug-sns-test</string>
+  <string>organisation</string>
+  <string>Koordinierungsstelle PortalU</string>
+  <string>provider</string>
+  <list>
+    <string>bu_kug</string>
+  </list>
+  <string>dataSourceName</string>
+  <string>IPlug SNS wemove ingrid-testserver</string>
+  <string>serviceUrl</string>
+  <string>http://www.semantic-network.de/service-xtm-2.0/xtm/soap</string>
+  <string>dataType</string>
+  <list>
+    <string>sns</string>
+  </list>
+  <string>personSureName</string>
+  <string>wemove</string>
+  <string>personTitle</string>
+  <string></string>
+  <string>iPlugClass</string>
+  <string>de.ingrid.iplug.sns.SnsPlug</string>
+  <string>language</string>
+  <string>de</string>
+  <string>ranking</string>
+  <list>
+    <string>off</string>
+  </list>
+  <string>IPLUG_ADMIN_PASSWORD</string>
+  <string>admin</string>
+</de.ingrid.utils.PlugDescription>

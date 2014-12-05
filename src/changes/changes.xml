@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  **************************************************-
+  Ingrid iPlug SNS
+  ==================================================
+  Copyright (C) 2014 wemove digital solutions GmbH
+  ==================================================
+  Licensed under the EUPL, Version 1.1 or – as soon they will be
+  approved by the European Commission - subsequent versions of the
+  EUPL (the "Licence");
+  
+  You may not use this work except in compliance with the Licence.
+  You may obtain a copy of the Licence at:
+  
+  http://ec.europa.eu/idabc/eupl5
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the Licence is distributed on an "AS IS" basis,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the Licence for the specific language governing permissions and
+  limitations under the Licence.
+  **************************************************#
+  -->
+
+<document>
+  <properties>
+    <title>Changes Ingrid iPlug SNS</title>
+    <author email="joachim@wemove.com">Joachim Müller</author>
+  </properties>
+  <body>
+    <release version="3.5-SNAPSHOT" date="2014-xx-xx" description="Release InGrid 3.5">
+        <action type="add" dev="wemove" issue="REDMINE-524">
+            Added license header to all source files for Open Source migration.
+        </action>
+    </release>
+    <release version="3.4.0" date="2014-02-25" description="Release InGrid 3.4.0">
+  	  <action type="update" dev="wemove">
+  		  Update installer for update procedure.
+      </action>
+    </release>
+
+  	<release version="3.3.0" date="2013-03-05" description="Release InGrid 3.3">
+      <action type="add" dev="wemove" issue="INGRID-2150">
+        Add java parameter "-Dfile.encoding=UTF8" to start script.
+      </action>
+      <action type="add" dev="wemove" issue="INGRID33-4">
+        Added local working directory, so that temp-dir is not deleted accidentally when cleaning up global temp dir.
+      </action>
+      <action type="update" dev="wemove" issue="INGRID-2156">
+        Connect to iBus even if the iBus was started after the iPlug.
+      </action>
+    </release>
+
+    <release version="3.2.0" date="2012-07-12" description="Release InGrid 3.2">
+      <action type="update" dev="wemove" issue="INGRID-1885">
+        Updated start.sh, which had an issue when being batch-invoked, deleted RSYNC which is no longer used, see https://dev.wemove.com/jira/browse/INGRID-1885
+      </action>
+      <action type="update">
+        GS Soil: Control case sensitivity for querying Gazetteer now via settings in spring config file (gazetteerService.getLocationsFromText.ignoreCase).
+      </action>
+      <action type="update">
+        GS Soil: Added newest version of GS Soil Semantic Services by Edisoft (Thesaurus, Gazetteer, FullClassify).
+      </action>
+    </release>
+
+    <release version="3.1.0" date="2011-09-15" description="Release InGrid 3.1">
+      <action type="update" issue="INGRID-1972">
+        Almanac searches now events in the same way as SNS web page defaults (SearchType.contains), further multiple searchterms are possible in almanac.
+      </action>
+      <action type="fix" issue="INGRID-1870">
+        Configuration within a text browser is now possible.
+      </action>
+      <action type="fix" issue="INGRID-1992">
+        Changed logging behavior, so that not so many files will be created.
+      </action>
+      <action type="fix" issue="INGRID-1870">
+        Configuration with text browser now possible.
+      </action>
+    </release>
+
+    <release version="3.0.1" date="2011-07-04" description="Add-Ons + Bugfixes for InGrid 3.0">
+      <action type="add" issue="GSSOIL-18">
+        GS Soil: Add new method for searching thesaurus topic via it's ID (TOPIC_FROM_ID) to fetch thesaurus topic in different languages.
+      </action>
+    </release>
+
+    <release version="3.0.0" date="2011-05-06" description="Release InGrid3.0">
+      <action type="update">
+		Always ignore case sensitivity when calling ThesaurusService (was case sensitive when calling getTermsFromText -> used by Portal/Extended Search) ! Case Sensitivity was ignored by SNS but NOT by GSSoil ThesaurusService !
+      </action>
+    </release>
+
+    <release version="2.3.1" date="2011-01-24" description="Update dependencies Release">
+      <action type="update">
+		Use most current dependencies (jars), NO FUNCTIONAL CHANGES !
+      </action>
+    </release>
+
+    <release version="1.5.0" date="2010-07-12" description="Release Thesaurus/Gazetteer API (GS Soil)">
+      <action type="add">
+        Thesaurus/Gazetteer/FullClassify Funktionalität jetzt hinter API und per Spring injizierbar (PortalU:SNS vs GS Soil:GEMET etc.)
+      </action>
+    </release>
+
+    <release version="1.4.1" date="2009-07-17" description="Release">
+      <action type="add">
+        Installationsassistent und Maven2 Kompatibilität
+      </action>
+      <action type="fix">
+        fixed admin webapp (now admin-step1-sns instead of -webservice)
+      </action>
+    </release>
+
+    <release version="1.4.0" date="2009-07-03" description="Umstellung">
+      <action type="update">
+        Umstellung auf Maven 2
+      </action>
+    </release>
+
+    <release version="1.3" date="2009-04-02" description="Release InGrid2.0">
+      <action type="add">
+        Provider werden jetzt in der Adminoberfläche aktualisiert und korrekt angezeigt
+      </action>
+      <action type="add">
+        add ingrid-authentication to dependencies
+      </action>
+      <action type="add" issue="INGRID-1607">
+        iPlug sendet Version und Release Datum an iBus. Diese wird in der iBus Admin UI dargestellt.
+      </action>
+      <action type="update">
+        Parameter ignoreCase bei autoclassify Methoden jetzt immer auf "false" statt "true"
+      </action>
+    </release>
+
+    <release version="1.1.3" date="2007-10-12" description="Release">
+      <action type="update">
+        Umstellung auf SNS Version 2.1
+      </action>
+      <action type="fix">
+        Erhoehung der Zuverlaessigkeit bei Reconnects
+      </action>
+    </release>
+
+    <release version="1.1.2" date="2007-10-10" description="Fix-Release">
+      <action type="fix">
+        Beachte Proxies, die kein EOF senden
+      </action>
+      <action type="fix">
+        Behebe erneute Anmeldung nach Herunterfahren
+      </action>
+    </release>
+
+    <release version="1.1.1" date="2007-08-31" description="Fix-Release">
+      <action type="update">
+        Verbesserung der Kommunikationskomponente.
+      </action>
+      <action type="add">
+        ProxyUser und ProxyPassword werden jetzt über Konfigurationsdatei gesetzt.
+      </action>
+      <action type="update">
+        Eine Http-Proxy Verbindung kann auch ohne Username und Password aufgebaut werden.
+      </action>
+    </release>
+
+    <release version="1.1.0" date="2007-08-01" description="Initial-Release">
+      <action type="update">
+        Austausch JXTA-Kommunikation gegen TCP/IP-Kommunikation
+      </action>
+    </release>
+  </body>
+</document>

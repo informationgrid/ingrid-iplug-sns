@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  **************************************************-
+  Ingrid iPlug SNS
+  ==================================================
+  Copyright (C) 2014 wemove digital solutions GmbH
+  ==================================================
+  Licensed under the EUPL, Version 1.1 or – as soon they will be
+  approved by the European Commission - subsequent versions of the
+  EUPL (the "Licence");
+  
+  You may not use this work except in compliance with the Licence.
+  You may obtain a copy of the Licence at:
+  
+  http://ec.europa.eu/idabc/eupl5
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the Licence is distributed on an "AS IS" basis,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the Licence for the specific language governing permissions and
+  limitations under the Licence.
+  **************************************************#
+  -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd"
+    default-init-method="init" default-destroy-method="destroy">
+
+    <!-- PortalU: always commit these ones to svn due to tests ! -->
+    <bean id="thesaurusService" class="de.ingrid.external.sns.SNSService" />
+	<bean id="gazetteerService" class="de.ingrid.external.wfs.WFSService" />
+	<bean id="fullClassifyService" class="de.ingrid.external.sns.SNSService" />
+	<bean id="chronicleService" class="de.ingrid.external.sns.SNSService" />
+
+    <!-- GS Soil: activate these ones on GS Soil server ! -->
+    <!-- bean id="thesaurusService" class="org.edisoft.eu.gssoil.semanticservice.thesaurus.ThesaurusServiceImpl" />
+    <bean id="gazetteerService" class="org.edisoft.eu.gssoil.semanticservice.gazetteer.GazetteerServiceImpl" />
+    <bean id="fullClassifyService" class="org.edisoft.eu.gssoil.semanticservice.classify.FullClassifyServiceImpl" /-->
+
+    <!-- Properties for services above ! ONLY USED IN SNS IPLUG ! -->
+    <util:map id="servicesProperties">
+        <!-- Portal "Advanced Search/Gazetteer initial lookup", search case insensitive or not -->
+        <!-- PortalU.SNS:false / GS Soil.gazetteerService:true -> always commit false to svn ! -->
+        <entry key="gazetteerService.getLocationsFromText.ignoreCase" value="false"/>
+    </util:map>
+</beans>
