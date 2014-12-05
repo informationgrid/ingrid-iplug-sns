@@ -11,8 +11,8 @@
   <version>3.5.0-SNAPSHOT</version>
   <name>Ingrid iPlug SNS</name>
   <scm>
-    <connection>scm:svn:https://harrison.its-technidata.de:444/svn/ingrid/ingrid-iplug-sns/trunk</connection>
-    <developerConnection>scm:svn:https://harrison.its-technidata.de:444/svn/ingrid/ingrid-iplug-sns/trunk</developerConnection>
+    <connection>scm:git:git@github.com:informationgrid/ingrid-iplug-sns.git</connection>
+    <developerConnection>scm:git:git@github.com:informationgrid/ingrid-iplug-sns.git</developerConnection>
   </scm>
 
   <!-- ==================== DEPENDENCY MANAGEMENT ==================== -->
@@ -105,7 +105,7 @@
         <repository>
             <id>de.ingrid.all</id>
 			<name>InGrid Repo Maven</name>
-			<url>http://harrison.its-technidata.de/archiva/repository/ingrid-all</url>
+			<url>https://dev.informationgrid.eu/archiva/repository/ingrid-all</url>
         </repository>
     </repositories>
   <build>
@@ -117,8 +117,8 @@
         <configuration>
           <archive>
             <manifestEntries>
-              <!--  
-                one of these: 
+              <!--
+                one of these:
                 IPLUG_SE, IPLUG_DSC, IPLUG_SNS, IPLUG_TAMINO, IPLUG_FPN, IPLUG_G2K, IPLUG_CSW, IPLUG_CSW_DSC, OTHER
                 see ingrid-utils:de.ingrid.utils.metadata.IPlugType
               -->
