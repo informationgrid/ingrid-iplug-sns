@@ -8,11 +8,12 @@
   <groupId>de.ingrid</groupId>
   <artifactId>ingrid-iplug-sns</artifactId>
   <packaging>jar</packaging>
-  <version>3.5.0-SNAPSHOT</version>
+  <version>3.5.0</version>
   <name>Ingrid iPlug SNS</name>
   <scm>
     <connection>scm:git:git@github.com:informationgrid/ingrid-iplug-sns.git</connection>
     <developerConnection>scm:git:git@github.com:informationgrid/ingrid-iplug-sns.git</developerConnection>
+    <tag>ingrid-iplug-sns-3.5.0</tag>
   </scm>
 
   <!-- ==================== DEPENDENCY MANAGEMENT ==================== -->
