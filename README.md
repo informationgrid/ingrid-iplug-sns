@@ -61,8 +61,12 @@ and import project into eclipse.
 
 ### Debug under eclipse
 
-TBD
-
+- call `mvn war:exploded` to extract webapp into target directory
+- copy content of `target/ingrid-iplug-sns-<version>` to `./webapp/step1`
+- set up a java application Run Configuration with start class `de.ingrid.iplug.PlugServer`
+- add the program attributes: `--descriptor src/test/resources/communication.xml --plugdescription src/test/resources/plugdescription.xml`
+- add `tools.jar` from JDK-lib-directory to the Classpath
+- the plugdescription.xml file contains the port of the administration page, which can be changed
 
 Support
 -------
