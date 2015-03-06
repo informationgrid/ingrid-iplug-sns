@@ -2,7 +2,7 @@
   <parent>
     <artifactId>ingrid-releases-pom</artifactId>
     <groupId>de.ingrid</groupId>
-    <version>3.5.0</version>
+    <version>3.5.1</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>de.ingrid</groupId>
@@ -15,30 +15,27 @@
     <developerConnection>scm:git:git@github.com:informationgrid/ingrid-iplug-sns.git</developerConnection>
     <tag>HEAD</tag>
   </scm>
-
   <!-- ==================== DEPENDENCY MANAGEMENT ==================== -->
   <!-- DEPENDENCY MANAGEMENT FOR USING OTHER VERSIONS (needed for assembly). COMMENT IF USING VERSIONS FROM PARENT -->
-<!--
   <dependencyManagement>
     <dependencies>
       <dependency>
-        ...
+        <groupId>xerces</groupId>
+        <artifactId>xercesImpl</artifactId>
+        <version>2.10.0</version>
       </dependency>
-    </dependencies>
-  </dependencyManagement>
--->
-  <dependencyManagement>
-    <dependencies>
-        <dependency>
-          <groupId>xerces</groupId>
-          <artifactId>xercesImpl</artifactId>
-          <version>2.10.0</version>
-        </dependency>
-        <dependency>
-          <groupId>xml-apis</groupId>
-          <artifactId>xml-apis</artifactId>
-          <version>1.4.01</version>
-        </dependency>
+      <dependency>
+        <groupId>xml-apis</groupId>
+        <artifactId>xml-apis</artifactId>
+        <version>1.4.01</version>
+      </dependency>
+      <dependency>
+        <groupId>de.ingrid</groupId>
+        <artifactId>ingrid-version-management-pom</artifactId>
+        <version>3.6.0-SNAPSHOT</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
     </dependencies>
   </dependencyManagement>
   <!-- ==================== DEPENDENCIES ==================== -->
@@ -46,7 +43,8 @@
     <dependency>
       <groupId>de.ingrid</groupId>
       <artifactId>ingrid-iplug-admin-step1-sns</artifactId>
-	  <type>war</type>
+      <version>3.5.0</version>
+      <type>war</type>
     </dependency>
     <dependency>
       <groupId>de.ingrid</groupId>
@@ -92,12 +90,12 @@
   </dependencies>
   <!-- NEVER DELETE: InGrid repo needed for download of parent pom if not present ! -->
   <repositories>
-        <repository>
-            <id>de.ingrid.all</id>
-			<name>InGrid Repo Maven</name>
-			<url>https://dev.informationgrid.eu/archiva/repository/ingrid-all</url>
-        </repository>
-    </repositories>
+    <repository>
+      <id>de.ingrid.all</id>
+      <name>InGrid Repo Maven</name>
+      <url>https://dev.informationgrid.eu/archiva/repository/ingrid-all</url>
+    </repository>
+  </repositories>
   <build>
     <finalName>${project.artifactId}-${project.version}</finalName>
     <plugins>
@@ -119,23 +117,29 @@
       </plugin>
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
-            <!-- Add Type of Component to Manifest of Installer for Upgrade Server -->
-            <configuration>
-                <archive>
-                  <manifestEntries>
-                      <ingridComponentType>IPLUG_SNS</ingridComponentType>
-                </manifestEntries>
-                </archive>
-            </configuration>
+        <!-- Add Type of Component to Manifest of Installer for Upgrade Server -->
+        <configuration>
+          <archive>
+            <manifestEntries>
+              <ingridComponentType>IPLUG_SNS</ingridComponentType>
+            </manifestEntries>
+          </archive>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <phase>package</phase>
+          </execution>
+        </executions>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-		  <skip>true</skip>
-          <!--excludes>
-            <exclude>**/SNSControllerTest.java</exclude>
-          </excludes-->
+          <skip>true</skip>
+          <!--excludes><exclude>**/SNSControllerTest.java</exclude></excludes-->
         </configuration>
       </plugin>
     </plugins>
@@ -145,61 +149,44 @@
       <id>gssoil</id>
       <build>
         <plugins>
-      <!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
-      <!-- unzip all GSSoil Thesaurus Gazetteer resources and libs to target -->
-      <!-- USE THIS IF YOU SUPPLY IPLUG FOR GS SOIL -->
-      <!-- ADD THESE TO YOUR ECLIPSE libs / sourcepath to run GS Soil unit tests -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>unpack-gssoil</id>
-            <phase>package</phase>
-            <goals>
-              <goal>unpack</goal>
-            </goals>
-            <configuration>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>gssoil</groupId>
-                  <artifactId>thesaurus-gazetteer-resources</artifactId>
-                  <version>4.0.1</version>
-                  <type>zip</type>
-                  <outputDirectory>${project.build.directory}/gssoil/conf</outputDirectory>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>gssoil</groupId>
-                  <artifactId>thesaurus-gazetteer-libs</artifactId>
-                  <version>4.0.1</version>
-                  <type>zip</type>
-                  <outputDirectory>${project.build.directory}/gssoil/lib</outputDirectory>
-                </artifactItem>
-              </artifactItems>
-            </configuration>
-          </execution>
-<!-- NO SEPARATE REPO LIBS FOR GSSOIL ! WE EXTRACT EVERYTHING FROM ZIP FILE (see above, "thesaurus-gazetteer-libs") !
+          <!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
+          <!-- unzip all GSSoil Thesaurus Gazetteer resources and libs to target -->
+          <!-- USE THIS IF YOU SUPPLY IPLUG FOR GS SOIL -->
+          <!-- ADD THESE TO YOUR ECLIPSE libs / sourcepath to run GS Soil unit tests -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>unpack-gssoil</id>
+                <phase>package</phase>
+                <goals>
+                  <goal>unpack</goal>
+                </goals>
+                <configuration>
+                  <artifactItems>
+                    <artifactItem>
+                      <groupId>gssoil</groupId>
+                      <artifactId>thesaurus-gazetteer-resources</artifactId>
+                      <version>4.0.1</version>
+                      <type>zip</type>
+                      <outputDirectory>${project.build.directory}/gssoil/conf</outputDirectory>
+                    </artifactItem>
+                    <artifactItem>
+                      <groupId>gssoil</groupId>
+                      <artifactId>thesaurus-gazetteer-libs</artifactId>
+                      <version>4.0.1</version>
+                      <type>zip</type>
+                      <outputDirectory>${project.build.directory}/gssoil/lib</outputDirectory>
+                    </artifactItem>
+                  </artifactItems>
+                </configuration>
+              </execution>
+              <!-- NO SEPARATE REPO LIBS FOR GSSOIL ! WE EXTRACT EVERYTHING FROM ZIP FILE (see above, "thesaurus-gazetteer-libs") !
 SO WE CAN JUST UPDATE LIBS FROM EDISOFT DELIVERIES !
-          <execution>
-            <id>copy-gssoil</id>
-            <phase>package</phase>
-            <goals>
-              <goal>copy</goal>
-            </goals>
-            <configuration>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>net.htmlparser.jericho</groupId>
-                  <artifactId>jericho-html</artifactId>
-                  <version>3.1</version>
-                  <outputDirectory>${project.build.directory}/gssoil/lib</outputDirectory>
-                </artifactItem>
-              </artifactItems>
-            </configuration>
-          </execution>
--->
-        </executions>
-      </plugin>
+          <execution><id>copy-gssoil</id><phase>package</phase><goals><goal>copy</goal></goals><configuration><artifactItems><artifactItem><groupId>net.htmlparser.jericho</groupId><artifactId>jericho-html</artifactId><version>3.1</version><outputDirectory>${project.build.directory}/gssoil/lib</outputDirectory></artifactItem></artifactItems></configuration></execution>-->
+            </executions>
+          </plugin>
         </plugins>
       </build>
     </profile>
