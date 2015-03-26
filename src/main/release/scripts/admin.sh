@@ -65,14 +65,6 @@ if [ "$JAVA_HOME" = "" ]; then
 fi
 
 JAVA=$JAVA_HOME/bin/java
-JAVA_HEAP_MAX=-Xmx1000m 
-
-# check envvars which might override default args
-if [ "$INGRID_HEAPSIZE" != "" ]; then
-  #echo "run with heapsize $INGRID_HEAPSIZE"
-  JAVA_HEAP_MAX="-Xmx""$INGRID_HEAPSIZE""m"
-  #echo $JAVA_HEAP_MAX
-fi
 
 # CLASSPATH initially contains $INGRID_CONF_DIR, or defaults to $INGRID_HOME/conf
 CLASSPATH=${INGRID_CONF_DIR:=$INGRID_HOME/conf}
@@ -103,5 +95,7 @@ if expr `uname` : 'CYGWIN*' > /dev/null; then
   CLASSPATH=`cygpath -p -w "$CLASSPATH"`
 fi
 
+INGRID_OPTS="$INGRID_OPTS -XX:+UseG1GC -XX:+UseStringDeduplication -XX:NewRatio=3"
+
 # run it
-exec "$JAVA" $JAVA_HEAP_MAX $INGRID_OPTS -classpath "$CLASSPATH" $CLASS 8082 webapp
+exec "$JAVA" $INGRID_OPTS -classpath "$CLASSPATH" $CLASS 8082 webapp

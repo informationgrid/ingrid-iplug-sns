@@ -167,14 +167,6 @@ startIplug()
   fi
   
   JAVA=$JAVA_HOME/bin/java
-  # needed for GSSoil implementations of Thesaurus/Gazetteer API (Edisoft)
-  JAVA_HEAP_MAX="-Xms256m -Xmx512m -DXX:PermSize=384m -DXX:MaxPermSize=384m -Xss2048k"
-  
-  # check envvars which might override default args
-  if [ "$INGRID_HEAPSIZE" != "" ]; then
-    JAVA_HEAP_MAX="-Xmx""$INGRID_HEAPSIZE""m"
-    echo "run with heapsize $JAVA_HEAP_MAX"
-  fi
 
   # CLASSPATH initially contains $INGRID_CONF_DIR, or defaults to $INGRID_HOME/conf
   CLASSPATH=${CLASSPATH}:${INGRID_CONF_DIR:=$INGRID_HOME/conf}
@@ -196,11 +188,11 @@ startIplug()
   fi
 
   export CLASSPATH="$CLASSPATH"
-  INGRID_OPTS="$INGRID_OPTS -Dingrid_home=$INGRID_HOME -Dfile.encoding=UTF8"
+  INGRID_OPTS="$INGRID_OPTS -Dingrid_home=$INGRID_HOME -Dfile.encoding=UTF8 -XX:+UseG1GC -XX:+UseStringDeduplication -XX:NewRatio=3"
   CLASS=de.ingrid.iplug.PlugServer
   
   # run it
-  exec nohup "$JAVA" $JAVA_HEAP_MAX $INGRID_OPTS $CLASS --plugdescription conf/plugdescription.xml --descriptor conf/communication.xml > console.log &
+  exec nohup "$JAVA" $INGRID_OPTS $CLASS --plugdescription conf/plugdescription.xml --descriptor conf/communication.xml > console.log &
   
   echo "ingrid component ($INGRID_HOME) started."
   echo $! > $PID
