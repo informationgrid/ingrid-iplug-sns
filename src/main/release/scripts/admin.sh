@@ -95,7 +95,23 @@ if expr `uname` : 'CYGWIN*' > /dev/null; then
   CLASSPATH=`cygpath -p -w "$CLASSPATH"`
 fi
 
-INGRID_OPTS="$INGRID_OPTS -XX:+UseG1GC -XX:+UseStringDeduplication -XX:NewRatio=3"
+INGRID_OPTS="$INGRID_OPTS -XX:+UseG1GC -XX:NewRatio=1"
 
+# check java version
+JAVA_VERSION=`java -version 2>&1 |awk 'NR==1{ gsub(/"/,""); print $3 }'`
+JAVA_VERSION_PART_0=`echo $JAVA_VERSION | awk '{split($0, array, "-")} END{print array[1]}'`
+JAVA_VERSION_PART_1=`echo $JAVA_VERSION_PART_0 | awk '{split($0, array, "_")} END{print array[1]}'`
+JAVA_VERSION_PART_2=`echo $JAVA_VERSION_PART_0 | awk '{split($0, array, "_")} END{print array[2]}'`
+if [[ "$JAVA_VERSION_PART_1" > "1.7.0" ]]; then
+	LENGTH="${#JAVA_VERSION_PART_2}"
+	if [[ "$LENGTH" < "2" ]]; then
+		JAVA_VERSION_PART_2="0"$JAVA_VERSION_PART_2
+	fi
+	if [[ "$JAVA_VERSION_PART_2" > "19" ]]; then
+		INGRID_OPTS="$INGRID_OPTS -XX:+UseStringDeduplication"
+	elif [[ "$JAVA_VERSION_PART_1" > "1.8.0" ]]; then
+		INGRID_OPTS="$INGRID_OPTS -XX:+UseStringDeduplication"
+	fi
+fi
 # run it
 exec "$JAVA" $INGRID_OPTS -classpath "$CLASSPATH" $CLASS 8082 webapp
