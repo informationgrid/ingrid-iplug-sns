@@ -47,6 +47,11 @@
       <outputDirectory>/</outputDirectory>
     </fileSet>
     <fileSet>
+      <directory>target/installer/resources/scripts</directory>
+      <outputDirectory>${project.artifactId}-${project.version}/</outputDirectory>
+      <lineEnding>unix</lineEnding>
+    </fileSet>
+    <fileSet>
       <directory>target/site</directory>
       <outputDirectory>${project.build.finalName}/doc</outputDirectory>
     </fileSet>
