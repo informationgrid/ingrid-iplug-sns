@@ -2,7 +2,7 @@
   <parent>
     <artifactId>ingrid-releases-pom</artifactId>
     <groupId>de.ingrid</groupId>
-    <version>3.6.0-SNAPSHOT</version>
+    <version>3.6.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>de.ingrid</groupId>
@@ -32,7 +32,7 @@
       <dependency>
         <groupId>de.ingrid</groupId>
         <artifactId>ingrid-version-management-pom</artifactId>
-        <version>3.6.0-SNAPSHOT</version>
+        <version>3.6.0</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
