@@ -181,7 +181,7 @@ startIplug()
   fi
 
   export CLASSPATH="$CLASSPATH"
-  INGRID_OPTS="$INGRID_OPTS -Dingrid_home=$INGRID_HOME"
+  INGRID_OPTS="-Dingrid_home=$INGRID_HOME $INGRID_OPTS"
   CLASS=de.ingrid.iplug.PlugServer
 
   # run it
