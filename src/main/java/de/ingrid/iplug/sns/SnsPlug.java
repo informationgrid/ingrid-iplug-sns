@@ -67,9 +67,13 @@ public class SnsPlug implements IPlug {
 
     private String fLanguage;
 
-    private String fServiceUrl;
+    private String fServiceUrlThesaurus;
 
 	private ProcessorPipe _processorPipe = new ProcessorPipe();
+
+	private String fServiceUrlGazetteer;
+
+	private String fServiceUrlChronicle;
 
     private static final long serialVersionUID = SnsPlug.class.getName().hashCode();
 
@@ -143,7 +147,7 @@ public class SnsPlug implements IPlug {
                     hitsTemp = this.fSnsController.getTopicForId(getSearchTerm(query), filter, this.fPlugId, lang, totalSize);
                     break;
                 case Topic.ANNIVERSARY_FROM_TOPIC:
-                    hitsTemp = this.fSnsController.getAnniversaryFromTopic(getSearchTerm(query), Integer.MAX_VALUE,
+                    hitsTemp = this.fSnsController.getAnniversaryFromTopic(getSearchTerm(query), lang, Integer.MAX_VALUE,
                             this.fPlugId, totalSize);
                     break;
                 case Topic.SIMILARTERMS_FROM_TOPIC:
@@ -309,15 +313,18 @@ public class SnsPlug implements IPlug {
         this.fUserName = (String) plugDescription.get("username");
         this.fPassWord = (String) plugDescription.get("password");
         this.fLanguage = (String) plugDescription.get("language");
-        this.fServiceUrl = (String) plugDescription.get("serviceUrl");
+        this.fServiceUrlThesaurus = (String) plugDescription.get("serviceUrl.thesaurus");
+        this.fServiceUrlGazetteer = (String) plugDescription.get("serviceUrl.gazetteer");
+        this.fServiceUrlChronicle = (String) plugDescription.get("serviceUrl.chronicle");
         this.fMaximalAnalyzedWord = plugDescription.getInt("maxWordAnalyzing");
         String nativeKeyPrefix = (String) plugDescription.get("nativeKeyPrefix");
 
         SNSClient snsClient = null;
-        if ((this.fServiceUrl == null) || (this.fServiceUrl.trim().equals(""))) {
+        if ((this.fServiceUrlThesaurus == null) || (this.fServiceUrlThesaurus.trim().equals(""))) {
             snsClient = new SNSClient(this.fUserName, this.fPassWord, this.fLanguage);
         } else {
-            snsClient = new SNSClient(this.fUserName, this.fPassWord, this.fLanguage, new URL(this.fServiceUrl));
+            snsClient = new SNSClient(this.fUserName, this.fPassWord, this.fLanguage, new URL(this.fServiceUrlThesaurus)
+            , new URL(this.fServiceUrlGazetteer), new URL(this.fServiceUrlChronicle));
         }
 
         snsClient.setTimeout(180000);
