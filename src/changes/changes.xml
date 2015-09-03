@@ -28,6 +28,13 @@
     <author email="joachim@wemove.com">Joachim Müller</author>
   </properties>
   <body>
+  
+    <release version="3.6.1-SNAPSHOT" date="2015-xx-xx" description="Release 3.6.1">
+      <action type="update" dev="wemove" issue="REDMINE-15">
+        Remove all references to PortalU.
+      </action>
+    </release>
+    
     <release version="3.6.0.1" date="2015-06-25" description="Bugfix-Release 3.6.0.1">
       <action type="fix" dev="wemove">
         Correct usage of proxy settings, when configured through VM-options.
