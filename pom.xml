@@ -2,7 +2,7 @@
   <parent>
     <artifactId>ingrid-releases-pom</artifactId>
     <groupId>de.ingrid</groupId>
-    <version>3.6.0</version>
+    <version>3.6.0.3</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>de.ingrid</groupId>
@@ -43,7 +43,7 @@
     <dependency>
       <groupId>de.ingrid</groupId>
       <artifactId>ingrid-iplug-admin-step1-sns</artifactId>
-      <version>3.5.0</version>
+      <version>3.6.1-SNAPSHOT</version>
       <type>war</type>
     </dependency>
     <dependency>
@@ -136,6 +136,15 @@
         <configuration>
           <skip>true</skip>
           <!--excludes><exclude>**/SNSControllerTest.java</exclude></excludes-->
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>external.atlassian.jgitflow</groupId>
+        <artifactId>jgitflow-maven-plugin</artifactId>
+        <version>1.0-m5.1</version>
+        <configuration>
+          <defaultOriginUrl>https://github.com/informationgrid/ingrid-iplug-sns</defaultOriginUrl>
+          <noDeploy>true</noDeploy>
         </configuration>
       </plugin>
     </plugins>
