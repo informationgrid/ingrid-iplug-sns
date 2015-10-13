@@ -98,10 +98,14 @@ public class SNSController {
         this.fNativeKeyPrefix = nativeKeyPrefix;
 
         SpringUtil springUtil = new SpringUtil("spring/external-services.xml");
-        this.thesaurusService = springUtil.getBean("thesaurusService", _thesaurusService);
-        this.gazetteerService = springUtil.getBean("gazetteerService", _gazetteerService);
-        this.chronicleService = springUtil.getBean("chronicleService", _chronicleService);
-        this.fullClassifyService = springUtil.getBean("fullClassifyService", _fullClassifyService);
+        try {
+            this.thesaurusService = springUtil.getBean("thesaurusService", _thesaurusService);
+            this.gazetteerService = springUtil.getBean("gazetteerService", _gazetteerService);
+            this.chronicleService = springUtil.getBean("chronicleService", _chronicleService);
+            this.fullClassifyService = springUtil.getBean("fullClassifyService", _fullClassifyService);
+        } catch (Exception ex) {
+            log.error( "Error initializing beans", ex ); 
+        }
         
         mappingBundle = ResourceBundle.getBundle("mapping");
         
