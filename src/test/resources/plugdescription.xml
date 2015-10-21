@@ -170,5 +170,5 @@
     <string>off</string>
   </list>
   <string>IPLUG_ADMIN_PASSWORD</string>
-  <string>admin</string>
+  <string>$2a$10$ak1534iBHvHampkl94IMTup/S9DjNkzBz0CzamHWD4D2ZYK7fGv9e</string>
 </de.ingrid.utils.PlugDescription>

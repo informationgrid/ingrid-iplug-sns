@@ -36,6 +36,9 @@
       <action type="update" dev="wemove" issue="REDMINE-57">
         Use new interface for SNS related search.
       </action>
+      <action type="update" dev="wemove" issue="REDMINE-106">
+        Use encrypted password for web interface.
+      </action>
     </release>
     
     <release version="3.6.0.1" date="2015-06-25" description="Bugfix-Release 3.6.0.1">

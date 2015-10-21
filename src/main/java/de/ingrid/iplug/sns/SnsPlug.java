@@ -316,7 +316,7 @@ public class SnsPlug implements IPlug {
         this.fServiceUrlThesaurus = (String) plugDescription.get("serviceUrl.thesaurus");
         this.fServiceUrlGazetteer = (String) plugDescription.get("serviceUrl.gazetteer");
         this.fServiceUrlChronicle = (String) plugDescription.get("serviceUrl.chronicle");
-        this.fMaximalAnalyzedWord = plugDescription.getInt("maxWordAnalyzing");
+        this.fMaximalAnalyzedWord = 1000; // dummy number since SNS analyzes all now
         String nativeKeyPrefix = (String) plugDescription.get("nativeKeyPrefix");
 
         SNSClient snsClient = null;

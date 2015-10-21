@@ -185,7 +185,7 @@ startIplug()
   CLASS=de.ingrid.iplug.PlugServer
 
   # run it
-  exec nohup "$JAVA" $INGRID_OPTS $CLASS --plugdescription conf/plugdescription.xml --descriptor conf/communication.xml > console.log &
+  exec nohup "$JAVA" $INGRID_OPTS $CLASS $PARAMETER > console.log &
   
   echo "ingrid component ($INGRID_HOME) started."
   echo $! > $PID
@@ -204,6 +204,7 @@ fi
 
 case "$1" in
   start)
+    PARAMETER="--plugdescription conf/plugdescription.xml --descriptor conf/communication.xml"
     startIplug
     ;;
   stop)
@@ -213,6 +214,7 @@ case "$1" in
     stopNoExitIplug
     echo "sleep 3 sec ..."
     sleep 3
+    PARAMETER="--plugdescription conf/plugdescription.xml --descriptor conf/communication.xml"
     startIplug
     ;;
   status)
@@ -228,8 +230,13 @@ case "$1" in
       echo "process is not running. Exit."
     fi
     ;;
+  resetPassword)
+    PARAMETER="--resetPassword admin"
+    startIplug
+    echo "Resetted password to 'admin' ... please restart iPlug."
+    ;;
   *)
-    echo "Usage: $0 {start|stop|restart|status}"
+    echo "Usage: $0 {start|stop|restart|status|resetPassword}"
     exit 1
     ;;
 esac
