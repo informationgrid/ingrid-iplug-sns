@@ -2,13 +2,13 @@
   <parent>
     <artifactId>ingrid-releases-pom</artifactId>
     <groupId>de.ingrid</groupId>
-    <version>3.6.0</version>
+    <version>3.6.1</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>de.ingrid</groupId>
   <artifactId>ingrid-iplug-sns</artifactId>
   <packaging>jar</packaging>
-  <version>3.6.1-SNAPSHOT</version>
+  <version>3.6.1</version>
   <name>Ingrid iPlug SNS</name>
   <scm>
     <connection>scm:git:git@github.com:informationgrid/ingrid-iplug-sns.git</connection>
@@ -29,13 +29,6 @@
         <artifactId>xml-apis</artifactId>
         <version>1.4.01</version>
       </dependency>
-      <dependency>
-        <groupId>de.ingrid</groupId>
-        <artifactId>ingrid-version-management-pom</artifactId>
-        <version>3.6.0</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
     </dependencies>
   </dependencyManagement>
   <!-- ==================== DEPENDENCIES ==================== -->
@@ -43,12 +36,13 @@
     <dependency>
       <groupId>de.ingrid</groupId>
       <artifactId>ingrid-iplug-admin-step1-sns</artifactId>
-      <version>3.5.0</version>
+      <version>3.6.1</version>
       <type>war</type>
     </dependency>
     <dependency>
       <groupId>de.ingrid</groupId>
       <artifactId>ingrid-iplug</artifactId>
+      <version>3.6.1</version>
       <exclusions>
         <exclusion>
           <groupId>opensymphony</groupId>
@@ -58,15 +52,17 @@
           <groupId>commons-betwixt</groupId>
           <artifactId>commons-betwixt</artifactId>
         </exclusion>
+        <!-- already included in jena-arq -->
+        <exclusion>
+          <groupId>commons-codec</groupId>
+          <artifactId>commons-codec</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
       <groupId>de.ingrid</groupId>
       <artifactId>ingrid-external-service-sns</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>de.ingrid</groupId>
-      <artifactId>ingrid-external-service-wfs</artifactId>
+      <version>3.6.1</version>
     </dependency>
     <!-- JENA libs for RDF support -->
     <dependency>
@@ -84,7 +80,7 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>3.8.1</version>
+      <version>4.11</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -142,53 +138,15 @@
           <!--excludes><exclude>**/SNSControllerTest.java</exclude></excludes-->
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>external.atlassian.jgitflow</groupId>
+        <artifactId>jgitflow-maven-plugin</artifactId>
+        <version>1.0-m5.1</version>
+        <configuration>
+          <defaultOriginUrl>https://github.com/informationgrid/ingrid-iplug-sns</defaultOriginUrl>
+          <noDeploy>true</noDeploy>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
-  <profiles>
-    <profile>
-      <id>gssoil</id>
-      <build>
-        <plugins>
-          <!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
-          <!-- unzip all GSSoil Thesaurus Gazetteer resources and libs to target -->
-          <!-- USE THIS IF YOU SUPPLY IPLUG FOR GS SOIL -->
-          <!-- ADD THESE TO YOUR ECLIPSE libs / sourcepath to run GS Soil unit tests -->
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-dependency-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>unpack-gssoil</id>
-                <phase>package</phase>
-                <goals>
-                  <goal>unpack</goal>
-                </goals>
-                <configuration>
-                  <artifactItems>
-                    <artifactItem>
-                      <groupId>gssoil</groupId>
-                      <artifactId>thesaurus-gazetteer-resources</artifactId>
-                      <version>4.0.1</version>
-                      <type>zip</type>
-                      <outputDirectory>${project.build.directory}/gssoil/conf</outputDirectory>
-                    </artifactItem>
-                    <artifactItem>
-                      <groupId>gssoil</groupId>
-                      <artifactId>thesaurus-gazetteer-libs</artifactId>
-                      <version>4.0.1</version>
-                      <type>zip</type>
-                      <outputDirectory>${project.build.directory}/gssoil/lib</outputDirectory>
-                    </artifactItem>
-                  </artifactItems>
-                </configuration>
-              </execution>
-              <!-- NO SEPARATE REPO LIBS FOR GSSOIL ! WE EXTRACT EVERYTHING FROM ZIP FILE (see above, "thesaurus-gazetteer-libs") !
-SO WE CAN JUST UPDATE LIBS FROM EDISOFT DELIVERIES !
-          <execution><id>copy-gssoil</id><phase>package</phase><goals><goal>copy</goal></goals><configuration><artifactItems><artifactItem><groupId>net.htmlparser.jericho</groupId><artifactId>jericho-html</artifactId><version>3.1</version><outputDirectory>${project.build.directory}/gssoil/lib</outputDirectory></artifactItem></artifactItems></configuration></execution>-->
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
 </project>
