@@ -31,6 +31,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 import org.apache.commons.logging.Log;
@@ -705,8 +706,14 @@ public class SNSController {
 
     /** Extract SNS instanceOf href from location ! */
     private static String getSNSInstanceOf(Location location) {
-    	String base = location.getId().substring(location.getId().lastIndexOf('/'));
-        String mappedType = mappingBundle.getString("gazetteer.de." + location.getTypeId());
+        String id = location.getId();
+        int indexOfSlash = id.lastIndexOf('/');
+    	String base = indexOfSlash != -1 ? location.getId().substring(indexOfSlash) : id;
+        String mappedType = location.getTypeId();
+        try {
+            mappedType = mappingBundle.getString("gazetteer.de." + location.getTypeId());
+        } catch(MissingResourceException ex) { /* ignore */}
+        
 		return base + "#" + mappedType;
     }
 
