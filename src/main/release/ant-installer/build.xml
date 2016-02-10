@@ -81,7 +81,7 @@
     <target name="ibus" description="Set configuration correctly for the iBus.">
         <echo>Schreibe iBus Konfiguration in communication.xml</echo>
         <xmlproperty file="${xml-communication}" prefix="plugXML"/>
-        <replace file="${xml-communication}" token="${plugXML.communication.client(name)}"                              value="${clientName}-admin"/>
+        <replace file="${xml-communication}" token="${plugXML.communication.client(name)}"                              value="${clientName}"/>
         <replace file="${xml-communication}" token="${plugXML.communication.client.connections.server(name)}"           value="${serverName}"/>
         <replace file="${xml-communication}" token="${plugXML.communication.client.connections.server.socket(ip)}"      value="${serverIp}"/>
         <replace file="${xml-communication}" token="${plugXML.communication.client.connections.server.socket(port)}"    value="${serverPort}"/>     
