@@ -36,6 +36,8 @@ import org.apache.commons.logging.LogFactory;
 import de.ingrid.external.sns.SNSClient;
 import de.ingrid.iplug.sns.utils.Topic;
 import de.ingrid.utils.IPlug;
+import de.ingrid.utils.IngridCall;
+import de.ingrid.utils.IngridDocument;
 import de.ingrid.utils.IngridHit;
 import de.ingrid.utils.IngridHitDetail;
 import de.ingrid.utils.IngridHits;
@@ -390,5 +392,10 @@ public class SnsPlug implements IPlug {
 
     public void close() throws Exception {
         // nothing to do.
+    }
+
+    @Override
+    public IngridDocument call(IngridCall targetInfo) throws Exception {
+        throw new RuntimeException( "call-function not implemented in SNS-iPlug" );
     }
 }
