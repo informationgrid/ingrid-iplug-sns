@@ -7,7 +7,7 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>ingrid-iplug-sns</artifactId>
   <packaging>jar</packaging>
-  <version>3.6.3-SNAPSHOT</version>
+  <version>3.6.2</version>
   <name>Ingrid iPlug SNS</name>
   <scm>
     <connection>scm:git:git@github.com:informationgrid/ingrid-iplug-sns.git</connection>
