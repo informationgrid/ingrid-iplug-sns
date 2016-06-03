@@ -29,6 +29,12 @@
   </properties>
   <body>
   
+    <release version="3.6.2.1-SNAPSHOT" date="2016-xx-xx" description="Release 3.6.2.1">
+      <action type="fix" dev="wemove" issue="REDMINE-319">
+          Portal: Fixed similar terms request with special characters.
+      </action>
+    </release>
+    
     <release version="3.6.2" date="2016-05-13" description="Release 3.6.2">
       <action type="update" dev="wemove" issue="REDMINE-303">
         Updated URLs to HTTPS for SNS service.
