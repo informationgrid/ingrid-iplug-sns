@@ -32,16 +32,25 @@ import java.net.URL;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+import com.tngtech.configbuilder.ConfigBuilder;
+
+import de.ingrid.admin.JettyStarter;
 import de.ingrid.external.sns.SNSClient;
+import de.ingrid.iplug.HeartBeatPlug;
+import de.ingrid.iplug.PlugDescriptionFieldFilters;
 import de.ingrid.iplug.sns.utils.Topic;
-import de.ingrid.utils.IPlug;
 import de.ingrid.utils.IngridCall;
 import de.ingrid.utils.IngridDocument;
 import de.ingrid.utils.IngridHit;
 import de.ingrid.utils.IngridHitDetail;
 import de.ingrid.utils.IngridHits;
 import de.ingrid.utils.PlugDescription;
+import de.ingrid.utils.metadata.IMetadataInjector;
+import de.ingrid.utils.processor.IPostProcessor;
+import de.ingrid.utils.processor.IPreProcessor;
 import de.ingrid.utils.processor.ProcessorPipe;
 import de.ingrid.utils.processor.ProcessorPipeFactory;
 import de.ingrid.utils.query.FieldQuery;
@@ -53,349 +62,356 @@ import de.ingrid.utils.tool.SNSUtil;
 /**
  * Semantic Network Service as IPlug.
  */
-public class SnsPlug implements IPlug {
+@Service
+public class SnsPlug extends HeartBeatPlug {
 
-    private static Log log = LogFactory.getLog(SnsPlug.class);
+	private static Log log = LogFactory.getLog(SnsPlug.class);
 
-    private SNSController fSnsController;
+	public static Configuration conf;
 
-    private int fMaximalAnalyzedWord;
+	private SNSController fSnsController;
 
-    private String fPlugId;
+	private int fMaximalAnalyzedWord;
 
-    private String fUserName;
+	private String fPlugId;
 
-    private String fPassWord;
-
-    private String fLanguage;
-
-    private String fServiceUrlThesaurus;
+	private String fLanguage;
 
 	private ProcessorPipe _processorPipe = new ProcessorPipe();
 
-	private String fServiceUrlGazetteer;
+	private static final long serialVersionUID = SnsPlug.class.getName().hashCode();
 
-	private String fServiceUrlChronicle;
+	/**
+	 * Default constructor needed for server instantiation.
+	 */
+	@Autowired
+	public SnsPlug(final IMetadataInjector[] metadataInjectors, final IPreProcessor[] preProcessors,
+			final IPostProcessor[] postProcessors) {
+		super(30000, new PlugDescriptionFieldFilters(), metadataInjectors, preProcessors, postProcessors);
+	}
 
-    private static final long serialVersionUID = SnsPlug.class.getName().hashCode();
+	/**
+	 * Constructor with full description as IPlug.
+	 * 
+	 * @param description
+	 *            The description as IPlug.
+	 * @throws Exception
+	 */
+	// public SnsPlug(PlugDescription description) throws Exception {
+	// configure(description);
+	// }
 
-    /**
-     * Default constructor needed for server instantiation.
-     */
-    public SnsPlug() {
-        // Default constructor for server instantiation.
-    }
+	/**
+	 * @see de.ingrid.utils.IPlug#search(de.ingrid.utils.query.IngridQuery, int,
+	 *      int)
+	 */
+	public IngridHits search(IngridQuery query, int start, int length) throws Exception {
+		if (log.isDebugEnabled()) {
+			log.debug("incomming query : " + query.toString());
+		}
 
-    /**
-     * Constructor with full description as IPlug.
-     * 
-     * @param description
-     *            The description as IPlug.
-     * @throws Exception
-     */
-    public SnsPlug(PlugDescription description) throws Exception {
-        configure(description);
-    }
+		IngridHits ret = new IngridHits(this.fPlugId, 0, new IngridHit[0], true);
+		_processorPipe.preProcess(query);
 
-    /**
-     * @see de.ingrid.utils.IPlug#search(de.ingrid.utils.query.IngridQuery, int, int)
-     */
-    public IngridHits search(IngridQuery query, int start, int length)
-			throws Exception {
-        if (log.isDebugEnabled()) {
-            log.debug("incomming query : " + query.toString());
-        }
+		if (containsSNSDataType(query.getDataTypes())) {
+			int type = getRequestType(query);
 
-        IngridHits ret = new IngridHits(this.fPlugId, 0, new IngridHit[0], true);
-        _processorPipe.preProcess(query);
-        
-        if (containsSNSDataType(query.getDataTypes())) {
-            int type = getRequestType(query);
+			final String lang = getQueryLang(query);
+			final boolean expired = getExpiredField(query);
+			final boolean includeUse = getIncludeUseField(query);
+			int[] totalSize = new int[1];
+			totalSize[0] = 0;
 
-            final String lang = getQueryLang(query);
-            final boolean expired = getExpiredField(query);
-            final boolean includeUse = getIncludeUseField(query);
-            int[] totalSize = new int[1];
-            totalSize[0] = 0;
+			try {
+				String filter = null;
+				Topic[] hitsTemp = null;
+				switch (type) {
+				case Topic.TOPIC_FROM_TERM:
+					// ONLY RETURNS THESA TOPICS !!!
+					hitsTemp = this.fSnsController.getTopicsForTerm(getSearchTerm(query), start, Integer.MAX_VALUE,
+							this.fPlugId, totalSize, lang, expired, includeUse);
+					break;
+				case Topic.TOPIC_FROM_TEXT:
+					filter = (String) query.get("filter");
+					hitsTemp = this.fSnsController.getTopicsForText(getSearchTerm(query), this.fMaximalAnalyzedWord,
+							filter, this.fPlugId, lang, totalSize, expired);
+					break;
+				case Topic.TOPIC_FROM_URL:
+					filter = (String) query.get("filter");
+					hitsTemp = this.fSnsController.getTopicsForURL(getSearchTerm(query), this.fMaximalAnalyzedWord,
+							filter, this.fPlugId, lang, totalSize);
+					break;
+				case Topic.TOPIC_FROM_TOPIC:
+					// ONLY CALLED FROM EXTENDED SEARCH THESAURUS !!!!
+					filter = "/thesa";
+					hitsTemp = this.fSnsController.getTopicsForTopic(getSearchTerm(query), Integer.MAX_VALUE, filter,
+							this.fPlugId, lang, totalSize, expired);
+					break;
+				case Topic.TOPIC_FROM_ID:
+					// ONLY CALLED FROM Thesaurus Browser in Portal (GSSoil
+					// fetch english term) !!!
+					filter = (String) query.get("filter");
+					hitsTemp = this.fSnsController.getTopicForId(getSearchTerm(query), filter, this.fPlugId, lang,
+							totalSize);
+					break;
+				case Topic.ANNIVERSARY_FROM_TOPIC:
+					hitsTemp = this.fSnsController.getAnniversaryFromTopic(getSearchTerm(query), lang,
+							Integer.MAX_VALUE, this.fPlugId, totalSize);
+					break;
+				case Topic.SIMILARTERMS_FROM_TOPIC:
+					hitsTemp = this.fSnsController.getSimilarTermsFromTopic(getSearchTerm(query), Integer.MAX_VALUE,
+							this.fPlugId, totalSize, lang);
+					break;
+				case Topic.SIMILARLOCATIONS_FROM_TOPIC:
+					hitsTemp = this.fSnsController.getTopicSimilarLocationsFromTopic(getSearchTerm(query),
+							Integer.MAX_VALUE, this.fPlugId, totalSize, lang);
+					break;
+				case Topic.EVENT_FROM_TOPIC:
+					final String[] eventType = (String[]) query.get("eventtype");
+					final String atDate = (String) query.get("t0");
+					final String fromDate = (String) query.get("t1");
+					final String toDate = (String) query.get("t2");
+					if (null != atDate) {
+						hitsTemp = this.fSnsController.getEventFromTopic(getSearchTerm(query, true), eventType, atDate,
+								start, length, this.fPlugId, totalSize, lang);
+					} else {
+						hitsTemp = this.fSnsController.getEventFromTopic(getSearchTerm(query, true), eventType,
+								fromDate, toDate, start, length, this.fPlugId, totalSize, lang);
+					}
+					break;
+				case Topic.TOPIC_HIERACHY:
+					final String associationName = (String) query.get("association");
+					final long depth = Long.valueOf((String) query.get("depth")).longValue();
+					final String direction = (String) query.get("direction");
+					final boolean includeSiblings = Boolean.valueOf((String) query.get("includeSiblings"))
+							.booleanValue();
+					hitsTemp = this.fSnsController.getTopicHierachy(totalSize, associationName, depth, direction,
+							includeSiblings, lang, getSearchTerm(query), expired, this.fPlugId);
+					break;
+				default:
+					log.error("Unknown topic request type.");
+					break;
+				}
+				Topic[] hits = new Topic[0];
+				if (null != hitsTemp) {
+					hits = hitsTemp;
+				}
 
-            try {
-                String filter = null;
-                Topic[] hitsTemp = null;
-                switch (type) {
-                case Topic.TOPIC_FROM_TERM:
-                	// ONLY RETURNS THESA TOPICS !!!
-                    hitsTemp = this.fSnsController.getTopicsForTerm(getSearchTerm(query), start, Integer.MAX_VALUE,
-                            this.fPlugId, totalSize, lang, expired, includeUse);
-                    break;
-                case Topic.TOPIC_FROM_TEXT:
-                    filter = (String) query.get("filter");
-                    hitsTemp = this.fSnsController.getTopicsForText(getSearchTerm(query), this.fMaximalAnalyzedWord,
-                            filter, this.fPlugId, lang, totalSize, expired);
-                    break;
-                case Topic.TOPIC_FROM_URL:
-                    filter = (String) query.get("filter");
-                    hitsTemp = this.fSnsController.getTopicsForURL(getSearchTerm(query), this.fMaximalAnalyzedWord,
-                            filter, this.fPlugId, lang, totalSize);
-                    break;
-                case Topic.TOPIC_FROM_TOPIC:
-                	// ONLY CALLED FROM EXTENDED SEARCH THESAURUS !!!!
-                	filter = "/thesa";
-                    hitsTemp = this.fSnsController.getTopicsForTopic(getSearchTerm(query), Integer.MAX_VALUE,
-                    		filter, this.fPlugId, lang, totalSize, expired);
-                    break;
-                case Topic.TOPIC_FROM_ID:
-                	// ONLY CALLED FROM Thesaurus Browser in Portal (GSSoil fetch english term) !!!
-                    filter = (String) query.get("filter");
-                    hitsTemp = this.fSnsController.getTopicForId(getSearchTerm(query), filter, this.fPlugId, lang, totalSize);
-                    break;
-                case Topic.ANNIVERSARY_FROM_TOPIC:
-                    hitsTemp = this.fSnsController.getAnniversaryFromTopic(getSearchTerm(query), lang, Integer.MAX_VALUE,
-                            this.fPlugId, totalSize);
-                    break;
-                case Topic.SIMILARTERMS_FROM_TOPIC:
-                    hitsTemp = this.fSnsController.getSimilarTermsFromTopic(getSearchTerm(query), Integer.MAX_VALUE,
-                            this.fPlugId, totalSize, lang);
-                    break;
-                case Topic.SIMILARLOCATIONS_FROM_TOPIC:
-                    hitsTemp = this.fSnsController.getTopicSimilarLocationsFromTopic(getSearchTerm(query),
-                            Integer.MAX_VALUE, this.fPlugId, totalSize, lang);
-                    break;
-                case Topic.EVENT_FROM_TOPIC:
-                    final String[] eventType = (String[]) query.get("eventtype");
-                    final String atDate = (String) query.get("t0");
-                    final String fromDate = (String) query.get("t1");
-                    final String toDate = (String) query.get("t2");
-                    if (null != atDate) {
-                        hitsTemp = this.fSnsController.getEventFromTopic(getSearchTerm(query, true), eventType, atDate,
-                                start, length, this.fPlugId, totalSize, lang);
-                    } else {
-                        hitsTemp = this.fSnsController.getEventFromTopic(getSearchTerm(query, true), eventType, fromDate,
-                                toDate, start, length, this.fPlugId, totalSize, lang);
-                    }
-                    break;
-                case Topic.TOPIC_HIERACHY:
-                    final String associationName = (String) query.get("association");
-                    final long depth = Long.valueOf((String) query.get("depth")).longValue();
-                    final String direction = (String) query.get("direction");
-                    final boolean includeSiblings = Boolean.valueOf((String) query.get("includeSiblings"))
-                            .booleanValue();
-                    hitsTemp = this.fSnsController.getTopicHierachy(totalSize, associationName, depth, direction,
-                            includeSiblings, lang, getSearchTerm(query), expired, this.fPlugId);
-                    break;
-                default:
-                    log.error("Unknown topic request type.");
-                    break;
-                }
-                Topic[] hits = new Topic[0];
-                if (null != hitsTemp) {
-                    hits = hitsTemp;
-                }
+				int max;
+				if ((Topic.EVENT_FROM_TOPIC == type) || (Topic.TOPIC_FROM_TERM == type)) {
+					start = 0;
+				}
 
-                int max;
-                if ((Topic.EVENT_FROM_TOPIC == type) || (Topic.TOPIC_FROM_TERM == type)) {
-                    start = 0;
-                }
+				if (start > hits.length) {
+					start = hits.length;
+				}
+				max = Math.min((hits.length - start), length);
+				IngridHit[] finalHits = new IngridHit[max];
+				System.arraycopy(hits, start, finalHits, 0, max);
 
-                if (start > hits.length) {
-                    start = hits.length;
-                }
-                max = Math.min((hits.length - start), length);
-                IngridHit[] finalHits = new IngridHit[max];
-                System.arraycopy(hits, start, finalHits, 0, max);
+				if ((0 == totalSize[0]) && (hits.length > 0)) {
+					totalSize[0] = hits.length;
+				}
+				if (log.isDebugEnabled()) {
+					log.debug("hits: " + totalSize[0]);
+				}
+				ret = new IngridHits(this.fPlugId, totalSize[0], finalHits, false);
+			} catch (Exception e) {
+				log.error(e.getMessage(), e);
+			}
+		} else {
+			if (log.isErrorEnabled()) {
+				log.error("not correct or unsetted datatype");
+			}
+		}
 
-                if ((0 == totalSize[0]) && (hits.length > 0)) {
-                    totalSize[0] = hits.length;
-                }
-                if (log.isDebugEnabled()) {
-                    log.debug("hits: " + totalSize[0]);
-                }
-                ret = new IngridHits(this.fPlugId, totalSize[0], finalHits,
-						false);
-            } catch (Exception e) {
-                log.error(e.getMessage(), e);
-            }
-        } else {
-            if (log.isErrorEnabled()) {
-                log.error("not correct or unsetted datatype");
-            }
-        }
-        
-        _processorPipe.postProcess(query, ret.getHits());
+		_processorPipe.postProcess(query, ret.getHits());
 		return ret;
-    }
+	}
 
-    private boolean getIncludeUseField(IngridQuery query) {
-        boolean result = false;
+	private boolean getIncludeUseField(IngridQuery query) {
+		boolean result = false;
 
-        FieldQuery[] qFields = query.getFields();
-        for (int i = 0; i < qFields.length; i++) {
-            final String fieldName = qFields[i].getFieldName();
-            if (fieldName.equals("includeUse")) {
-                result = Boolean.valueOf(qFields[i].getFieldValue()).booleanValue();
-            }
-        }
+		FieldQuery[] qFields = query.getFields();
+		for (int i = 0; i < qFields.length; i++) {
+			final String fieldName = qFields[i].getFieldName();
+			if (fieldName.equals("includeUse")) {
+				result = Boolean.valueOf(qFields[i].getFieldValue()).booleanValue();
+			}
+		}
 
-        return result;
-    }
+		return result;
+	}
 
-    private int getRequestType(final IngridQuery query) {
-        Object resultO = null;
-        int result = -1;
+	private int getRequestType(final IngridQuery query) {
+		Object resultO = null;
+		int result = -1;
 
-        resultO = query.get(Topic.REQUEST_TYPE);
+		resultO = query.get(Topic.REQUEST_TYPE);
 
-        if (null == resultO) {
-            FieldQuery[] fieldQueries = query.getFields();
-            for (int i = 0; i < fieldQueries.length; i++) {
-                String fieldName = fieldQueries[i].getFieldName();
-                if (fieldName.equals(Topic.REQUEST_TYPE)) {
-                    resultO = fieldQueries[i].getFieldValue();
-                }
-            }
-        }
+		if (null == resultO) {
+			FieldQuery[] fieldQueries = query.getFields();
+			for (int i = 0; i < fieldQueries.length; i++) {
+				String fieldName = fieldQueries[i].getFieldName();
+				if (fieldName.equals(Topic.REQUEST_TYPE)) {
+					resultO = fieldQueries[i].getFieldValue();
+				}
+			}
+		}
 
-        if (resultO instanceof Integer) {
-            result = ((Integer) resultO).intValue();
-        } else if (resultO instanceof String) {
-            result = Integer.parseInt((String) resultO);
-        }
-        return result;
-    }
+		if (resultO instanceof Integer) {
+			result = ((Integer) resultO).intValue();
+		} else if (resultO instanceof String) {
+			result = Integer.parseInt((String) resultO);
+		}
+		return result;
+	}
 
-    private boolean containsSNSDataType(FieldQuery[] dataTypes) {
-        int count = dataTypes.length;
-        for (int i = 0; i < count; i++) {
-            FieldQuery query = dataTypes[i];
-            if (query.getFieldValue().equals(IDataTypes.SNS) && !query.isProhibited()) {
-                return true;
-            }
-        }
-        return false;
-    }
+	private boolean containsSNSDataType(FieldQuery[] dataTypes) {
+		int count = dataTypes.length;
+		for (int i = 0; i < count; i++) {
+			FieldQuery query = dataTypes[i];
+			if (query.getFieldValue().equals(IDataTypes.SNS) && !query.isProhibited()) {
+				return true;
+			}
+		}
+		return false;
+	}
 
-    /** Search term can be topic ID ! */
-    private String getSearchTerm(IngridQuery query) {
-    	return getSearchTerm(query, false);
-    }
+	/** Search term can be topic ID ! */
+	private String getSearchTerm(IngridQuery query) {
+		return getSearchTerm(query, false);
+	}
 
-    private String getSearchTerm(IngridQuery query, boolean multipleTerms) {
-        TermQuery[] terms = query.getTerms();
-        if (terms.length > 1 && !multipleTerms) {
-            throw new IllegalArgumentException("only one term per query is allowed");
-        }
+	private String getSearchTerm(IngridQuery query, boolean multipleTerms) {
+		TermQuery[] terms = query.getTerms();
+		if (terms.length > 1 && !multipleTerms) {
+			throw new IllegalArgumentException("only one term per query is allowed");
+		}
 
-        String searchTerm = "";
-        if (terms != null) {
-        	for (int i=0; i < terms.length; i++) {
-                // GSSoil Thesaurus Service topic id is marshalled due to special characters (URL)
-        		String unmarshalledSearchTerm = SNSUtil.unmarshallTopicId(terms[i].getTerm());
-        		if (log.isDebugEnabled()) {
-        			log.debug("unmarshalled term (topicID) = " + unmarshalledSearchTerm);
-        		}
+		String searchTerm = "";
+		if (terms != null) {
+			for (int i = 0; i < terms.length; i++) {
+				// GSSoil Thesaurus Service topic id is marshalled due to
+				// special characters (URL)
+				String unmarshalledSearchTerm = SNSUtil.unmarshallTopicId(terms[i].getTerm());
+				if (log.isDebugEnabled()) {
+					log.debug("unmarshalled term (topicID) = " + unmarshalledSearchTerm);
+				}
 
-                searchTerm = searchTerm + unmarshalledSearchTerm;
-                if (!multipleTerms) {
-                	break;
-                }
-                if (i != terms.length-1) {
-                    searchTerm = searchTerm + " ";
-                }
-        	}
-        }
+				searchTerm = searchTerm + unmarshalledSearchTerm;
+				if (!multipleTerms) {
+					break;
+				}
+				if (i != terms.length - 1) {
+					searchTerm = searchTerm + " ";
+				}
+			}
+		}
 
-        if (log.isDebugEnabled()) {
-            log.debug("searchterm from query: " + searchTerm);
-        }
+		if (log.isDebugEnabled()) {
+			log.debug("searchterm from query: " + searchTerm);
+		}
 
-        return searchTerm;
-    }
+		return searchTerm;
+	}
 
-    public void configure(PlugDescription plugDescription) throws Exception {
-        this.fPlugId = plugDescription.getPlugId();
-        this.fUserName = (String) plugDescription.get("username");
-        this.fPassWord = (String) plugDescription.get("password");
-        this.fLanguage = (String) plugDescription.get("language");
-        this.fServiceUrlThesaurus = (String) plugDescription.get("serviceUrl.thesaurus");
-        this.fServiceUrlGazetteer = (String) plugDescription.get("serviceUrl.gazetteer");
-        this.fServiceUrlChronicle = (String) plugDescription.get("serviceUrl.chronicle");
-        this.fMaximalAnalyzedWord = 1000; // dummy number since SNS analyzes all now
-        String nativeKeyPrefix = (String) plugDescription.get("nativeKeyPrefix");
+	public void configure(PlugDescription plugDescription) {
+		this.fPlugId = JettyStarter.getInstance().config.communicationProxyUrl;
+		this.fLanguage = SnsPlug.conf.snsLanguage;
+		this.fMaximalAnalyzedWord = 1000; // dummy number since SNS analyzes all
+		String fUserName = SnsPlug.conf.snsUsername;
+		String fPassWord = SnsPlug.conf.snsPassword;
+		String fServiceUrlThesaurus = SnsPlug.conf.snsUrlThesaurus;
+		String fServiceUrlGazetteer = SnsPlug.conf.snsUrlGazetteer;
+		String fServiceUrlChronicle = SnsPlug.conf.snsUrlChronicle;
+		String nativeKeyPrefix = SnsPlug.conf.snsPrefix;
 
-        SNSClient snsClient = null;
-        if ((this.fServiceUrlThesaurus == null) || (this.fServiceUrlThesaurus.trim().equals(""))) {
-            snsClient = new SNSClient(this.fUserName, this.fPassWord, this.fLanguage);
-        } else {
-            snsClient = new SNSClient(this.fUserName, this.fPassWord, this.fLanguage, new URL(this.fServiceUrlThesaurus)
-            , new URL(this.fServiceUrlGazetteer), new URL(this.fServiceUrlChronicle));
-        }
+		SNSClient snsClient = null;
+		try {
+			if ((fServiceUrlThesaurus == null) || (fServiceUrlThesaurus.trim().equals(""))) {
+				snsClient = new SNSClient(fUserName, fPassWord, this.fLanguage);
+			} else {
+				snsClient = new SNSClient(fUserName, fPassWord, this.fLanguage, new URL(fServiceUrlThesaurus),
+						new URL(fServiceUrlGazetteer), new URL(fServiceUrlChronicle));
+			}
 
-        snsClient.setTimeout(180000);
-        if (null == nativeKeyPrefix) {
-            nativeKeyPrefix = "ags:";
-        }
-        this.fSnsController = new SNSController(snsClient, nativeKeyPrefix);
-		ProcessorPipeFactory processorPipeFactory = new ProcessorPipeFactory(
-				plugDescription);
-        _processorPipe = processorPipeFactory.getProcessorPipe();
-    }
+			snsClient.setTimeout(180000);
+		} catch (Exception ex) {
+			log.error("Exception occured during SNSClient initialization", ex);
+		}
 
-    /**
-     * @see de.ingrid.utils.IDetailer#getDetail(de.ingrid.utils.IngridHit, de.ingrid.utils.query.IngridQuery,
-     *      java.lang.String[])
-     */
-    public IngridHitDetail getDetail(IngridHit hit, IngridQuery query, String[] fields) throws Exception {
-        String lang = getQueryLang(query);
-        String filter = (String) query.get("filter");
+		if (null == nativeKeyPrefix) {
+			nativeKeyPrefix = "agsNotation";
+		}
+		this.fSnsController = new SNSController(snsClient, nativeKeyPrefix);
+		ProcessorPipeFactory processorPipeFactory = new ProcessorPipeFactory(plugDescription);
+		_processorPipe = processorPipeFactory.getProcessorPipe();
+	}
 
-        return this.fSnsController.getTopicDetail(hit, filter, lang);
-    }
+	/**
+	 * @see de.ingrid.utils.IDetailer#getDetail(de.ingrid.utils.IngridHit,
+	 *      de.ingrid.utils.query.IngridQuery, java.lang.String[])
+	 */
+	public IngridHitDetail getDetail(IngridHit hit, IngridQuery query, String[] fields) throws Exception {
+		String lang = getQueryLang(query);
+		String filter = (String) query.get("filter");
 
-    private String getQueryLang(IngridQuery query) {
-        String result = this.fLanguage;
+		return this.fSnsController.getTopicDetail(hit, filter, lang);
+	}
 
-        FieldQuery[] qFields = query.getFields();
-        for (int i = 0; i < qFields.length; i++) {
-            final String fieldName = qFields[i].getFieldName();
-            if (fieldName.equals("lang")) {
-                result = qFields[i].getFieldValue();
-            }
-        }
+	private String getQueryLang(IngridQuery query) {
+		String result = this.fLanguage;
 
-        return result;
-    }
+		FieldQuery[] qFields = query.getFields();
+		for (int i = 0; i < qFields.length; i++) {
+			final String fieldName = qFields[i].getFieldName();
+			if (fieldName.equals("lang")) {
+				result = qFields[i].getFieldValue();
+			}
+		}
 
-    private boolean getExpiredField(IngridQuery query) {
-        boolean result = false;
+		return result;
+	}
 
-        FieldQuery[] qFields = query.getFields();
-        for (int i = 0; i < qFields.length; i++) {
-            final String fieldName = qFields[i].getFieldName();
-            if (fieldName.equals("expired")) {
-                result = Boolean.valueOf(qFields[i].getFieldValue()).booleanValue();
-            }
-        }
+	private boolean getExpiredField(IngridQuery query) {
+		boolean result = false;
 
-        return result;
-    }
+		FieldQuery[] qFields = query.getFields();
+		for (int i = 0; i < qFields.length; i++) {
+			final String fieldName = qFields[i].getFieldName();
+			if (fieldName.equals("expired")) {
+				result = Boolean.valueOf(qFields[i].getFieldValue()).booleanValue();
+			}
+		}
 
-    /**
-     * @see de.ingrid.utils.IDetailer#getDetails(de.ingrid.utils.IngridHit[], de.ingrid.utils.query.IngridQuery,
-     *      java.lang.String[])
-     */
-    public IngridHitDetail[] getDetails(IngridHit[] hits, IngridQuery query, String[] requestedFields) throws Exception {
-        IngridHitDetail[] details = new IngridHitDetail[hits.length];
-        for (int i = 0; i < hits.length; i++) {
-            details[i] = getDetail(hits[i], query, requestedFields);
-        }
-        return details;
-    }
+		return result;
+	}
 
-    public void close() throws Exception {
-        // nothing to do.
-    }
+	/**
+	 * @see de.ingrid.utils.IDetailer#getDetails(de.ingrid.utils.IngridHit[],
+	 *      de.ingrid.utils.query.IngridQuery, java.lang.String[])
+	 */
+	public IngridHitDetail[] getDetails(IngridHit[] hits, IngridQuery query, String[] requestedFields)
+			throws Exception {
+		IngridHitDetail[] details = new IngridHitDetail[hits.length];
+		for (int i = 0; i < hits.length; i++) {
+			details[i] = getDetail(hits[i], query, requestedFields);
+		}
+		return details;
+	}
 
-    @Override
-    public IngridDocument call(IngridCall targetInfo) throws Exception {
-        throw new RuntimeException( "call-function not implemented in SNS-iPlug" );
-    }
+	public void close() throws Exception {
+		// nothing to do.
+	}
+
+	@Override
+	public IngridDocument call(IngridCall targetInfo) throws Exception {
+		throw new RuntimeException("call-function not implemented in SNS-iPlug");
+	}
+
+	public static void main(String[] args) throws Exception {
+		conf = new ConfigBuilder<Configuration>(Configuration.class).withCommandLineArgs(args).build();
+		new JettyStarter(conf);
+	}
 }

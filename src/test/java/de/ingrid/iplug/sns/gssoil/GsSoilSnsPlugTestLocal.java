@@ -56,7 +56,8 @@ public class GsSoilSnsPlugTestLocal extends TestCase {
     }
 
     public void testTOPIC_FROM_ID() throws Exception {
-        SnsPlug plug = new SnsPlug(fPlugDescription);
+    	SnsPlug plug = new SnsPlug(null, null, null);
+        plug.configure(fPlugDescription);
         
 		String marshalledTopicId = SNSUtil.marshallTopicId("http://www.eionet.europa.eu/gemet/supergroup/5499");
 
@@ -77,7 +78,8 @@ public class GsSoilSnsPlugTestLocal extends TestCase {
     }
 
     public void testTOPIC_FROM_TEXT() throws Exception {
-        SnsPlug plug = new SnsPlug(fPlugDescription);
+    	SnsPlug plug = new SnsPlug(null, null, null);
+        plug.configure(fPlugDescription);
         
         String term = "Lissabon";
 
