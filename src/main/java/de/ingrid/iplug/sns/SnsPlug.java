@@ -317,6 +317,8 @@ public class SnsPlug extends HeartBeatPlug {
 	}
 
 	public void configure(PlugDescription plugDescription) {
+		super.configure(plugDescription);
+		
 		this.fPlugId = JettyStarter.getInstance().config.communicationProxyUrl;
 		this.fLanguage = SnsPlug.conf.snsLanguage;
 		this.fMaximalAnalyzedWord = 1000; // dummy number since SNS analyzes all
