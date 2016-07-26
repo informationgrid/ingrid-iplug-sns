@@ -67,32 +67,17 @@
             create              ="false"
             checkExists         ="true" />
     </page>
+    
+    <page
+            ifTarget    ="setInstallProperty"
+            type        ="input"
+            name        ="componentOptions"
+            displayText ="Einstellungen fuer das iPlug">
+            
+            <comment displayText="" explanatoryText="Lokaler Port, unter dem die Administrationsoberfläche des iPlugs erreichbar sein soll."/>           
+            <text property="localServerPort" displayText="Port für Adminoberfläche:" defaultValue="9668"/>
+    </page>
 
-    <page
-            ifTarget    ="setInstallProperty"
-            type        ="input"
-            name        ="iPlugOptions"
-            displayText ="Einstellungen fuer das iPlug.">
-            
-            <text property="clientName" displayText="Client ID:" defaultValue="/ingrid-group:iplug-sns-'Ihr-Name'"/>
-            
-            <comment displayText="" explanatoryText="Der Client-ID muss eindeutig sein, da es sonst zu Kommunikationsproblemen zum iBus führen kann."/>
-    </page>
-    
-    <page
-            ifTarget    ="setInstallProperty"
-            type        ="input"
-            name        ="iBusOptions"
-            displayText ="Einstellungen fuer den iBus"
-            target      ="ibus">
-            
-            <text property="serverName" displayText="Server ID:" defaultValue="/ingrid-group:ibus-'Ihr-Name'"/>
-            <text property="serverIp"   displayText="Server IP:"   defaultValue="127.0.0.1"/>
-            <text property="serverPort" displayText="Server Port:" defaultValue="9900"/>
-            
-            <comment displayText="" explanatoryText="Die Server-IP ist die Adresse des Rechners, auf dem der iBus ueber dem Server-Port angesprochen werden kann."/>
-    </page>
-    
     <!--  type="input" shows a list of editable options for the installer -->
     <page
             ifTarget    ="setInstallProperty"

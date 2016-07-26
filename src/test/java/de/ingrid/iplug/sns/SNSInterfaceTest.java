@@ -25,8 +25,11 @@ package de.ingrid.iplug.sns;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.ResourceBundle;
 
 import junit.framework.TestCase;
+import de.ingrid.admin.Config;
+import de.ingrid.admin.JettyStarter;
 import de.ingrid.iplug.sns.utils.DetailedTopic;
 import de.ingrid.iplug.sns.utils.Topic;
 import de.ingrid.utils.IngridHit;
@@ -47,12 +50,12 @@ public class SNSInterfaceTest extends TestCase {
     private static PlugDescription fPlugDescription;
 
     static {
-        fPlugDescription = new PlugDescription();
-        fPlugDescription.setProxyServiceURL("aPlugId");
-        fPlugDescription.put("username", "ms");
-        fPlugDescription.put("password", "m3d1asyl3");
-        fPlugDescription.put("language", "de");
-        fPlugDescription.putInt("maxWordAnalyzing", 100);
+        SnsPlug.conf = new Configuration();
+        SnsPlug.conf.snsLanguage = "de";
+        SnsPlug.conf.snsPrefix = "agsNotation";
+        SnsPlug.conf.snsUrlThesaurus = ResourceBundle.getBundle("sns").getString("sns.serviceURL.thesaurus");
+        SnsPlug.conf.snsUrlGazetteer = ResourceBundle.getBundle("sns").getString("sns.serviceURL.gazetteer");
+        SnsPlug.conf.snsUrlChronicle = ResourceBundle.getBundle("sns").getString("sns.serviceURL.chronicle");
     }
     private SnsPlug fPlug;
     
@@ -62,7 +65,13 @@ public class SNSInterfaceTest extends TestCase {
 
     protected void setUp() throws Exception {
         super.setUp();
-        this.fPlug = new SnsPlug(fPlugDescription);
+        
+        new JettyStarter(false);
+        JettyStarter.getInstance().config = new Config();
+        JettyStarter.getInstance().config.communicationProxyUrl = "ibus-client-test";
+        
+        this.fPlug = new SnsPlug(null, null, null);
+        this.fPlug.configure(fPlugDescription);
     }
 
     /**

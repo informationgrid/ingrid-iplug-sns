@@ -53,7 +53,7 @@ public class SNSControllerTest extends TestCase {
 
     private boolean fToStdout;
 
-    private final static String VALID_TOPIC_ID = "http://sns.uba.de/umthes/_00019054";
+    private final static String VALID_TOPIC_ID = "https://sns.uba.de/umthes/_00040280";
 
     /**
      * @param client
@@ -83,7 +83,7 @@ public class SNSControllerTest extends TestCase {
         int[] totalSize = new int[1];
         // NOTICE: "Wasser" is LABEL topic !!!
         Topic[] topicsForTerm = controller.getTopicsForTerm("Wasser", 0, 1000, "aId", totalSize, "de", false, false);
-        assertEquals( 41, topicsForTerm.length );
+        assertEquals( 40, topicsForTerm.length );
         for (int i = 0; i < topicsForTerm.length; i++) {
             Topic topic = topicsForTerm[i];
             if (this.fToStdout) {
@@ -122,22 +122,13 @@ public class SNSControllerTest extends TestCase {
         Topic[] topics = controller.getTopicsForTopic("Wasser", 23, "/thesa", "aId", "de", totalSize, false);
         assertNull(topics);
         topics = controller.getTopicsForTopic(VALID_TOPIC_ID, 23, "/thesa", "aId", "de", totalSize, false);
-        assertEquals(7, topics.length);
+        assertEquals(23, topics.length);
         for (int i = 0; i < topics.length; i++) {
             Topic topic = topics[i];
             if (this.fToStdout) {
                 System.out.println(topic);
             }
         }
-
-        // LOCATION
-		String locationId = "http://sns.uba.de/gazetteer/GEMEINDE0641200000"; // Frankfurt am Main
-        topics = controller.getTopicsForTopic(locationId, 23, "/location", "aId", "de", totalSize, false);
-        assertEquals(23, topics.length);
-
-        // LOCATION
-        topics = controller.getTopicSimilarLocationsFromTopic(locationId, 23, "aId", totalSize, "de");
-        assertEquals(23, topics.length);
     }
 
     /**
@@ -207,7 +198,7 @@ public class SNSControllerTest extends TestCase {
         int[] totalSize = new int[1];
         // #legalType (EVENT)
         // ---------------
-        DetailedTopic[] topicsForId = controller.getTopicForId("http://sns.uba.de/chronik/t47098a_10220d1bc3e_4ee1", "/event", "plugId", "de", totalSize);
+        DetailedTopic[] topicsForId = controller.getTopicForId("https://sns.uba.de/chronik/t47098a_10220d1bc3e_4ee1", "/event", "plugId", "de", totalSize);
         assertEquals( 1, topicsForId.length );
         DetailedTopic dt = topicsForId[0];
 
@@ -250,12 +241,12 @@ public class SNSControllerTest extends TestCase {
 
         // #descriptorType (THESA) Waldschaden
         // ---------------
-        topicsForId = controller.getTopicForId("http://sns.uba.de/umthes/_00027061", "/thesa", "plugId", "de", totalSize);
+        topicsForId = controller.getTopicForId("https://sns.uba.de/umthes/_00027061", "/thesa", "plugId", "de", totalSize);
         assertEquals( 1, topicsForId.length );
         dt = topicsForId[0];
 
         assertNotNull(dt);
-        assertEquals("http://sns.uba.de/umthes/_00027061", dt.getTopicID());
+        assertEquals("https://sns.uba.de/umthes/_00027061", dt.getTopicID());
         assertEquals("Waldschaden", dt.getTitle());
 
         // ALWAYS empty definitions cause using ThesaurusService API
@@ -282,43 +273,6 @@ public class SNSControllerTest extends TestCase {
         bla = (String) dt.get(DetailedTopic.DESCRIPTION_OCC);
         assertNull(bla);
 
-        // #use6Type (LOCATION) Frankfurt am Main
-        // ---------------
-        topicsForId = controller.getTopicForId("http://sns.uba.de/gazetteer/GEMEINDE0641200000", "/location", "plugId", "de", totalSize);
-        assertEquals( 1, topicsForId.length );
-        dt = topicsForId[0];
-
-        assertNotNull(dt);
-        assertEquals("http://sns.uba.de/gazetteer/GEMEINDE0641200000", dt.getTopicID());
-        assertEquals("Frankfurt am Main", dt.getTitle());
-        assertTrue(dt.getTopicNativeKey().indexOf("06412000") != -1);
-        assertEquals("http://sns.uba.de/gazetteer/GEMEINDE0641200000", dt.getAdministrativeID());
-        assertTrue(dt.getSummary().indexOf("Gemeinde") != -1);
-
-        // ALWAYS empty definitions cause using GazetterService API
-        array = dt.getDefinitions();
-        assertEquals(0, array.length);
-
-        // ALWAYS empty definitionTitles cause using GazetterService API
-        array = dt.getDefinitionTitles();
-        assertEquals(0, array.length);
-
-        /*
-        // ALWAYS empty samples cause using GazetterService API
-        array = dt.getSamples();
-        assertEquals(0, array.length);
-
-        // ALWAYS empty sampleTitles cause using GazetterService API
-        array = dt.getSampleTitles();
-        assertEquals(0, array.length);
-
-        // NO associations cause using GazetterService API
-        bla = (String) dt.get(DetailedTopic.ASSOCIATED_OCC);
-        assertNull(bla);*/
-
-        // NO descriptionOcc cause using GazetterService API
-        bla = (String) dt.get(DetailedTopic.DESCRIPTION_OCC);
-        assertNull(bla);
     }
 
     /**
@@ -329,7 +283,7 @@ public class SNSControllerTest extends TestCase {
         Topic topic = new Topic();
         // #legalType (EVENT)
         // ---------------
-        topic.setTopicID("http://sns.uba.de/chronik/t47098a_10220d1bc3e_4ee1");
+        topic.setTopicID("https://sns.uba.de/chronik/t47098a_10220d1bc3e_4ee1");
 
         DetailedTopic dt = controller.getTopicDetail(topic, "de");
 
@@ -371,11 +325,11 @@ public class SNSControllerTest extends TestCase {
 
         // #descriptorType (THESA) Waldschaden
         // ---------------
-        topic.setTopicID("http://sns.uba.de/umthes/_00027061");
+        topic.setTopicID("https://sns.uba.de/umthes/_00027061");
 
         dt = controller.getTopicDetail(topic, "/thesa", "de");
         assertNotNull(dt);
-        assertEquals("http://sns.uba.de/umthes/_00027061", dt.getTopicID());
+        assertEquals("https://sns.uba.de/umthes/_00027061", dt.getTopicID());
         assertEquals("Waldschaden", dt.getTitle());
 
         // ALWAYS empty definitions cause using ThesaurusService API
@@ -402,63 +356,6 @@ public class SNSControllerTest extends TestCase {
         bla = (String) dt.get(DetailedTopic.DESCRIPTION_OCC);
         assertNull(bla);
 
-        // #use6Type (LOCATION) Frankfurt am Main
-        // ---------------
-        topic.setTopicID("http://sns.uba.de/gazetteer/GEMEINDE0641200000");
-
-        dt = controller.getTopicDetail(topic, "/location", "de");
-        assertNotNull(dt);
-        assertEquals("http://sns.uba.de/gazetteer/GEMEINDE0641200000", dt.getTopicID());
-        assertEquals("Frankfurt am Main", dt.getTitle());
-        assertTrue(dt.getTopicNativeKey().indexOf("06412000") != -1);
-        assertEquals("http://sns.uba.de/gazetteer/GEMEINDE0641200000", dt.getAdministrativeID());
-        //assertTrue(dt.getSummary().indexOf("location-admin-use6") != -1);
-        assertTrue(dt.getSummary().indexOf("Gemeinde") != -1);
-
-        // ALWAYS empty definitions cause using GazetterService API
-        array = dt.getDefinitions();
-        assertEquals(0, array.length);
-
-        // ALWAYS empty definitionTitles cause using GazetterService API
-        array = dt.getDefinitionTitles();
-        assertEquals(0, array.length);
-
-        // ALWAYS empty samples cause using GazetterService API
-        array = dt.getSamples();
-        assertEquals(0, array.length);
-
-        // ALWAYS empty sampleTitles cause using GazetterService API
-        array = dt.getSampleTitles();
-        assertEquals(0, array.length);
-
-        // NO associations cause using GazetterService API
-        bla = (String) dt.get(DetailedTopic.ASSOCIATED_OCC);
-        assertNull(bla);
-
-        // NO descriptionOcc cause using GazetterService API
-        bla = (String) dt.get(DetailedTopic.DESCRIPTION_OCC);
-        assertNull(bla);
-    }
-
-    /**
-     * @throws Exception
-     */
-    public void testGetAssociatedTopicsExpired() throws Exception {
-        SNSController controller = new SNSController(fClient, "agsNotation");
-        int[] totalSize = new int[1];
-        // WITH INTRODUCTION OF GAZETTEER API NEVER RETURNS EXPIRED ONES !!!
-        Topic[] topicsForTopic = controller.getTopicSimilarLocationsFromTopic("http://sns.uba.de/gazetteer/GEMEINDE0325300005", 1000, "aId",
-                totalSize, "de");
-//                totalSize, false, "de");
-        assertNotNull(topicsForTopic);
-        assertEquals(1, topicsForTopic.length);
-
-        // WITH INTRODUCTION OF GAZETTEER API NEVER RETURNS EXPIRED ONES !!!
-        /*topicsForTopic = controller.getTopicSimilarLocationsFromTopic("http://sns.uba.de/gazetteer/GEMEINDE0325300005", 1000, "aId", totalSize,
-                "de");
-//                true, "de");
-        assertNotNull(topicsForTopic);
-        */
     }
 
     /**
@@ -478,7 +375,7 @@ public class SNSControllerTest extends TestCase {
         // printHierachy(topicsHierachy[0].getSuccessors(), 1);
 
         // up
-        topicID = "http://sns.uba.de/umthes/_00040282";
+        topicID = "https://sns.uba.de/umthes/_00040282";
         topicsHierachy = controller.getTopicHierachy(totalSize, "narrowerTermAssoc", 5, "up", false, "de", topicID,
                 false, "pid");
         assertNotNull(topicsHierachy);
@@ -490,11 +387,11 @@ public class SNSControllerTest extends TestCase {
 
         assertTrue(resultList.contains("[Atmosph\u00E4re und Klima]"));
         assertTrue(resultList.contains("Luft"));
-        assertTrue(resultList.contains("http://sns.uba.de/umthes/_00049251"));
-        assertTrue(resultList.contains("http://sns.uba.de/umthes/_00040282"));
+        assertTrue(resultList.contains("https://sns.uba.de/umthes/_00049251"));
+        assertTrue(resultList.contains("https://sns.uba.de/umthes/_00040282"));
 
         // top node up
-        topicID = "http://sns.uba.de/umthes/_00049251";
+        topicID = "https://sns.uba.de/umthes/_00049251";
         topicsHierachy = controller.getTopicHierachy(totalSize, "narrowerTermAssoc", 5, "up", false, "de", topicID,
                 false, "pid");
         assertNotNull(topicsHierachy);
@@ -503,7 +400,7 @@ public class SNSControllerTest extends TestCase {
         assertNull(topicsHierachy[0]);
 
         // down
-        topicID = "http://sns.uba.de/umthes/_00049251";
+        topicID = "https://sns.uba.de/umthes/_00049251";
         topicsHierachy = controller.getTopicHierachy(totalSize, "narrowerTermAssoc", 2, "down", false, "de", topicID,
                 false, "pid");
         assertNotNull(topicsHierachy);
@@ -515,11 +412,11 @@ public class SNSControllerTest extends TestCase {
 
         assertTrue(resultList.contains("[Atmosph\u00E4re und Klima]"));
         assertTrue(resultList.contains("Luft"));
-        assertTrue(resultList.contains("http://sns.uba.de/umthes/_00049251"));
-        assertTrue(resultList.contains("http://sns.uba.de/umthes/_00040282"));
+        assertTrue(resultList.contains("https://sns.uba.de/umthes/_00049251"));
+        assertTrue(resultList.contains("https://sns.uba.de/umthes/_00040282"));
 
         // leaf down
-        topicID = "http://sns.uba.de/umthes/de/concepts/_00040787"; // Kleinmenge
+        topicID = "https://sns.uba.de/umthes/de/concepts/_00040787"; // Kleinmenge
         topicsHierachy = controller.getTopicHierachy(totalSize, "narrowerTermAssoc", 2, "down", false, "de", topicID,
                 false, "pid");
         assertNotNull(topicsHierachy);
@@ -535,7 +432,7 @@ public class SNSControllerTest extends TestCase {
 		// NOTICE: has 2 paths to top !
 		// 1. uba_thes_13093 / uba_thes_47403 / uba_thes_47404 / uba_thes_49276
 		// 2. uba_thes_13093 / uba_thes_13133 / uba_thes_49268
-		String topicID = "http://sns.uba.de/umthes/_00013093"; // Immissionsdaten
+		String topicID = "https://sns.uba.de/umthes/_00013093"; // Immissionsdaten
 //        String topicID = "uba_thes_27118";
         int[] totalSize = new int[1];
         Topic[] topicsHierachy = controller.getTopicHierachy(totalSize, "narrowerTermAssoc", 200, "up", true, "de",
@@ -550,8 +447,8 @@ public class SNSControllerTest extends TestCase {
 
         assertTrue(resultList.contains("Messergebnis [benutze Unterbegriffe]"));
         assertTrue(resultList.contains("Immissionssituation"));
-        assertTrue(resultList.contains("http://sns.uba.de/umthes/_00047403"));
-        assertTrue(resultList.contains("http://sns.uba.de/umthes/_00013133"));
+        assertTrue(resultList.contains("https://sns.uba.de/umthes/_00047403"));
+        assertTrue(resultList.contains("https://sns.uba.de/umthes/_00013133"));
     }
 
     /**
@@ -577,27 +474,12 @@ public class SNSControllerTest extends TestCase {
         String text = "Waldsterben Weser Explosion";
         int[] totalSize = new int[1];
         DetailedTopic[] topics = controller.getTopicsForText(text, 100, "/thesa", "aPlugId", "de", totalSize, false);        
-        assertEquals(2, totalSize[0]);
+        assertEquals(3, totalSize[0]);
         assertNotNull(topics);
-        assertEquals(2, topics.length);
-        assertEquals("Waldschaden", topics[0].getTitle());
-        assertEquals("Weser", topics[1].getTitle());
+        assertEquals(3, topics.length);
+        assertEquals("Weser", topics[0].getTitle());
+        assertEquals("Waldschaden", topics[1].getTitle());
         //assertEquals("Explosion", topics[2].getTitle());
-
-    	// test locations
-        topics = controller.getTopicsForText(text, 100, "/location", "aPlugId", "de", totalSize, false);
-        assertEquals(2, totalSize[0]);
-        assertNotNull(topics);
-        assertEquals(2, topics.length);
-        assertEquals("http://sns.uba.de/gazetteer/FLUSS4", topics[0].getTopicNativeKey());
-        assertEquals("http://sns.uba.de/gazetteer/WASSEREINZUGSGEBIET496", topics[1].getTopicNativeKey());
-
-        // BUG: https://github.com/innoq/iqvoc_gazetteer/issues/13
-        topics = controller.getTopicsForText("Frankfurt", 100, "/location", "aPlugId", "de", new int[1], false);
-        assertNotNull(topics);
-        assertEquals(4, topics.length);
-        assertEquals("06412000", topics[0].getTopicNativeKey());
-        assertEquals("12053000", topics[1].getTopicNativeKey());
 
     	// test events
         // -> NOT SUPPORTED WITH INNOQ-SNS
@@ -617,33 +499,6 @@ public class SNSControllerTest extends TestCase {
         assertTrue(topics.length >= 4);
     }
 
-
-    /**
-     * @throws Exception
-     */
-    public void testGetTopicFromTextNoNativeKey() throws Exception {
-        SNSController controller = new SNSController(fClient, "agsNotation");
-        String text = "Weser";
-        DetailedTopic[] topics = controller.getTopicsForText(text, 100, "aPlugId", "de", new int[1], false);
-        assertNotNull(topics);
-        assertEquals(3, topics.length);
-        assertEquals("http://sns.uba.de/gazetteer/FLUSS4", topics[0].getTopicNativeKey()); //http://sns.uba.de/umthes/_00100789
-        assertEquals("http://sns.uba.de/gazetteer/WASSEREINZUGSGEBIET496", topics[1].getTopicNativeKey());
-    }
-
-    /**
-     * @throws Exception
-     */
-    public void testGetSimilarLocationsFromTopicNativeKeyHasLawaPrefix() throws Exception {
-        SNSController controller = new SNSController(fClient, "agsNotation");
-        String topicId = "http://sns.uba.de/gazetteer/NATURRAUM583";
-        Topic[] topics = controller.getTopicSimilarLocationsFromTopic(topicId, 100, "aPlugId", new int[1], "de");
-        assertNotNull(topics);
-        assertEquals(82, topics.length);
-        for (int i = 0; i < topics.length; i++) {
-            assertTrue("Does contain 'lawa:'.", !topics[i].getTopicNativeKey().startsWith("lawa:"));
-        }
-    }
 
     private void printHierachy(Set successors, int tab) {
 		for (Object object : successors) {

@@ -21,7 +21,6 @@
   limitations under the Licence.
   **************************************************#
   -->
-
 <assembly>
   <id>installer</id>
   <formats>
@@ -36,6 +35,17 @@
     <fileSet>
       <directory>src/main/release/scripts</directory>
       <outputDirectory>${project.build.finalName}/</outputDirectory>
+    </fileSet>
+    <fileSet>
+      <directory>src/main/webapp</directory>
+      <outputDirectory>${project.artifactId}-${project.version}/webapp</outputDirectory>
+      <excludes>
+        <exclude>**/WEB-INF/jetty-web.xml</exclude>
+      </excludes>
+    </fileSet>
+    <fileSet>
+      <directory>target/base-webapp</directory>
+      <outputDirectory>${project.artifactId}-${project.version}/webapp</outputDirectory>
     </fileSet>
     <fileSet>
       <directory>src/main/release/ant-installer</directory>
@@ -55,11 +65,14 @@
       <directory>target/site</directory>
       <outputDirectory>${project.build.finalName}/doc</outputDirectory>
     </fileSet>
-    <fileSet>
-      <directory>target/gssoil</directory>
-      <outputDirectory>${project.build.finalName}/</outputDirectory>
-    </fileSet>
   </fileSets>
+  <files>
+    <file>
+      <source>src/main/release/jetty/jetty-web.xml</source>
+      <outputDirectory>${project.build.finalName}/webapp/WEB-INF</outputDirectory>
+      <filtered>true</filtered>
+    </file>
+  </files>
   <dependencySets>
     <dependencySet>
       <outputDirectory>${project.build.finalName}/lib</outputDirectory>
@@ -67,15 +80,8 @@
       <scope>runtime</scope>
       <excludes>
         <exclude>de.ingrid:ingrid-installer</exclude>
-        <exclude>de.ingrid:ingrid-iplug-admin-step1-sns</exclude>
+        <exclude>de.ingrid:ingrid-base-webapp:zip:res</exclude>
       </excludes>
-    </dependencySet>
-    <dependencySet>
-      <outputDirectory>${project.build.finalName}/webapp/step1</outputDirectory>
-      <unpack>true</unpack>
-      <includes>
-        <include>de.ingrid:ingrid-iplug-admin-step1-sns</include>
-      </includes>
     </dependencySet>
   </dependencySets>
 </assembly>
