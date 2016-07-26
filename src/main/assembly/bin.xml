@@ -65,14 +65,14 @@
       <directory>target/site</directory>
       <outputDirectory>${project.build.finalName}/doc</outputDirectory>
     </fileSet>
-    <files>
-      <file>
-        <source>src/main/release/jetty/jetty-web.xml</source>
-        <outputDirectory>${project.build.finalName}/webapp/WEB-INF</outputDirectory>
-        <filtered>true</filtered>
-      </file>
-    </files>
   </fileSets>
+  <files>
+    <file>
+      <source>src/main/release/jetty/jetty-web.xml</source>
+      <outputDirectory>${project.build.finalName}/webapp/WEB-INF</outputDirectory>
+      <filtered>true</filtered>
+    </file>
+  </files>
   <dependencySets>
     <dependencySet>
       <outputDirectory>${project.build.finalName}/lib</outputDirectory>

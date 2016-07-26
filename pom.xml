@@ -36,6 +36,12 @@
       <groupId>de.ingrid</groupId>
       <artifactId>ingrid-base-webapp</artifactId>
       <version>3.6.2.1</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.elasticsearch</groupId>
+          <artifactId>elasticsearch</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>de.ingrid</groupId>
@@ -43,6 +49,12 @@
       <version>3.6.2.1</version>
       <classifier>res</classifier>
       <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>org.elasticsearch</groupId>
+          <artifactId>elasticsearch</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>de.ingrid</groupId>
@@ -50,17 +62,28 @@
       <version>3.6.2</version>
       <exclusions>
         <exclusion>
+          <groupId>ant</groupId>
+          <artifactId>ant</artifactId>
+        </exclusion>
+        <exclusion>
           <groupId>opensymphony</groupId>
           <artifactId>quartz</artifactId>
         </exclusion>
         <exclusion>
-          <groupId>commons-betwixt</groupId>
-          <artifactId>commons-betwixt</artifactId>
+          <groupId>tomcat</groupId>
+          <artifactId>jasper-compiler</artifactId>
         </exclusion>
-        <!-- already included in jena-arq -->
         <exclusion>
-          <groupId>commons-codec</groupId>
-          <artifactId>commons-codec</artifactId>
+          <groupId>tomcat</groupId>
+          <artifactId>jasper-runtime</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>jetty</groupId>
+          <artifactId>servlet-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>jetty</groupId>
+          <artifactId>org.mortbay.jetty</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -78,7 +101,7 @@
     <dependency>
       <groupId>commons-fileupload</groupId>
       <artifactId>commons-fileupload</artifactId>
-      <version>1.3.1</version>
+      <version>1.2.2</version>
     </dependency>
 
     <!-- JENA libs for RDF support -->
