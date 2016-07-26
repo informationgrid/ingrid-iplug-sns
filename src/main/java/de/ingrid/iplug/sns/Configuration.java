@@ -34,6 +34,7 @@ import com.tngtech.configbuilder.annotation.valueextractor.PropertyValue;
 
 import de.ingrid.admin.IConfig;
 import de.ingrid.admin.command.PlugdescriptionCommandObject;
+import de.ingrid.utils.PlugDescription;
 
 @PropertiesFiles( {"config", "sns"} )
 @PropertyLocations(directories = {"conf"}, fromClassLoader = true)
@@ -72,6 +73,31 @@ public class Configuration implements IConfig {
     @Override
     public void addPlugdescriptionValues( PlugdescriptionCommandObject pdObject ) {
         pdObject.put( "iPlugClass", "de.ingrid.iplug.sns.SnsPlug");
+        
+        pdObject.removeFromList(PlugDescription.FIELDS, "lang");
+        pdObject.removeFromList(PlugDescription.FIELDS, "t0");
+        pdObject.removeFromList(PlugDescription.FIELDS, "t1");
+        pdObject.removeFromList(PlugDescription.FIELDS, "t2");
+        pdObject.removeFromList(PlugDescription.FIELDS, "eventtype");
+        pdObject.removeFromList(PlugDescription.FIELDS, "filter");
+        pdObject.removeFromList(PlugDescription.FIELDS, "sns_request_type");
+        pdObject.removeFromList(PlugDescription.FIELDS, "expired");
+        pdObject.removeFromList(PlugDescription.FIELDS, "association");
+        pdObject.removeFromList(PlugDescription.FIELDS, "depth");
+        pdObject.removeFromList(PlugDescription.FIELDS, "direction");
+        pdObject.removeFromList(PlugDescription.FIELDS, "includeSiblings");
+        pdObject.addField("lang");
+    	pdObject.addField("t0");
+    	pdObject.addField("t1");
+    	pdObject.addField("t2");
+    	pdObject.addField("eventtype");
+    	pdObject.addField("filter");
+    	pdObject.addField("sns_request_type");
+    	pdObject.addField("expired");
+    	pdObject.addField("association");
+    	pdObject.addField("depth");
+    	pdObject.addField("direction");
+    	pdObject.addField("includeSiblings");
         
     }
 
