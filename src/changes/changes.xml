@@ -29,6 +29,12 @@
   </properties>
   <body>
   
+    <release version="4.0.0" date="2016-08-25" description="Release 4.0.0">
+      <action type="fix" dev="wemove" issue="REDMINE-412">
+        Integrate usual admin gui according to all other iPlugs.
+      </action>
+    </release>
+    
     <release version="3.6.2.1" date="2016-07-08" description="Release 3.6.2.1">
       <action type="fix" dev="wemove" issue="REDMINE-319">
           Portal: Fixed similar terms request with special characters.
