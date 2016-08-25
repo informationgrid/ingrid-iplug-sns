@@ -26,7 +26,7 @@
     </description>
     <!-- set global properties for this build -->
     <property name="iPlugName"          value="${project.artifactId}-${project.version}"/>
-    <property name="xml-communication"  value="${installDir}/conf/communication.xml"/>
+    <property name="config"             value="${installDir}/conf/config.override.properties"/>
 
     <!-- THESE PORPERTIES ARE NECESSARY FOR UPDATES -->
     <property name="libraryDir"         value="lib" />
@@ -59,13 +59,18 @@
         </move>
         
         <mkdir dir="${installDir}/webapp/WEB-INF/work"/>
+    	
+        <echo>Schreiben des Admin-Ports in Konfiguration</echo>
+        <touch file="${config}"/>
+        <propertyfile file="${config}">
+          <entry key="jetty.port" value="${localServerPort}" />
+        </propertyfile>
     </target>
     
     <target name="extractUpdate">
         <unzip src="${antinstaller.jar}" dest=".">
             <patternset>
                 <include name="**/*.*"/>
-                <exclude name="${iPlugName}/conf/communication.xml" />
             </patternset>
         </unzip>
         
@@ -76,15 +81,6 @@
         <move toDir="${installDir}">
             <fileset dir="./${iPlugName}"/>
         </move>
-    </target>
-
-    <target name="ibus" description="Set configuration correctly for the iBus.">
-        <echo>Schreibe iBus Konfiguration in communication.xml</echo>
-        <xmlproperty file="${xml-communication}" prefix="plugXML"/>
-        <replace file="${xml-communication}" token="${plugXML.communication.client(name)}"                              value="${clientName}"/>
-        <replace file="${xml-communication}" token="${plugXML.communication.client.connections.server(name)}"           value="${serverName}"/>
-        <replace file="${xml-communication}" token="${plugXML.communication.client.connections.server.socket(ip)}"      value="${serverIp}"/>
-        <replace file="${xml-communication}" token="${plugXML.communication.client.connections.server.socket(port)}"    value="${serverPort}"/>     
     </target>
     
     <target name="startIPlug">
@@ -99,7 +95,7 @@ Gehen Sie ins Verzeichnis:
 ${installDir}
 und rufen sie von der Kommandozeile folgendes auf
 "sh admin.sh", um im Webbrowser das iPlug unter
-der folgenden Adresse "http://localhost:8082/step1"
+der folgenden Adresse "http://localhost:8082/"
 zu konfigurieren. Anstelle von localhost koennen Sie
 auch die IP-Adresse des Computers eingeben!
 Bitte lesen Sie bzgl. der Administration die Kapitel unter

@@ -1,6 +1,8 @@
+#!/bin/sh
+
 ###
 # **************************************************-
-# Ingrid iPlug SNS
+# InGrid-iPlug DSC
 # ==================================================
 # Copyright (C) 2014 - 2016 wemove digital solutions GmbH
 # ==================================================
@@ -20,16 +22,6 @@
 # limitations under the Licence.
 # **************************************************#
 ###
-#!/bin/sh
-#
-##
-# Environment Variables
-#
-#   INGRID_JAVA_HOME Overrides JAVA_HOME.
-#
-#   INGRID_OPTS      addtional java runtime options
-#
-
 THIS="$0"
 
 # some directories
@@ -49,90 +41,124 @@ stopIplug()
 {
   echo "Try stopping ingrid component ($INGRID_HOME)..."
   if [ -f $PID ]; then
-		procid=`cat $PID`
-		idcount=`ps -p $procid | wc -l`
-		if [ $idcount -eq 2 ]; then
-			echo stopping $command, wait 3 sec to exit.
-			kill `cat $PID`
-			sleep 3
-			idcount=`ps -p $procid | wc -l`
-			if [ $idcount -eq 1 ]; then
-				echo "process ($procid) has been terminated."
-				unlink $PID
-				exit 0
-			else
-				COUNTER=1
-				SECS=0
-				while [  $COUNTER -lt 10 ]; 
-				do
-					COUNTER=$(($COUNTER + 1))
-					echo "process is still running. wait 1 more sec."
-					sleep 1
-					idcount=`ps -p $procid | wc -l`
-					if [ $idcount -eq 1 ]; then
-						SECS=$(($COUNTER + $SECS))
-					    echo "process ($procid) has been terminated after $SECS sec."
-					    unlink $PID
-					    exit 0
-					fi					
-				done
-				echo "process is still running. force kill -9."
-				kill -9 `cat $PID`
-				exit 0
-			fi 
-		else
-			echo "process is not running. Exit."
-			unlink $PID 
-		fi
-	else
-		echo "process is not running. Exit."
-	fi
+    procid=`cat $PID`
+    idcount=`ps -p $procid | wc -l`
+    if [ $idcount -eq 2 ]; then
+      echo stopping $command, wait 3 sec to exit.
+      kill `cat $PID`
+      sleep 3
+      idcount=`ps -p $procid | wc -l`
+      if [ $idcount -eq 1 ]; then
+        echo "process ($procid) has been terminated."
+        unlink $PID
+        exit 0
+      else
+        COUNTER=1
+        SECS=0
+        while [  $COUNTER -lt 10 ];
+        do
+          COUNTER=$(($COUNTER + 1))
+          echo "process is still running. wait 1 more sec."
+          sleep 1
+          idcount=`ps -p $procid | wc -l`
+          if [ $idcount -eq 1 ]; then
+            SECS=$(($COUNTER + $SECS))
+              echo "process ($procid) has been terminated after $SECS sec."
+              unlink $PID
+              exit 0
+          fi
+        done
+        echo "process is still running. force kill -9."
+        kill -9 `cat $PID`
+        exit 0
+      fi
+    else
+      echo "process is not running. Exit."
+      unlink $PID
+    fi
+  else
+    echo "process is not running. Exit."
+  fi
 }
 
 stopNoExitIplug()
 {
-  echo "Try stopping ingrid component ($INGRID_HOME)..."
+  echo "Try stopping jetty ($INGRID_HOME)..."
   if [ -f $PID ]; then
-		procid=`cat $PID`
-		idcount=`ps -p $procid | wc -l`
-		if [ $idcount -eq 2 ]; then
-			echo stopping $command, wait 3 sec to exit.
-			kill `cat $PID`
-			sleep 3
-			idcount=`ps -p $procid | wc -l`
-			if [ $idcount -eq 1 ]; then
-				echo "process ($procid) has been terminated."
-				unlink $PID
-			else
-				COUNTER=1
-				SECS=0
-				while [  $COUNTER -lt 10 ]; 
-				do
-					COUNTER=$(($COUNTER + 1))
-					echo "process is still running. wait 1 more sec."
-					sleep 1
-					idcount=`ps -p $procid | wc -l`
-					if [ $idcount -eq 1 ]; then
-						SECS=$(($COUNTER + $SECS))
-					    echo "process ($procid) has been terminated after $SECS sec."
-					    unlink $PID
-					fi					
-				done
-				echo "process is still running. force kill -9."
-				kill -9 `cat $PID`
-			fi
-		else
-			echo "process is not running. Exit."			
-		fi
+    procid=`cat $PID`
+    idcount=`ps -p $procid | wc -l`
+    if [ $idcount -eq 2 ]; then
+      echo stopping $command, wait 3 sec to exit.
+      kill `cat $PID`
+      sleep 3
+      idcount=`ps -p $procid | wc -l`
+      if [ $idcount -eq 1 ]; then
+        echo "process ($procid) has been terminated."
+        unlink $PID
+      else
+        COUNTER=1
+        SECS=0
+        while [  $COUNTER -lt 10 ];
+        do
+          COUNTER=$(($COUNTER + 1))
+          echo "process is still running. wait 1 more sec."
+          sleep 1
+          idcount=`ps -p $procid | wc -l`
+          if [ $idcount -eq 1 ]; then
+            SECS=$(($COUNTER + $SECS))
+              echo "process ($procid) has been terminated after $SECS sec."
+              unlink $PID
+          fi
+        done
+        echo "process is still running. force kill -9."
+        kill -9 `cat $PID`
+      fi
+    else
+      echo "process is not running. Exit."
+    fi
     else
       echo "process is not running. Exit."
     fi
 }
 
+prepareJavaStatement()
+{
+    # some Java parameters
+    if [ "$INGRID_JAVA_HOME" != "" ]; then
+      #echo "run java in $INGRID_JAVA_HOME"
+      JAVA_HOME=$INGRID_JAVA_HOME
+    fi
+
+    if [ "$JAVA_HOME" = "" ]; then
+      echo "Error: JAVA_HOME is not set."
+      exit 1
+    fi
+
+    JAVA=$JAVA_HOME/bin/java
+
+    # so that filenames w/ spaces are handled correctly in loops below
+    IFS=
+    # add libs to CLASSPATH
+    CLASSPATH=${CLASSPATH}:${INGRID_CONF_DIR:=$INGRID_HOME/conf}
+    for f in $INGRID_HOME/lib/*.jar; do
+      CLASSPATH=${CLASSPATH}:$f;
+    done
+    # restore ordinary behaviour
+    unset IFS
+
+    # cygwin path translation
+    if expr `uname` : 'CYGWIN*' > /dev/null; then
+      CLASSPATH=`cygpath -p -w "$CLASSPATH"`
+    fi
+
+    # run it
+    export CLASSPATH="$CLASSPATH"
+    INGRID_OPTS="-Dingrid_home=$INGRID_HOME $INGRID_OPTS"
+}
 
 startIplug()
 {
-  echo "Try starting ingrid component ($INGRID_HOME)..."
+  echo "Try starting jetty ($INGRID_HOME)..."
   if [ -f $PID ]; then
       procid=`cat $PID`
       idcount=`ps -p $procid | wc -l`
@@ -141,55 +167,18 @@ startIplug()
         exit 1
       fi
   fi
-  
-  if [ -d "$INGRID_HOME/../repository/" ]; then
-  	echo 'syncronize libs from repository...'
-	rsync -av --update --existing $INGRID_HOME/../repository/ $INGRID_HOME/lib/
-	echo 'finished syncronize.'
-  fi
-  
-  # some Java parameters
-  if [ "$INGRID_JAVA_HOME" != "" ]; then
-    #echo "run java in $INGRID_JAVA_HOME"
-    JAVA_HOME=$INGRID_JAVA_HOME
-  fi
-  
-  if [ "$JAVA_HOME" = "" ]; then
-    echo "Error: JAVA_HOME is not set."
-    exit 1
-  fi
-  
-  JAVA=$JAVA_HOME/bin/java
 
-  # CLASSPATH initially contains $INGRID_CONF_DIR, or defaults to $INGRID_HOME/conf
-  CLASSPATH=${CLASSPATH}:${INGRID_CONF_DIR:=$INGRID_HOME/conf}
-  CLASSPATH=${CLASSPATH}:$JAVA_HOME/lib/tools.jar
-  CLASSPATH=${CLASSPATH}:${INGRID_HOME}
-  
-  # so that filenames w/ spaces are handled correctly in loops below
-  IFS=
-  # add libs to CLASSPATH
-  for f in $INGRID_HOME/lib/*.jar; do
-    CLASSPATH=${CLASSPATH}:$f;
-  done
-  # restore ordinary behaviour
-  unset IFS
-  
-  # cygwin path translation
-  if expr `uname` : 'CYGWIN*' > /dev/null; then
-    CLASSPATH=`cygpath -p -w "$CLASSPATH"`
-  fi
+  prepareJavaStatement
 
-  export CLASSPATH="$CLASSPATH"
-  INGRID_OPTS="-Dingrid_home=$INGRID_HOME $INGRID_OPTS"
-  CLASS=de.ingrid.iplug.PlugServer
+  CLASS=de.ingrid.iplug.sns.SnsPlug
 
-  # run it
-  exec nohup "$JAVA" $INGRID_OPTS $CLASS $PARAMETER > console.log &
-  
-  echo "ingrid component ($INGRID_HOME) started."
+  exec nohup "$JAVA" $INGRID_OPTS $CLASS > console.log &
+
+  echo "jetty ($INGRID_HOME) started."
   echo $! > $PID
 }
+
+
 
 # make sure the current user has the privilege to execute that script
 if [ "$INGRID_USER" = "" ]; then
@@ -200,11 +189,15 @@ STARTING_USER=`whoami`
 if [ "$STARTING_USER" != "$INGRID_USER" ]; then
   echo "You must be user '$INGRID_USER' to start that script! Set INGRID_USER in environment to overwrite this."
   exit 1
-fi 
+fi
 
 case "$1" in
   start)
-    PARAMETER="--plugdescription conf/plugdescription.xml --descriptor conf/communication.xml"
+    startIplug
+    ;;
+  debug)
+    INGRID_OPTS="$INGRID_OPTS -agentlib:jdwp=transport=dt_socket,address=7925,server=y,suspend=y"
+    echo "Startup is delayed until remote connected to port 7925 ..."
     startIplug
     ;;
   stop)
@@ -214,7 +207,6 @@ case "$1" in
     stopNoExitIplug
     echo "sleep 3 sec ..."
     sleep 3
-    PARAMETER="--plugdescription conf/plugdescription.xml --descriptor conf/communication.xml"
     startIplug
     ;;
   status)
@@ -231,12 +223,13 @@ case "$1" in
     fi
     ;;
   resetPassword)
-    PARAMETER="--resetPassword admin"
-    startIplug
-    echo "Resetted password to 'admin' ... please restart iPlug."
+    prepareJavaStatement
+    CLASS=de.ingrid.admin.command.AdminManager
+    exec "$JAVA" $INGRID_OPTS $CLASS reset_password $2
+    echo "Please restart the iPlug to read updated configuration."
     ;;
   *)
-    echo "Usage: $0 {start|stop|restart|status|resetPassword}"
+    echo "Usage: $0 {start|stop|restart|status|resetPassword <newPassword>}"
     exit 1
     ;;
 esac

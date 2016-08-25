@@ -1,9 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
+<%--
   **************************************************-
-  Ingrid iPlug SNS
+  Ingrid iPlug XML
   ==================================================
-  Copyright (C) 2014 wemove digital solutions GmbH
+  Copyright (C) 2014 - 2016 wemove digital solutions GmbH
   ==================================================
   Licensed under the EUPL, Version 1.1 or – as soon they will be
   approved by the European Commission - subsequent versions of the
@@ -20,17 +19,7 @@
   See the Licence for the specific language governing permissions and
   limitations under the Licence.
   **************************************************#
-  -->
-
-<communication xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:noNamespaceSchemaLocation="communication.xsd">
-	<client name="peerName">
-		<connections>
-			<server name="serverName">
-				<socket port="serverPort" timeout="10" ip="serverIp" />
-				<messages maximumSize="1048576" threadCount="100" />
-			</server>
-		</connections>
-	</client>
-	<messages queueSize="2000" handleTimeout="10"/>
-</communication>
+  --%>
+<%
+response.sendRedirect("base/welcome.html");
+%>
