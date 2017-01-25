@@ -2,13 +2,14 @@
   <parent>
     <artifactId>ingrid-releases-pom</artifactId>
     <groupId>de.ingrid</groupId>
-    <version>3.6.2</version>
+    <version>4.0.1</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>ingrid-iplug-sns</artifactId>
   <packaging>jar</packaging>
   <version>4.0.1-SNAPSHOT</version>
   <name>Ingrid iPlug SNS</name>
+  <description>This iPlug is an interface to an SNS service can be queried by the iBus.</description>
   <scm>
     <connection>scm:git:git@github.com:informationgrid/ingrid-iplug-sns.git</connection>
     <developerConnection>scm:git:git@github.com:informationgrid/ingrid-iplug-sns.git</developerConnection>
