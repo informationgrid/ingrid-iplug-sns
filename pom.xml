@@ -7,7 +7,7 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>ingrid-iplug-sns</artifactId>
   <packaging>jar</packaging>
-  <version>4.0.1</version>
+  <version>4.0.2</version>
   <name>Ingrid iPlug SNS</name>
   <description>This iPlug is an interface to an SNS service can be queried by the iBus.</description>
   <scm>
@@ -36,7 +36,7 @@
     <dependency>
       <groupId>de.ingrid</groupId>
       <artifactId>ingrid-base-webapp</artifactId>
-      <version>4.0.1</version>
+      <version>4.0.2</version>
       <exclusions>
         <exclusion>
           <groupId>org.elasticsearch</groupId>
@@ -47,7 +47,7 @@
     <dependency>
       <groupId>de.ingrid</groupId>
       <artifactId>ingrid-base-webapp</artifactId>
-      <version>4.0.1</version>
+      <version>4.0.2</version>
       <classifier>res</classifier>
       <type>zip</type>
       <exclusions>
@@ -91,7 +91,7 @@
     <dependency>
       <groupId>de.ingrid</groupId>
       <artifactId>ingrid-external-service-sns</artifactId>
-      <version>3.6.2.1</version>
+      <version>4.0.2</version>
     </dependency>
     <dependency>
       <groupId>de.ingrid</groupId>
