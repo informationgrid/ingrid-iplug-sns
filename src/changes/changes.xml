@@ -32,6 +32,9 @@
       <action type="fix" dev="wemove" issue="REDMINE-616">
         Fixed handling of multiple values inside an index field on detail request.
       </action>
+      <action type="fix" dev="wemove" issue="REDMINE-617">
+        Fixed handling of events that are not assigned to any category.
+      </action>
     </release>
 
     <release version="4.0.1" date="2017-02-01" description="Release 4.0.1">

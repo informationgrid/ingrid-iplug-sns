@@ -36,6 +36,8 @@ import de.ingrid.utils.IngridHit;
 import de.ingrid.utils.IngridHitDetail;
 import de.ingrid.utils.IngridHits;
 import de.ingrid.utils.PlugDescription;
+import de.ingrid.utils.metadata.DefaultMetadataInjector;
+import de.ingrid.utils.metadata.IMetadataInjector;
 import de.ingrid.utils.query.FieldQuery;
 import de.ingrid.utils.query.IngridQuery;
 import de.ingrid.utils.query.TermQuery;
@@ -50,6 +52,7 @@ public class SNSInterfaceTest extends TestCase {
     private static PlugDescription fPlugDescription;
 
     static {
+        fPlugDescription = new PlugDescription();
         SnsPlug.conf = new Configuration();
         SnsPlug.conf.snsLanguage = "de";
         SnsPlug.conf.snsPrefix = "agsNotation";
@@ -70,7 +73,7 @@ public class SNSInterfaceTest extends TestCase {
         JettyStarter.getInstance().config = new Config();
         JettyStarter.getInstance().config.communicationProxyUrl = "ibus-client-test";
         
-        this.fPlug = new SnsPlug(null, null, null);
+        this.fPlug = new SnsPlug(new DefaultMetadataInjector[0], null, null);
         this.fPlug.configure(fPlugDescription);
     }
 
