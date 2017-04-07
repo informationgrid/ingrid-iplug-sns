@@ -40,6 +40,7 @@ import de.ingrid.utils.IngridHit;
 import de.ingrid.utils.IngridHitDetail;
 import de.ingrid.utils.IngridHits;
 import de.ingrid.utils.PlugDescription;
+import de.ingrid.utils.metadata.DefaultMetadataInjector;
 import de.ingrid.utils.query.FieldQuery;
 import de.ingrid.utils.query.IngridQuery;
 import de.ingrid.utils.query.TermQuery;
@@ -79,7 +80,7 @@ public class SnsPlugTest extends TestCase {
      * @throws Exception
      */
     public void testTOPIC_FROM_TERM() throws Exception {
-        SnsPlug plug = new SnsPlug(null, null, null);
+        SnsPlug plug = new SnsPlug(new DefaultMetadataInjector[0], null, null);
         plug.configure(fPlugDescription);
         String q = "Wasser";
         IngridQuery query = QueryStringParser.parse(q);
@@ -101,7 +102,7 @@ public class SnsPlugTest extends TestCase {
      * @throws Exception
      */
     public void testTOPIC_FROM_TEXT() throws Exception {
-    	SnsPlug plug = new SnsPlug(null, null, null);
+    	SnsPlug plug = new SnsPlug(new DefaultMetadataInjector[0], null, null);
         plug.configure(fPlugDescription);
         String q = "\"Tschernobyl liegt in Halle gefunden\"";
         IngridQuery query = new IngridQuery();
@@ -121,7 +122,7 @@ public class SnsPlugTest extends TestCase {
      * @throws Exception
      */
     public void testTOPIC_FROM_TEXT_WITH_FILTER() throws Exception {
-    	SnsPlug plug = new SnsPlug(null, null, null);
+    	SnsPlug plug = new SnsPlug(new DefaultMetadataInjector[0], null, null);
         plug.configure(fPlugDescription);
         String q = "Frankfurt";
         IngridQuery query = new IngridQuery();
@@ -142,7 +143,7 @@ public class SnsPlugTest extends TestCase {
      * @throws Exception
      */
     public void testTOPIC_FROM_TOPIC() throws Exception {
-    	SnsPlug plug = new SnsPlug(null, null, null);
+    	SnsPlug plug = new SnsPlug(new DefaultMetadataInjector[0], null, null);
         plug.configure(fPlugDescription);
         String q = "http://umthes.innoq.com/_00500855";
         IngridQuery query = QueryStringParser.parse(q);
@@ -158,7 +159,7 @@ public class SnsPlugTest extends TestCase {
     }
 
     public void testTOPIC_FROM_ID() throws Exception {
-    	SnsPlug plug = new SnsPlug(null, null, null);
+    	SnsPlug plug = new SnsPlug(new DefaultMetadataInjector[0], null, null);
         plug.configure(fPlugDescription);
         String q = SNSUtil.marshallTopicId("https://sns.uba.de/umthes/_00027061");
         IngridQuery query = QueryStringParser.parse(q);
@@ -180,7 +181,7 @@ public class SnsPlugTest extends TestCase {
      * @throws Exception
      */
     public void testANNIVERSARY() throws Exception {
-    	SnsPlug plug = new SnsPlug(null, null, null);
+    	SnsPlug plug = new SnsPlug(new DefaultMetadataInjector[0], null, null);
         plug.configure(fPlugDescription);
         String q = "2006-04-06";
         IngridQuery query = QueryStringParser.parse(q);
@@ -205,7 +206,7 @@ public class SnsPlugTest extends TestCase {
      * @throws Exception
      */
     public void testSIMILARTERMS() throws Exception {
-    	SnsPlug plug = new SnsPlug(null, null, null);
+    	SnsPlug plug = new SnsPlug(new DefaultMetadataInjector[0], null, null);
         plug.configure(fPlugDescription);
         String q = "blau";
         IngridQuery query = QueryStringParser.parse(q);
@@ -224,7 +225,7 @@ public class SnsPlugTest extends TestCase {
      * @throws Exception
      */
     public void testEVENT_AT() throws Exception {
-    	SnsPlug plug = new SnsPlug(null, null, null);
+    	SnsPlug plug = new SnsPlug(new DefaultMetadataInjector[0], null, null);
         plug.configure(fPlugDescription);
         String q = "tschernobyl";
         IngridQuery query = QueryStringParser.parse(q);
@@ -246,7 +247,7 @@ public class SnsPlugTest extends TestCase {
      * @throws Exception
      */
     public void testEVENT_WITHOUT_TERM() throws Exception {
-    	SnsPlug plug = new SnsPlug(null, null, null);
+    	SnsPlug plug = new SnsPlug(new DefaultMetadataInjector[0], null, null);
         plug.configure(fPlugDescription);
         String q = "";
         IngridQuery query = QueryStringParser.parse(q);
@@ -268,7 +269,7 @@ public class SnsPlugTest extends TestCase {
      * @throws Exception
      */
     public void testEVENT_WITHOUT_TERM_KATASTROPHE() throws Exception {
-    	SnsPlug plug = new SnsPlug(null, null, null);
+    	SnsPlug plug = new SnsPlug(new DefaultMetadataInjector[0], null, null);
         plug.configure(fPlugDescription);
         String q = "";
         IngridQuery query = QueryStringParser.parse(q);
@@ -290,7 +291,7 @@ public class SnsPlugTest extends TestCase {
      * @throws Exception
      */
     public void testEVENT_AT_FILTER_NOOUTPUT() throws Exception {
-    	SnsPlug plug = new SnsPlug(null, null, null);
+    	SnsPlug plug = new SnsPlug(new DefaultMetadataInjector[0], null, null);
         plug.configure(fPlugDescription);
         String q = "Tschernobyl";
         IngridQuery query = QueryStringParser.parse(q);
@@ -308,7 +309,7 @@ public class SnsPlugTest extends TestCase {
      * @throws Exception
      */
     public void testEVENT_BETWEEN() throws Exception {
-    	SnsPlug plug = new SnsPlug(null, null, null);
+    	SnsPlug plug = new SnsPlug(new DefaultMetadataInjector[0], null, null);
         plug.configure(fPlugDescription);
         String q = "Tschernobyl";
         IngridQuery query = QueryStringParser.parse(q);
@@ -330,7 +331,7 @@ public class SnsPlugTest extends TestCase {
      * @throws Exception
      */
     public void testEVENT_FROM() throws Exception {
-    	SnsPlug plug = new SnsPlug(null, null, null);
+    	SnsPlug plug = new SnsPlug(new DefaultMetadataInjector[0], null, null);
         plug.configure(fPlugDescription);
         String q = "Tschernobyl";
         IngridQuery query = QueryStringParser.parse(q);
@@ -353,7 +354,7 @@ public class SnsPlugTest extends TestCase {
      * @throws Exception
      */
     public void testEVENT_FROM_BUNDESWALDGESETZ() throws Exception {
-    	SnsPlug plug = new SnsPlug(null, null, null);
+    	SnsPlug plug = new SnsPlug(new DefaultMetadataInjector[0], null, null);
         plug.configure(fPlugDescription);
         String q = "Bundeswaldgesetz";
         IngridQuery query = QueryStringParser.parse(q);
@@ -380,7 +381,7 @@ public class SnsPlugTest extends TestCase {
      * @throws Exception
      */
     public void testEVENT_TO() throws Exception {
-    	SnsPlug plug = new SnsPlug(null, null, null);
+    	SnsPlug plug = new SnsPlug(new DefaultMetadataInjector[0], null, null);
         plug.configure(fPlugDescription);
         String q = "Tschernobyl";
         IngridQuery query = QueryStringParser.parse(q);
@@ -401,7 +402,7 @@ public class SnsPlugTest extends TestCase {
      * @throws Exception
      */
     public void testEVENT_NODATESET() throws Exception {
-    	SnsPlug plug = new SnsPlug(null, null, null);
+    	SnsPlug plug = new SnsPlug(new DefaultMetadataInjector[0], null, null);
         plug.configure(fPlugDescription);
         String q = "tschernobyl";
         IngridQuery query = QueryStringParser.parse(q);
@@ -423,7 +424,7 @@ public class SnsPlugTest extends TestCase {
     public void testSIMILARLOCATIONS_FROM_TOPIC() throws Exception {
         final String q = "GEMEINDE0325502016";
 
-        SnsPlug plug = new SnsPlug(null, null, null);
+        SnsPlug plug = new SnsPlug(new DefaultMetadataInjector[0], null, null);
         plug.configure(fPlugDescription);
         IngridQuery query = new IngridQuery();
         query.addField(new FieldQuery(true, false, "datatype", IDataTypes.SNS));
@@ -445,7 +446,7 @@ public class SnsPlugTest extends TestCase {
     public void testDateInFuture() throws Exception {
         final String q = "";
 
-        SnsPlug plug = new SnsPlug(null, null, null);
+        SnsPlug plug = new SnsPlug(new DefaultMetadataInjector[0], null, null);
         plug.configure(fPlugDescription);
         IngridQuery query = QueryStringParser.parse(q);
         query.putInt(Topic.REQUEST_TYPE, Topic.EVENT_FROM_TOPIC);
@@ -466,7 +467,7 @@ public class SnsPlugTest extends TestCase {
      * @throws Exception
      */
     public void testMORE_THAN_TEN_RESULTS() throws Exception {
-    	SnsPlug plug = new SnsPlug(null, null, null);
+    	SnsPlug plug = new SnsPlug(new DefaultMetadataInjector[0], null, null);
         plug.configure(fPlugDescription);
         String q = "";
         IngridQuery query = QueryStringParser.parse(q);
@@ -488,7 +489,7 @@ public class SnsPlugTest extends TestCase {
      * @throws Exception
      */
     public void testSIMILARTERMSINENGLISH() throws Exception {
-    	SnsPlug plug = new SnsPlug(null, null, null);
+    	SnsPlug plug = new SnsPlug(new DefaultMetadataInjector[0], null, null);
         plug.configure(fPlugDescription);
         String q = "water";
         IngridQuery query = QueryStringParser.parse(q);
@@ -511,7 +512,7 @@ public class SnsPlugTest extends TestCase {
 	 * @throws Exception
 	 */
 	public void testGETHIERACHY() throws Exception {
-		SnsPlug plug = new SnsPlug(null, null, null);
+		SnsPlug plug = new SnsPlug(new DefaultMetadataInjector[0], null, null);
         plug.configure(fPlugDescription);
 		String q = "toplevel";
 		IngridQuery query = QueryStringParser.parse(q);
