@@ -191,7 +191,7 @@ public class SNSServiceClientTest extends TestCase {
         try {
             Resource hierachy = adapter.getHierachy(4, "up", true, "de", topicID);
             assertNotNull(hierachy);
-            assertEquals(107, RDFUtils.getConcepts(hierachy.getModel()).toList().size());
+            assertTrue(RDFUtils.getConcepts(hierachy.getModel()).toList().size() > 100);
         } catch (Exception e) {
             fail("No exception should be thrown: " + e.getMessage());
         }
