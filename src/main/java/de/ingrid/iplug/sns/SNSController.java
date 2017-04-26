@@ -426,7 +426,7 @@ public class SNSController {
     private DetailedTopic[] toDetailedTopicArray(Event[] events, String plugId, String lang, int length) {
         final List<DetailedTopic> returnList = new ArrayList<DetailedTopic>();
         int count = Math.min(length, events.length);
-        for (int i = 0; i < count; i++) {
+        for (int i = 0; i < events.length; i++) {
             if(events[i] != null){
                 returnList.add(buildDetailedTopicFromEvent(events[i], plugId, lang));
             }
@@ -975,7 +975,7 @@ public class SNSController {
     public Topic[] getAnniversaryFromTopic(String searchTerm, String lang, int length, String plugId,
             int[] totalSize) throws Exception {
         Event[] anniversaries = chronicleService.getAnniversaries(searchTerm, new Locale(lang));
-        return toDetailedTopicArray(anniversaries, plugId, lang, 10);
+        return toDetailedTopicArray(anniversaries, plugId, lang, length);
     }
 
 	/**

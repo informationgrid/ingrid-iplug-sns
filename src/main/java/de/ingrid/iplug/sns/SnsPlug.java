@@ -156,7 +156,7 @@ public class SnsPlug extends HeartBeatPlug {
 					break;
 				case Topic.ANNIVERSARY_FROM_TOPIC:
 					hitsTemp = this.fSnsController.getAnniversaryFromTopic(getSearchTerm(query), lang,
-							Integer.MAX_VALUE, this.fPlugId, totalSize);
+							length, this.fPlugId, totalSize);
 					break;
 				case Topic.SIMILARTERMS_FROM_TOPIC:
 					hitsTemp = this.fSnsController.getSimilarTermsFromTopic(getSearchTerm(query), Integer.MAX_VALUE,
