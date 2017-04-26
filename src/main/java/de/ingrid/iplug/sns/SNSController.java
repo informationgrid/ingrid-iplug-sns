@@ -427,7 +427,9 @@ public class SNSController {
         final List<DetailedTopic> returnList = new ArrayList<DetailedTopic>();
         int count = Math.min(length, events.length);
         for (int i = 0; i < count; i++) {
-        	returnList.add(buildDetailedTopicFromEvent(events[i], plugId, lang));
+            if(events[i] != null){
+                returnList.add(buildDetailedTopicFromEvent(events[i], plugId, lang));
+            }
         }
 
 //        return returnList.toArray(new DetailedTopic[returnList.size()]);

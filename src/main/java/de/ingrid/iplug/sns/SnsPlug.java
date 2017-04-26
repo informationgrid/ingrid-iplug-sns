@@ -398,7 +398,9 @@ public class SnsPlug extends HeartBeatPlug {
 			throws Exception {
 		IngridHitDetail[] details = new IngridHitDetail[hits.length];
 		for (int i = 0; i < hits.length; i++) {
-			details[i] = getDetail(hits[i], query, requestedFields);
+		    if(hits[i] != null){
+		        details[i] = getDetail(hits[i], query, requestedFields);
+		    }
 		}
 		return details;
 	}
