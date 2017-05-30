@@ -28,14 +28,19 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd"
     default-init-method="init" default-destroy-method="destroy">
 
-    <!-- PortalU: always commit these ones to svn due to tests ! -->
-    <bean id="thesaurusService" class="de.ingrid.external.sns.SNSService" />
+    <!-- InGrid-Portal: always commit these ones to svn due to tests ! -->
 	<!-- <bean id="gazetteerService" class="de.ingrid.external.sns.SNSService" /> -->
     <bean id="gazetteerService" class="de.ingrid.external.wfs.WFSService" />
 	<bean id="fullClassifyService" class="de.ingrid.external.sns.SNSService" />
 	<bean id="chronicleService" class="de.ingrid.external.sns.SNSService" />
+    <!-- UMTHES Thesaurus from SNS -->
+	<bean id="thesaurusService" class="de.ingrid.external.sns.SNSService" />
+	<!-- GEMET Thesaurus -->
+<!--
+    <bean id="thesaurusService" class="de.ingrid.external.gemet.GEMETService" />
+-->
 
-    <!-- GS Soil: activate these ones on GS Soil server ! -->
+    <!-- GS Soil: activate these ones for GS Soil on GS Soil server (comment InGrid ones above) ! -->
     <!-- bean id="thesaurusService" class="org.edisoft.eu.gssoil.semanticservice.thesaurus.ThesaurusServiceImpl" />
     <bean id="gazetteerService" class="org.edisoft.eu.gssoil.semanticservice.gazetteer.GazetteerServiceImpl" />
     <bean id="fullClassifyService" class="org.edisoft.eu.gssoil.semanticservice.classify.FullClassifyServiceImpl" /-->
