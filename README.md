@@ -15,7 +15,7 @@ Instead of the SNS other interfaces can be used to provide the service functiona
 Features
 --------
 
-- connects thesarus, gazeteer and chronics to ingrid components
+- connects thesaurus, gazeteer and chronics to ingrid components
 - abstracts different service providers
 - GUI for easy administration
 

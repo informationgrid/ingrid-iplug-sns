@@ -28,6 +28,12 @@
     <author email="joachim@wemove.com">Joachim Müller</author>
   </properties>
   <body>
+    <release version="4.0.3-SNAPSHOT" date="????-??-??" description="??">
+      <action type="add" dev="wemove" issue="REDMINE-18">
+        Add GEMET Thesaurus Service to be activated in external-services.xml
+      </action>
+    </release>
+
     <release version="4.0.2" date="2017-04-06" description="Release 4.0.2">
       <action type="fix" dev="wemove" issue="REDMINE-616">
         Fixed handling of multiple values inside an index field on detail request.
