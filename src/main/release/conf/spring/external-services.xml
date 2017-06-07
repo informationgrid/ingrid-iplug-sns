@@ -29,16 +29,20 @@
     default-init-method="init" default-destroy-method="destroy">
 
     <!-- InGrid-Portal -->
+
+    <!-- Gazetteer from SNS -->
 	<!-- <bean id="gazetteerService" class="de.ingrid.external.sns.SNSService" /> -->
+    <!-- Gazetteer from WFS -->
 	<bean id="gazetteerService" class="de.ingrid.external.wfs.WFSService" />
+
 	<bean id="fullClassifyService" class="de.ingrid.external.sns.SNSService" />
     <bean id="chronicleService" class="de.ingrid.external.sns.SNSService" />
+
     <!-- UMTHES Thesaurus from SNS -->
 	<bean id="thesaurusService" class="de.ingrid.external.sns.SNSService" />
 	<!-- GEMET Thesaurus -->
-<!--
-    <bean id="thesaurusService" class="de.ingrid.external.gemet.GEMETService" />
--->
+	<!-- <bean id="thesaurusService" class="de.ingrid.external.gemet.GEMETService" /> -->
+
 
     <!-- GS Soil: activate these ones for GS Soil on GS Soil server (comment InGrid ones above) ! -->
     <!-- bean id="thesaurusService" class="org.edisoft.eu.gssoil.semanticservice.thesaurus.ThesaurusServiceImpl" />
