@@ -28,9 +28,12 @@
     <author email="joachim@wemove.com">Joachim Müller</author>
   </properties>
   <body>
-    <release version="4.0.3-SNAPSHOT" date="????-??-??" description="??">
+    <release version="4.0.3" date="2017-06-13" description="Release 4.0.3">
       <action type="add" dev="wemove" issue="REDMINE-18">
         Add GEMET Thesaurus Service to be activated in external-services.xml
+      </action>
+      <action type="add" dev="wemove" issue="">
+        Prepare for docker deployment.
       </action>
     </release>
 
