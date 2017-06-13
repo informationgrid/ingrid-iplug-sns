@@ -156,7 +156,7 @@ public class SnsPlug extends HeartBeatPlug {
 					break;
 				case Topic.ANNIVERSARY_FROM_TOPIC:
 					hitsTemp = this.fSnsController.getAnniversaryFromTopic(getSearchTerm(query), lang,
-							Integer.MAX_VALUE, this.fPlugId, totalSize);
+							length, this.fPlugId, totalSize);
 					break;
 				case Topic.SIMILARTERMS_FROM_TOPIC:
 					hitsTemp = this.fSnsController.getSimilarTermsFromTopic(getSearchTerm(query), Integer.MAX_VALUE,
@@ -398,7 +398,9 @@ public class SnsPlug extends HeartBeatPlug {
 			throws Exception {
 		IngridHitDetail[] details = new IngridHitDetail[hits.length];
 		for (int i = 0; i < hits.length; i++) {
-			details[i] = getDetail(hits[i], query, requestedFields);
+		    if(hits[i] != null){
+		        details[i] = getDetail(hits[i], query, requestedFields);
+		    }
 		}
 		return details;
 	}
