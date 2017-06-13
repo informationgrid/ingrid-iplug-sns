@@ -2,7 +2,7 @@
   <parent>
     <artifactId>ingrid-releases-pom</artifactId>
     <groupId>de.ingrid</groupId>
-    <version>4.0.1</version>
+    <version>4.0.3-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>ingrid-iplug-sns</artifactId>
@@ -225,6 +225,13 @@
           </excludes>
         </configuration>
       </plugin>
+      
+      <!-- Activate docker image build and push integration (see parent-pom) -->
+      <plugin>
+        <groupId>com.spotify</groupId>
+        <artifactId>docker-maven-plugin</artifactId>
+      </plugin>
+      
       <plugin>
         <groupId>external.atlassian.jgitflow</groupId>
         <artifactId>jgitflow-maven-plugin</artifactId>
