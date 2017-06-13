@@ -32,6 +32,9 @@
       <action type="add" dev="wemove" issue="REDMINE-18">
         Add GEMET Thesaurus Service to be activated in external-services.xml
       </action>
+      <action type="add" dev="wemove" issue="REDMINE-363">
+        Add English translation to keywords.
+      </action>
       <action type="add" dev="wemove" issue="">
         Prepare for docker deployment.
       </action>
