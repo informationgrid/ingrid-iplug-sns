@@ -2,7 +2,7 @@
   <parent>
     <artifactId>ingrid-releases-pom</artifactId>
     <groupId>de.ingrid</groupId>
-    <version>4.0.3</version>
+    <version>4.0.4-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>ingrid-iplug-sns</artifactId>
@@ -224,12 +224,6 @@
             <exclude>**/*LocationsTest.java</exclude>
           </excludes>
         </configuration>
-      </plugin>
-      
-      <!-- Activate docker image build and push integration (see parent-pom) -->
-      <plugin>
-        <groupId>com.spotify</groupId>
-        <artifactId>docker-maven-plugin</artifactId>
       </plugin>
       
       <plugin>
