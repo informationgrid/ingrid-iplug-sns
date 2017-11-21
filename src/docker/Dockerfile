@@ -12,6 +12,7 @@ RUN unzip ingrid-iplug-sns*-installer.jar -d /tmp \
 
 # COPY ./files /
 
+RUN touch /opt/ingrid/ingrid-iplug-sns/conf/config.override.properties
 WORKDIR /opt/ingrid/ingrid-iplug-sns
 EXPOSE 80
 
