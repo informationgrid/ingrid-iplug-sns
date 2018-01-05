@@ -180,7 +180,7 @@ public class SNSServiceClientTest extends TestCase {
         try {
             Resource hierachy = adapter.getHierachy(4, "up", false, "de", topicID);
             assertNotNull(hierachy);
-            assertEquals(2, RDFUtils.getConcepts(hierachy.getModel()).toList().size());
+            assertEquals(4, RDFUtils.getConcepts(hierachy.getModel()).toList().size());
         } catch (Exception e) {
             fail("No exception should be thrown: " + e.getMessage());
         }
