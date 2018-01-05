@@ -2,12 +2,12 @@
   <parent>
     <artifactId>ingrid-releases-pom</artifactId>
     <groupId>de.ingrid</groupId>
-    <version>4.0.3</version>
+    <version>4.2.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>ingrid-iplug-sns</artifactId>
   <packaging>jar</packaging>
-  <version>4.0.3</version>
+  <version>4.2.0</version>
   <name>Ingrid iPlug SNS</name>
   <description>This iPlug is an interface to an SNS service can be queried by the iBus.</description>
   <scm>
@@ -28,6 +28,11 @@
         <groupId>xml-apis</groupId>
         <artifactId>xml-apis</artifactId>
         <version>1.4.01</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpclient</artifactId>
+        <version>4.2.6</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -224,12 +229,6 @@
             <exclude>**/*LocationsTest.java</exclude>
           </excludes>
         </configuration>
-      </plugin>
-      
-      <!-- Activate docker image build and push integration (see parent-pom) -->
-      <plugin>
-        <groupId>com.spotify</groupId>
-        <artifactId>docker-maven-plugin</artifactId>
       </plugin>
       
       <plugin>
