@@ -29,6 +29,12 @@
   </properties>
   <body>
 
+    <release version="4.2.1" date="2018-01-19" description="Release 4.2.1">
+      <action type="fix" dev="wemove" issue="946">
+        Adapted to changed API of WFS-Service.
+      </action>
+    </release>
+
     <release version="4.2.0" date="2018-01-05" description="Release 4.2.0">
       <action type="add" dev="wemove">
         Added docker integration.
