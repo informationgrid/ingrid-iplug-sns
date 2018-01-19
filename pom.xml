@@ -254,6 +254,13 @@
           <noDeploy>true</noDeploy>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-changes-plugin</artifactId>
+        <configuration>
+          <smtpHost>mail.informationgrid.eu</smtpHost>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 </project>
