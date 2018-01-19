@@ -50,7 +50,7 @@ pipeline {
                     // check is release version
                     // deploy to distribution
                     // send release email
-                    sh 'mvn clean deploy -Pdocker,release'
+                    sh 'mvn clean deploy -Pdocker,release -Dchanges.smtpHost=mail.informationgrid.eu'
                 }
             }
         }
