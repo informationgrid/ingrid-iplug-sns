@@ -29,6 +29,12 @@
   </properties>
   <body>
 
+    <release version="4.3.0-SNAPSHOT" date="2018-??-??" description="">
+      <action type="fix" dev="wemove" issue="REDMINE-965">
+        Fixed access to GeoThesaurus WFS Service with Java8 162, update dependency.
+      </action>
+    </release>
+    
     <release version="4.2.0" date="2018-01-05" description="Release 4.2.0">
       <action type="add" dev="wemove">
         Added docker integration.

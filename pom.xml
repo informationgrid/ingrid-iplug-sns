@@ -111,7 +111,7 @@
     <dependency>
       <groupId>de.ingrid</groupId>
       <artifactId>ingrid-external-service-wfs</artifactId>
-      <version>4.2.1-SNAPSHOT</version>
+      <version>4.3.0-SNAPSHOT</version>
     </dependency>
 
     <dependency>
