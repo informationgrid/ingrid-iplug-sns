@@ -29,6 +29,21 @@
   </properties>
   <body>
 
+    <release version="4.3.0" date="2018-03-26" description="Release 4.3.0">
+      <action type="fix" dev="wemove" issue="993">
+        Fix language of Geothesaurus result (WFS), now always german if multiple languages.
+      </action>
+    </release>
+
+    <release version="4.2.1" date="2018-02-08" description="Release 4.2.1">
+      <action type="fix" dev="wemove" issue="965">
+        Fix problems using WFS-Service on Java8 162.
+      </action>
+      <action type="fix" dev="wemove" issue="946">
+        Adapted to changed API of WFS-Service.
+      </action>
+    </release>
+
     <release version="4.2.0" date="2018-01-05" description="Release 4.2.0">
       <action type="add" dev="wemove">
         Added docker integration.

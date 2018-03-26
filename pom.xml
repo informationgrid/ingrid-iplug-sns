@@ -2,12 +2,12 @@
   <parent>
     <artifactId>ingrid-releases-pom</artifactId>
     <groupId>de.ingrid</groupId>
-    <version>4.2.0</version>
+    <version>4.2.2</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>ingrid-iplug-sns</artifactId>
   <packaging>jar</packaging>
-  <version>4.2.0</version>
+  <version>4.3.0</version>
   <name>Ingrid iPlug SNS</name>
   <description>This iPlug is an interface to an SNS service can be queried by the iBus.</description>
   <scm>
@@ -111,7 +111,7 @@
     <dependency>
       <groupId>de.ingrid</groupId>
       <artifactId>ingrid-external-service-wfs</artifactId>
-      <version>3.6.1</version>
+      <version>4.3.0</version>
     </dependency>
 
     <dependency>
@@ -136,9 +136,9 @@
   <!-- NEVER DELETE: InGrid repo needed for download of parent pom if not present ! -->
   <repositories>
     <repository>
-      <id>de.ingrid.all</id>
-      <name>InGrid Repo Maven</name>
-      <url>https://dev.informationgrid.eu/archiva/repository/ingrid-all</url>
+      <id>nexus</id>
+      <name>Nexus Repo</name>
+      <url>https://nexus.informationgrid.eu/repository/maven-public</url>
     </repository>
   </repositories>
   <build>
