@@ -29,7 +29,7 @@
   </properties>
   <body>
 
-    <release version="4.3.0-SNAPSHOT" date="2018-??-??" description="">
+    <release version="4.3.0" date="2018-03-26" description="Release 4.3.0">
       <action type="fix" dev="wemove" issue="993">
         Fix language of Geothesaurus result (WFS), now always german if multiple languages.
       </action>
