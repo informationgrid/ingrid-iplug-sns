@@ -49,7 +49,7 @@ import de.ingrid.iplug.sns.utils.Topic;
  * @author $Author: ${lastedit}
  * 
  */
-public class SNSControllerTest extends TestCase {
+public class SNSControllerTestLocal extends TestCase {
 
     private static SNSClient fClient;
 
