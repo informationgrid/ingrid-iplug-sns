@@ -36,9 +36,9 @@ import de.ingrid.external.sns.SNSClient;
  */
 public class SNSControllerPerformanceTestLocal extends TestCase {
 
-    private SNSControllerTest fSNSControllerTest;
+    private SNSControllerTestLocal fSNSControllerTest;
     
-    private SNSIndexingInterfaceTest fSNSIndexingInterfaceTest;
+    private SNSIndexingInterfaceTestLocal fSNSIndexingInterfaceTest;
 
     private final int fMaxLoops = 10;
 
@@ -48,10 +48,10 @@ public class SNSControllerPerformanceTestLocal extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
 
-        this.fSNSIndexingInterfaceTest = new SNSIndexingInterfaceTest();
+        this.fSNSIndexingInterfaceTest = new SNSIndexingInterfaceTestLocal();
         this.fSNSIndexingInterfaceTest.setSNSIndexingInterface(new SNSIndexingInterface("ms", "m3d1asyl3", "de"));
         
-        this.fSNSControllerTest = new SNSControllerTest();
+        this.fSNSControllerTest = new SNSControllerTestLocal();
         SNSClient snsClient = new SNSClient("ms", "m3d1asyl3", "de");
         snsClient.setTimeout(180000);
         this.fSNSControllerTest.setSNSClient(snsClient);

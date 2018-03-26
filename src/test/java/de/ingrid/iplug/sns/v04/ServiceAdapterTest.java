@@ -30,7 +30,7 @@ package de.ingrid.iplug.sns.v04;
 
 import junit.framework.TestCase;
 import de.ingrid.external.sns.SNSClient;
-import de.ingrid.iplug.sns.SNSControllerTest;
+import de.ingrid.iplug.sns.SNSControllerTestLocal;
 import de.ingrid.iplug.sns.SNSServiceClientTest;
 
 /**
@@ -47,7 +47,7 @@ public class ServiceAdapterTest extends TestCase {
      * @throws Exception
      */
     public void testCommunicationWithSNS() throws Exception {
-        SNSControllerTest controller = new SNSControllerTest();
+        SNSControllerTestLocal controller = new SNSControllerTestLocal();
         controller.setSNSClient(new SNSClient("ms", "m3d1asyl3", "de"));
         
         controller.testGetAssociatedTopics();

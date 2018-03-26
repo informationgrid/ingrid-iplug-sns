@@ -33,7 +33,7 @@ import junit.framework.TestCase;
 /**
  * 
  */
-public class SNSIndexingInterfaceTest extends TestCase {
+public class SNSIndexingInterfaceTestLocal extends TestCase {
 
     private SNSIndexingInterface fSnsInterface;
 
