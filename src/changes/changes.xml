@@ -29,7 +29,7 @@
   </properties>
   <body>
 
-    <release version="4.4.0-SNAPSHOT" date="????-??-??" description="Release ???">
+    <release version="4.6.0" date="2019-01-21" description="Release 4.6.0">
       <action type="update" dev="wemove">
         Write log files into dedicated logs directory.
       </action>
