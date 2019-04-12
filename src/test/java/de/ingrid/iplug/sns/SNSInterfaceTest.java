@@ -53,12 +53,12 @@ public class SNSInterfaceTest extends TestCase {
 
     static {
         fPlugDescription = new PlugDescription();
-        SnsPlug.conf = new Configuration();
-        SnsPlug.conf.snsLanguage = "de";
-        SnsPlug.conf.snsPrefix = "agsNotation";
-        SnsPlug.conf.snsUrlThesaurus = ResourceBundle.getBundle("sns").getString("sns.serviceURL.thesaurus");
-        SnsPlug.conf.snsUrlGazetteer = ResourceBundle.getBundle("sns").getString("sns.serviceURL.gazetteer");
-        SnsPlug.conf.snsUrlChronicle = ResourceBundle.getBundle("sns").getString("sns.serviceURL.chronicle");
+//        SnsPlug.conf = new Configuration();
+//        SnsPlug.conf.snsLanguage = "de";
+//        SnsPlug.conf.snsPrefix = "agsNotation";
+//        SnsPlug.conf.snsUrlThesaurus = ResourceBundle.getBundle("sns").getString("sns.serviceURL.thesaurus");
+//        SnsPlug.conf.snsUrlGazetteer = ResourceBundle.getBundle("sns").getString("sns.serviceURL.gazetteer");
+//        SnsPlug.conf.snsUrlChronicle = ResourceBundle.getBundle("sns").getString("sns.serviceURL.chronicle");
     }
     private SnsPlug fPlug;
     
@@ -70,10 +70,11 @@ public class SNSInterfaceTest extends TestCase {
         super.setUp();
         
         new JettyStarter(false);
-        JettyStarter.getInstance().config = new Config();
-        JettyStarter.getInstance().config.communicationProxyUrl = "ibus-client-test";
-        
-        this.fPlug = new SnsPlug(new DefaultMetadataInjector[0], null, null);
+        JettyStarter.baseConfig = new Config();
+        JettyStarter.baseConfig.communicationProxyUrl = "ibus-client-test";
+        Configuration configuration = new Configuration();
+
+        this.fPlug = new SnsPlug(new DefaultMetadataInjector[0], null, null, configuration);
         this.fPlug.configure(fPlugDescription);
     }
 

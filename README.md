@@ -28,11 +28,11 @@ Requirements
 Installation
 ------------
 
-Download from https://dev.informationgrid.eu/ingrid-distributions/ingrid-iplug-sns/
+Download from https://distributions.informationgrid.eu/ingrid-iplug-sns/
  
 or
 
-build from source with `mvn package assembly:single`.
+build from source with `mvn clean package`.
 
 Execute
 
@@ -51,22 +51,21 @@ Contribute
 - Issue Tracker: https://github.com/informationgrid/ingrid-iplug-sns/issues
 - Source Code: https://github.com/informationgrid/ingrid-iplug-sns
  
-### Set up eclipse project
+### Setup Eclipse project
 
-```
-mvn eclipse:eclipse
-```
+* import project as Maven-Project
+* right click on project and select Maven -> Select Maven Profiles ... (Ctrl+Alt+P)
+* choose profile "development"
+* run "mvn compile" from Commandline (unpacks base-webapp) 
+* run de.ingrid.iplug.sns.SnsPlug as Java Application
+* in browser call "http://localhost:10018" with login "admin/admin"
 
-and import project into eclipse.
+### Setup IntelliJ IDEA project
 
-### Debug under eclipse
-
-- call `mvn war:exploded` to extract webapp into target directory
-- copy content of `target/ingrid-iplug-sns-<version>` to `./webapp/step1`
-- set up a java application Run Configuration with start class `de.ingrid.iplug.PlugServer`
-- add the program attributes: `--descriptor src/test/resources/communication.xml --plugdescription src/test/resources/plugdescription.xml`
-- add `tools.jar` from JDK-lib-directory to the Classpath
-- the plugdescription.xml file contains the port of the administration page, which can be changed
+* choose action "Add Maven Projects" and select pom.xml
+* in Maven panel expand "Profiles" and make sure "development" is checked
+* run de.ingrid.iplug.sns.SnsPlug
+* in browser call "http://localhost:10018" with login "admin/admin"
 
 Support
 -------

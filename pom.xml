@@ -2,19 +2,24 @@
   <parent>
     <artifactId>ingrid-releases-pom</artifactId>
     <groupId>de.ingrid</groupId>
-    <version>4.2.2</version>
+    <version>5.0.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>ingrid-iplug-sns</artifactId>
   <packaging>jar</packaging>
-  <version>4.7.0-SNAPSHOT</version>
-  <name>Ingrid iPlug SNS</name>
+  <version>5.0.0-SNAPSHOT</version>
+  <name>InGrid iPlug SNS</name>
   <description>This iPlug is an interface to an SNS service can be queried by the iBus.</description>
   <scm>
     <connection>scm:git:git@github.com:informationgrid/ingrid-iplug-sns.git</connection>
     <developerConnection>scm:git:git@github.com:informationgrid/ingrid-iplug-sns.git</developerConnection>
     <tag>HEAD</tag>
   </scm>
+
+  <properties>
+    <log4j2.version>2.8.2</log4j2.version>
+  </properties>
+
   <!-- ==================== DEPENDENCY MANAGEMENT ==================== -->
   <!-- DEPENDENCY MANAGEMENT FOR USING OTHER VERSIONS (needed for assembly). COMMENT IF USING VERSIONS FROM PARENT -->
   <dependencyManagement>
@@ -32,7 +37,7 @@
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpclient</artifactId>
-        <version>4.2.6</version>
+        <version>4.3.6</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -41,7 +46,7 @@
     <dependency>
       <groupId>de.ingrid</groupId>
       <artifactId>ingrid-base-webapp</artifactId>
-      <version>4.5.0</version>
+      <version>5.0.1</version>
       <exclusions>
         <exclusion>
           <groupId>org.elasticsearch</groupId>
@@ -52,7 +57,7 @@
     <dependency>
       <groupId>de.ingrid</groupId>
       <artifactId>ingrid-base-webapp</artifactId>
-      <version>4.5.0</version>
+      <version>5.0.1</version>
       <classifier>res</classifier>
       <type>zip</type>
       <exclusions>
@@ -65,7 +70,7 @@
     <dependency>
       <groupId>de.ingrid</groupId>
       <artifactId>ingrid-iplug</artifactId>
-      <version>3.6.2</version>
+      <version>5.0.0</version>
       <exclusions>
         <exclusion>
           <groupId>ant</groupId>
@@ -91,6 +96,10 @@
           <groupId>jetty</groupId>
           <artifactId>org.mortbay.jetty</artifactId>
         </exclusion>
+        <exclusion>
+          <artifactId>log4j</artifactId>
+          <groupId>log4j</groupId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
@@ -102,22 +111,71 @@
       <groupId>de.ingrid</groupId>
       <artifactId>ingrid-external-service-gemet</artifactId>
       <version>4.0.3</version>
+      <exclusions>
+        <exclusion>
+          <artifactId>log4j</artifactId>
+          <groupId>log4j</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>slf4j-api</artifactId>
+          <groupId>org.slf4j</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>slf4j-log4j12</artifactId>
+          <groupId>org.slf4j</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>de.ingrid</groupId>
       <artifactId>ingrid-external-service-sns</artifactId>
       <version>4.0.2</version>
+      <exclusions>
+        <exclusion>
+          <artifactId>log4j</artifactId>
+          <groupId>log4j</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>de.ingrid</groupId>
       <artifactId>ingrid-external-service-wfs</artifactId>
       <version>4.3.0</version>
+      <exclusions>
+        <exclusion>
+          <artifactId>log4j</artifactId>
+          <groupId>log4j</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>
       <groupId>commons-fileupload</groupId>
       <artifactId>commons-fileupload</artifactId>
-      <version>1.2.2</version>
+      <version>1.3.3</version>
+    </dependency>
+
+    <!-- backward compatible -->
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-1.2-api</artifactId>
+      <version>${log4j2.version}</version>
+    </dependency>
+    <!-- end -->
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-api</artifactId>
+      <version>${log4j2.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-core</artifactId>
+      <version>${log4j2.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-slf4j-impl</artifactId>
+      <version>${log4j2.version}</version>
     </dependency>
 
     <dependency>

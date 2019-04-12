@@ -35,8 +35,6 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.tngtech.configbuilder.ConfigBuilder;
-
 import de.ingrid.admin.JettyStarter;
 import de.ingrid.external.sns.SNSClient;
 import de.ingrid.iplug.HeartBeatPlug;
@@ -67,7 +65,7 @@ public class SnsPlug extends HeartBeatPlug {
 
 	private static Log log = LogFactory.getLog(SnsPlug.class);
 
-	public static Configuration conf;
+	public Configuration conf;
 
 	private SNSController fSnsController;
 
@@ -86,8 +84,10 @@ public class SnsPlug extends HeartBeatPlug {
 	 */
 	@Autowired
 	public SnsPlug(final IMetadataInjector[] metadataInjectors, final IPreProcessor[] preProcessors,
-			final IPostProcessor[] postProcessors) {
+			final IPostProcessor[] postProcessors, Configuration conf) {
 		super(30000, new PlugDescriptionFieldFilters(), metadataInjectors, preProcessors, postProcessors);
+
+		this.conf = conf;
 	}
 
 	/**
@@ -107,7 +107,7 @@ public class SnsPlug extends HeartBeatPlug {
 	 */
 	public IngridHits search(IngridQuery query, int start, int length) throws Exception {
 		if (log.isDebugEnabled()) {
-			log.debug("incomming query : " + query.toString());
+			log.debug("incoming query : " + query.toString());
 		}
 
 		IngridHits ret = new IngridHits(this.fPlugId, 0, new IngridHit[0], true);
@@ -319,15 +319,15 @@ public class SnsPlug extends HeartBeatPlug {
 	public void configure(PlugDescription plugDescription) {
 		super.configure(plugDescription);
 		
-		this.fPlugId = JettyStarter.getInstance().config.communicationProxyUrl;
-		this.fLanguage = SnsPlug.conf.snsLanguage;
+		this.fPlugId = JettyStarter.baseConfig.communicationProxyUrl;
+		this.fLanguage = this.conf.snsLanguage;
 		this.fMaximalAnalyzedWord = 1000; // dummy number since SNS analyzes all
-		String fUserName = SnsPlug.conf.snsUsername;
-		String fPassWord = SnsPlug.conf.snsPassword;
-		String fServiceUrlThesaurus = SnsPlug.conf.snsUrlThesaurus;
-		String fServiceUrlGazetteer = SnsPlug.conf.snsUrlGazetteer;
-		String fServiceUrlChronicle = SnsPlug.conf.snsUrlChronicle;
-		String nativeKeyPrefix = SnsPlug.conf.snsPrefix;
+		String fUserName = this.conf.snsUsername;
+		String fPassWord = this.conf.snsPassword;
+		String fServiceUrlThesaurus = this.conf.snsUrlThesaurus;
+		String fServiceUrlGazetteer = this.conf.snsUrlGazetteer;
+		String fServiceUrlChronicle = this.conf.snsUrlChronicle;
+		String nativeKeyPrefix = this.conf.snsPrefix;
 
 		SNSClient snsClient = null;
 		try {
@@ -415,7 +415,6 @@ public class SnsPlug extends HeartBeatPlug {
 	}
 
 	public static void main(String[] args) throws Exception {
-		conf = new ConfigBuilder<Configuration>(Configuration.class).withCommandLineArgs(args).build();
-		new JettyStarter(conf);
+		new JettyStarter(Configuration.class);
 	}
 }

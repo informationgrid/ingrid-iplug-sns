@@ -21,13 +21,13 @@
   **************************************************#
   --%>
 <%@ include file="/WEB-INF/jsp/base/include.jsp" %><%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ page contentType="text/html; charset=UTF-8" %>
 
 <%@page import="de.ingrid.admin.security.IngridPrincipal"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="de">
 <head>
 <title><fmt:message key="DbSettings.main.title"/></title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <meta name="description" content="" />
 <meta name="keywords" content="" />
 <meta name="author" content="wemove digital solutions" />
@@ -41,7 +41,7 @@
 </head>
 <body>
     <div id="header">
-        <img src="../images/base/logo.gif" width="168" height="60" alt="Portal U" />
+        <img src="../images/base/logo.gif" width="168" height="60" alt="Portal" />
         <h1><fmt:message key="DbSettings.main.configuration"/></h1>
         <%
           java.security.Principal  principal = request.getUserPrincipal();
@@ -60,12 +60,12 @@
     <div id="contentBox" class="contentMiddle">
         <h1 id="head">Datenbankeinstellungen</h1>
         <div class="controls">
-            <a href="../base/extras.html">Zurück</a>
+            <a href="../base/extras.html">ZurÃ¼ck</a>
             <a href="../base/welcome.html">Abbrechen</a>
             <a href="#" onclick="document.getElementById('dbSettings').submit();">Weiter</a>
         </div>
         <div class="controls cBottom">
-            <a href="../base/extras.html">Zurück</a>
+            <a href="../base/extras.html">ZurÃ¼ck</a>
             <a href="../base/welcome.html">Abbrechen</a>
             <a href="#" onclick="document.getElementById('dbSettings').submit();">Weiter</a>
         </div>
@@ -91,7 +91,7 @@
                             <div class="input full">
                             	<form:input path="dbUsername" id="dbUsername" />
                             </div>
-                            <br /><span>Der Benutzername für den Datenbankenzugriff.</span>
+                            <br /><span>Der Benutzername fÃ¼r den Datenbankenzugriff.</span>
                             <form:errors path="dbUsername" cssClass="error" element="div" />
                         </td>
                     </tr>
@@ -101,7 +101,7 @@
                             <div class="input full">
                             	<form:input path="dbPassword" id="dbPassword" />
                             </div>
-                            <br /><span>Das Passwort für den oben angegebenen Benutzer.</span>
+                            <br /><span>Das Passwort fÃ¼r den oben angegebenen Benutzer.</span>
                             <form:errors path="dbPassword" cssClass="error" element="div" />
                         </td>
                     </tr>

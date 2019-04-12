@@ -27,43 +27,37 @@ import java.util.Properties;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.tngtech.configbuilder.annotation.propertyloaderconfiguration.PropertiesFiles;
-import com.tngtech.configbuilder.annotation.propertyloaderconfiguration.PropertyLocations;
-import com.tngtech.configbuilder.annotation.valueextractor.DefaultValue;
-import com.tngtech.configbuilder.annotation.valueextractor.PropertyValue;
-
 import de.ingrid.admin.IConfig;
 import de.ingrid.admin.command.PlugdescriptionCommandObject;
 import de.ingrid.utils.PlugDescription;
+import org.springframework.beans.factory.annotation.Value;
 
-@PropertiesFiles( {"config", "sns"} )
-@PropertyLocations(directories = {"conf"}, fromClassLoader = true)
+@org.springframework.context.annotation.Configuration
 public class Configuration implements IConfig {
     
     @SuppressWarnings("unused")
     private static Log log = LogFactory.getLog(Configuration.class);
     
-    @PropertyValue("sns.username")
+    @Value("${sns.username:}")
     public String snsUsername;
     
-    @PropertyValue("sns.password")
+    @Value("${sns.password:}")
     public String snsPassword;
     
-    @PropertyValue("sns.language")
-    @DefaultValue("de")
+    @Value("${sns.language:de}")
     public String snsLanguage;
     
     
-    @PropertyValue("sns.serviceURL.chronicle")
+    @Value("${sns.serviceURL.chronicle:}")
     public String snsUrlChronicle;
     
-    @PropertyValue("sns.serviceURL.thesaurus")
+    @Value("${sns.serviceURL.thesaurus:}")
     public String snsUrlThesaurus;
     
-    @PropertyValue("sns.serviceURL.gazetteer")
+    @Value("${sns.serviceURL.gazetteer:}")
     public String snsUrlGazetteer;
     
-    @PropertyValue("sns.nativeKeyPrefix")
+    @Value("${sns.nativeKeyPrefix:}")
     public String snsPrefix;
 
     
