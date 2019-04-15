@@ -29,8 +29,14 @@
   <includeBaseDirectory>false</includeBaseDirectory>
   <fileSets>
     <fileSet>
-      <directory>src/main/release/conf</directory>
-      <outputDirectory>${project.build.finalName}/conf</outputDirectory>
+      <directory>src/main/resources</directory>
+      <outputDirectory>${project.artifactId}-${project.version}/conf</outputDirectory>
+      <includes>
+        <include>config.properties</include>
+        <include>sns.properties</include>
+        <include>ingrid.auth</include>
+        <include>log4j2.xml</include>
+      </includes>
     </fileSet>
     <fileSet>
       <directory>src/main/release/scripts</directory>

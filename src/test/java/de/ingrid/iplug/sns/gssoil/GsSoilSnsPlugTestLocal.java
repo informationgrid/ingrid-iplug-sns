@@ -28,6 +28,7 @@
 
 package de.ingrid.iplug.sns.gssoil;
 
+import de.ingrid.iplug.sns.Configuration;
 import junit.framework.TestCase;
 import de.ingrid.iplug.sns.SnsPlug;
 import de.ingrid.iplug.sns.utils.Topic;
@@ -55,8 +56,14 @@ public class GsSoilSnsPlugTestLocal extends TestCase {
         fPlugDescription.putInt("maxWordAnalyzing", 100);
     }
 
+    protected void setUp() throws Exception {
+        configuration = new Configuration();
+    }
+
+    private Configuration configuration;
+
     public void testTOPIC_FROM_ID() throws Exception {
-    	SnsPlug plug = new SnsPlug(null, null, null);
+    	SnsPlug plug = new SnsPlug(null, null, null, configuration);
         plug.configure(fPlugDescription);
         
 		String marshalledTopicId = SNSUtil.marshallTopicId("http://www.eionet.europa.eu/gemet/supergroup/5499");
@@ -78,7 +85,7 @@ public class GsSoilSnsPlugTestLocal extends TestCase {
     }
 
     public void testTOPIC_FROM_TEXT() throws Exception {
-    	SnsPlug plug = new SnsPlug(null, null, null);
+    	SnsPlug plug = new SnsPlug(null, null, null, configuration);
         plug.configure(fPlugDescription);
         
         String term = "Lissabon";
