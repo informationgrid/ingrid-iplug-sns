@@ -17,6 +17,7 @@
   </scm>
 
   <properties>
+    <iplug.type>IPLUG_SNS</iplug.type>
     <log4j2.version>2.8.2</log4j2.version>
   </properties>
 
@@ -256,25 +257,12 @@
           </archive>
         </configuration>
       </plugin>
+
+      <!-- Activate maven-assembly-plugin from release pom to build installer -->
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
-        <!-- Add Type of Component to Manifest of Installer for Upgrade Server -->
-        <configuration>
-          <archive>
-            <manifestEntries>
-              <ingridComponentType>IPLUG_SNS</ingridComponentType>
-            </manifestEntries>
-          </archive>
-        </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>single</goal>
-            </goals>
-            <phase>package</phase>
-          </execution>
-        </executions>
       </plugin>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
