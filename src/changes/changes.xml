@@ -28,6 +28,12 @@
     <author email="joachim@wemove.com">Joachim Müller</author>
   </properties>
   <body>
+    <release version="5.2.0" date="2019-10-28" description="Release 5.2.0">
+      <action type="fix" dev="wemove" issue="1478">
+        Adapt chronicle to fixed SNS interface (events).
+      </action>
+    </release>
+
     <release version="5.0.0" date="2019-04-15" description="Release 5.0.0">
       <action type="update" dev="wemove" issue="1196">
         Updating libraries and modernize.
