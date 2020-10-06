@@ -92,7 +92,8 @@ public class Configuration implements IConfig {
     	pdObject.addField("depth");
     	pdObject.addField("direction");
     	pdObject.addField("includeSiblings");
-        
+    	pdObject.addField("isfolder");
+
     }
 
     @Override
