@@ -5,6 +5,12 @@
     <author email="joachim@wemove.com">Joachim Müller</author>
   </properties>
   <body>
+    <release version="5.6.0" date="2020-10-15" description="Release 5.6.0">
+      <action type="add" dev="wemove" issue="2185">
+        Fix configuration that prevented iPlug from search
+      </action>
+    </release>
+
     <release version="5.5.0" date="2020-07-24" description="Release 5.5.0">
       <action type="add" dev="wemove" issue="1898">
         Change the container’s privilege to a non-root user.
