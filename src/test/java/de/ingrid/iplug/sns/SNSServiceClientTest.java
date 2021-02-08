@@ -7,12 +7,12 @@
  * Licensed under the EUPL, Version 1.1 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
  * EUPL (the "Licence");
- * 
+ *
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * http://ec.europa.eu/idabc/eupl5
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,7 +22,7 @@
  */
 /*
  * Copyright (c) 1997-2005 by media style GmbH
- * 
+ *
  * $Source: DispatcherTest.java,v $
  */
 
@@ -41,7 +41,7 @@ import de.ingrid.external.sns.SNSClient;
 
 /**
  * created on 21.07.2005
- * 
+ *
  * @author hs
  */
 public class SNSServiceClientTest extends TestCase {
@@ -61,7 +61,7 @@ public class SNSServiceClientTest extends TestCase {
     }
 
     /**
-     * 
+     *
      * @throws Exception
      */
     public void testFindTopics() throws Exception {
@@ -90,8 +90,8 @@ public class SNSServiceClientTest extends TestCase {
 
     /**
      * @throws Exception
-     * 
-     * 
+     *
+     *
      */
     public void testAutoClassify() throws Exception {
         String document = null;
@@ -116,7 +116,7 @@ public class SNSServiceClientTest extends TestCase {
         } catch (Exception e) {
             assertTrue(e instanceof IllegalArgumentException);
         }
-        // FIXME: 
+        // FIXME:
 //        assertNotNull(adapter.autoClassify(document, maxWords, FilterType.ONLY_TERMS, false, "de"));
 //        maxWords = Integer.MAX_VALUE;
 //        assertNotNull(adapter.autoClassify(document, maxWords, FilterType.ONLY_TERMS, false, "de"));
@@ -129,13 +129,13 @@ public class SNSServiceClientTest extends TestCase {
     	SNSClient client = new SNSClient("", "", "de", null, null, new URL("https://sns.uba.de/chronik/"));
         Resource fragment = client.anniversary("1976-08-31", "de");
         assertNotNull(fragment);
-        
+
         SNSController ctrl = new SNSController(client, "");
         int[] totalSize = new int[1];
         totalSize[0] = 0;
         de.ingrid.iplug.sns.utils.Topic[] result = ctrl.getAnniversaryFromTopic("1976-08-31", "de", 1, "/my-plug", totalSize);
         assertTrue(result.length > 0);
-        
+
         result = ctrl.getAnniversaryFromTopic("1976-08-31", "en", 1, "/my-plug", totalSize);
         assertTrue(result.length > 0);
     }
@@ -152,20 +152,20 @@ public class SNSServiceClientTest extends TestCase {
      * @throws Exception
      */
     public void testFindEventsAt() throws Exception {
-        Resource eventsRes = adapter.findEvents("query", "contains", 
+        Resource eventsRes = adapter.findEvents("query", "contains",
         		null, 0, "1976-08-31", "de", 10);
         assertNotNull(eventsRes);
     }
-    
+
     public void testFindEventsFromTo() throws Exception {
-        Resource eventsRes = adapter.findEvents("query", "contains", 
+        Resource eventsRes = adapter.findEvents("query", "contains",
         		null, 0, "1976-08-31", "1978-08-31", "de", 10);
         assertNotNull(eventsRes);
     }
 
     /**
      * @throws Exception
-     * 
+     *
      */
     public void testGetHierachy() throws Exception {
         String topicID = "https://sns.uba.de/umthes/_00040282";
@@ -174,7 +174,7 @@ public class SNSServiceClientTest extends TestCase {
             Resource hierachy = adapter.getHierachy(4, "down", true, "de", topicID);
             assertNotNull(hierachy);
             // TODO: assertEquals(190, RDFUtils.getConcepts(hierachy.getModel()).toList().size());
-            assertTrue(RDFUtils.getConcepts(hierachy.getModel()).toList().size() > 0);            
+            assertTrue(RDFUtils.getConcepts(hierachy.getModel()).toList().size() > 0);
         } catch (Exception e) {
             fail("No exception should be thrown: " + e.getMessage());
         }
@@ -182,7 +182,7 @@ public class SNSServiceClientTest extends TestCase {
             Resource hierachy = adapter.getHierachy(4, "up", false, "de", topicID);
             assertNotNull(hierachy);
             // TODO: assertEquals(4, RDFUtils.getConcepts(hierachy.getModel()).toList().size());
-            assertTrue(RDFUtils.getConcepts(hierachy.getModel()).toList().size() > 0);            
+            assertTrue(RDFUtils.getConcepts(hierachy.getModel()).toList().size() > 0);
         } catch (Exception e) {
             fail("No exception should be thrown: " + e.getMessage());
         }
@@ -193,7 +193,7 @@ public class SNSServiceClientTest extends TestCase {
         try {
             Resource hierachy = adapter.getHierachy(4, "up", true, "de", topicID);
             assertNotNull(hierachy);
-            assertTrue(RDFUtils.getConcepts(hierachy.getModel()).toList().size() > 100);
+            assertTrue(RDFUtils.getConcepts(hierachy.getModel()).toList().size() > 50);
         } catch (Exception e) {
             fail("No exception should be thrown: " + e.getMessage());
         }
