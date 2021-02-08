@@ -5,12 +5,18 @@
     <author email="joachim@wemove.com">Joachim Müller</author>
   </properties>
   <body>
+    <release version="5.7.1" date="2021-02-08" description="Release 5.7.1">
+      <action type="update" dev="wemove" issue="2321">
+        IGE: Handle %-character in thesaurus
+      </action>
+    </release>
+
     <release version="5.7.0" date="2021-01-18" description="Release 5.7.0">
       <action type="add" dev="wemove" issue="2211">
         Fix Redmine issue link generation for changes.
       </action>
     </release>
-	
+
     <release version="5.6.0" date="2020-10-15" description="Release 5.6.0">
       <action type="add" dev="wemove" issue="2185">
         Fix configuration that prevented iPlug from search
@@ -70,7 +76,7 @@
         Added docker integration.
       </action>
     </release>
-    
+
     <release version="4.0.3" date="2017-06-13" description="Release 4.0.3">
       <action type="add" dev="wemove" issue="REDMINE-18">
         Add GEMET Thesaurus Service to be activated in external-services.xml
@@ -97,19 +103,19 @@
         Fixed wrong path to save data when using cygwin.
       </action>
     </release>
-    
+
     <release version="4.0.0" date="2016-08-25" description="Release 4.0.0">
       <action type="fix" dev="wemove" issue="REDMINE-412">
         Integrate usual admin gui according to all other iPlugs.
       </action>
     </release>
-    
+
     <release version="3.6.2.1" date="2016-07-08" description="Release 3.6.2.1">
       <action type="fix" dev="wemove" issue="REDMINE-319">
           Portal: Fixed similar terms request with special characters.
       </action>
     </release>
-    
+
     <release version="3.6.2" date="2016-05-13" description="Release 3.6.2">
       <action type="update" dev="wemove" issue="REDMINE-303">
         Updated URLs to HTTPS for SNS service.
@@ -127,7 +133,7 @@
         Use encrypted password for web interface.
       </action>
     </release>
-    
+
     <release version="3.6.0.1" date="2015-06-25" description="Bugfix-Release 3.6.0.1">
       <action type="fix" dev="wemove">
         Correct usage of proxy settings, when configured through VM-options.
@@ -136,7 +142,7 @@
         Locations are searched case insensitive now.
       </action>
     </release>
-    
+
     <release version="3.6.0" date="2015-06-19" description="Release 3.6.0">
       <action type="update" dev="wemove">
         Updated libraries and memory management.
