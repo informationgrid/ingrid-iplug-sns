@@ -5,6 +5,12 @@
     <author email="joachim@wemove.com">Joachim Müller</author>
   </properties>
   <body>
+    <release version="5.8.0" date="2021-04-15" description="Release 5.8.0-SNAPSHOT">
+      <action type="fix" dev="wemove" issue="2355">
+        Fix NullPointer-Exception when getting date information.
+      </action>
+    </release>
+
     <release version="5.7.1" date="2021-02-08" description="Release 5.7.1">
       <action type="update" dev="wemove" issue="2321">
         IGE: Handle %-character in thesaurus
