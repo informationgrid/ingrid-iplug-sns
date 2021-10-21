@@ -5,6 +5,12 @@
     <author email="joachim@wemove.com">Joachim Müller</author>
   </properties>
   <body>
+    <release version="5.10.0" date="2021-10-21" description="Release 5.10.0">
+      <action type="fix" dev="wemove" issue="">
+        Update log4j version to 2.13.3.
+      </action>
+    </release>
+
     <release version="5.8.0" date="2021-04-15" description="Release 5.8.0-SNAPSHOT">
       <action type="fix" dev="wemove" issue="2355">
         Fix NullPointer-Exception when getting date information.
