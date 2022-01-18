@@ -2,12 +2,12 @@
   <parent>
     <artifactId>ingrid-releases-pom</artifactId>
     <groupId>de.ingrid</groupId>
-    <version>5.7.0</version>
+    <version>5.11.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>ingrid-iplug-sns</artifactId>
   <packaging>jar</packaging>
-  <version>5.10.0</version>
+  <version>5.11.0</version>
   <name>InGrid iPlug SNS</name>
   <description>This iPlug is an interface to an SNS service can be queried by the iBus.</description>
   <scm>
@@ -18,7 +18,7 @@
 
   <properties>
     <iplug.type>IPLUG_SNS</iplug.type>
-    <log4j2.version>2.13.3</log4j2.version>
+    <log4j2.version>2.17.1</log4j2.version>
   </properties>
 
   <!-- ==================== DEPENDENCY MANAGEMENT ==================== -->
@@ -28,7 +28,7 @@
       <dependency>
         <groupId>xerces</groupId>
         <artifactId>xercesImpl</artifactId>
-        <version>2.10.0</version>
+        <version>2.12.0</version>
       </dependency>
       <dependency>
         <groupId>xml-apis</groupId>
@@ -47,7 +47,7 @@
     <dependency>
       <groupId>de.ingrid</groupId>
       <artifactId>ingrid-base-webapp</artifactId>
-      <version>5.6.0</version>
+      <version>5.11.0</version>
       <exclusions>
         <exclusion>
           <groupId>org.elasticsearch</groupId>
@@ -58,7 +58,7 @@
     <dependency>
       <groupId>de.ingrid</groupId>
       <artifactId>ingrid-base-webapp</artifactId>
-      <version>5.6.0</version>
+      <version>5.11.0</version>
       <classifier>res</classifier>
       <type>zip</type>
       <exclusions>
@@ -111,7 +111,7 @@
     <dependency>
       <groupId>de.ingrid</groupId>
       <artifactId>ingrid-external-service-gemet</artifactId>
-      <version>4.0.3</version>
+      <version>5.11.0</version>
       <exclusions>
         <exclusion>
           <artifactId>log4j</artifactId>
@@ -130,7 +130,7 @@
     <dependency>
       <groupId>de.ingrid</groupId>
       <artifactId>ingrid-external-service-sns</artifactId>
-      <version>5.8.0</version>
+      <version>5.11.0</version>
       <exclusions>
         <exclusion>
           <artifactId>log4j</artifactId>
@@ -141,7 +141,7 @@
     <dependency>
       <groupId>de.ingrid</groupId>
       <artifactId>ingrid-external-service-wfs</artifactId>
-      <version>4.3.0</version>
+      <version>5.11.0</version>
       <exclusions>
         <exclusion>
           <artifactId>log4j</artifactId>
