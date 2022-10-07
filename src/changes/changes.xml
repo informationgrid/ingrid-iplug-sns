@@ -5,6 +5,12 @@
     <author email="joachim@wemove.com">Joachim Müller</author>
   </properties>
   <body>
+    <release version="5.14.0" date="2022-10-04" description="Release 5.14.0">
+      <action type="update" dev="wemove">
+        Update Java to version 1.8.0.345.b01
+      </action>
+    </release>
+    
     <release version="5.12.0" date="2021-04-12" description="Release 5.12.0">
       <action type="fix" dev="wemove" issue="3596">
         IT-Sicherheitsmängel in Docker Basis Images beseitigen
