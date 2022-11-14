@@ -33,11 +33,11 @@ import java.util.ResourceBundle;
 
 import junit.framework.TestCase;
 
-import com.hp.hpl.jena.rdf.model.Resource;
 
 import de.ingrid.external.FullClassifyService.FilterType;
 import de.ingrid.external.sns.RDFUtils;
 import de.ingrid.external.sns.SNSClient;
+import org.apache.jena.rdf.model.Resource;
 
 /**
  * created on 21.07.2005
