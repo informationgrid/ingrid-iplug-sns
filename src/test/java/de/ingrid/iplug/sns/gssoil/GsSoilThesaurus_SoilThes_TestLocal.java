@@ -31,8 +31,14 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import de.ingrid.external.ThesaurusService;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import de.ingrid.external.ThesaurusService.MatchingType;
 import de.ingrid.external.om.RelatedTerm;
 import de.ingrid.external.om.Term;
@@ -47,7 +53,7 @@ import de.ingrid.utils.tool.SpringUtil;
  * Tests of GSSoil implementations of Thesaurus/Gazetteer/FullClassify APi !!!
  * SOIL THES VERSION !!!
  */
-public class GsSoilThesaurus_SoilThes_TestLocal extends TestCase {
+public class GsSoilThesaurus_SoilThes_TestLocal {
 
     private static SNSClient fClient;
 
@@ -59,8 +65,8 @@ public class GsSoilThesaurus_SoilThes_TestLocal extends TestCase {
         fClient = client;
     }
 
-    protected void setUp() throws Exception {
-        super.setUp();
+    @BeforeEach
+    public void setUp() throws Exception {
 
         fClient = new SNSClient("ms", "m3d1asyl3", "de");
         fClient.setTimeout(180000);
@@ -68,6 +74,7 @@ public class GsSoilThesaurus_SoilThes_TestLocal extends TestCase {
         this.fToStdout = true;
     }
 
+    @Test
     public void testThesaurusDirectlySoilThes() throws Exception {
         SpringUtil springUtil = new SpringUtil("spring/external-services.xml");
         final Class<ThesaurusService> _thesaurusService = null;
@@ -78,30 +85,30 @@ public class GsSoilThesaurus_SoilThes_TestLocal extends TestCase {
         String topicID = "https://secure.umweltbundesamt.at/soil/7843"; // Boden
         Term term = thesaurus.getTerm(topicID, new Locale("en"));
         assertTrue(term != null);
-        assertTrue(term.getName().equals("soil"));
-        assertTrue(term.getType().equals(Term.TermType.DESCRIPTOR));
+        assertEquals(term.getName(), "soil");
+        assertEquals(term.getType(), Term.TermType.DESCRIPTOR);
         // SoilThes terms encapsulate now Thesaurus identificator in their alternateId !
         // Was planned as "GEMET", "SoilThes" ... but seems to be always SoilThes ...
         // ALWAYS "SoilThes" !!!!!!!!? Although this is normal GEMET hierarchy !
-        assertTrue(term.getAlternateId().equals("SoilThes"));
+        assertEquals(term.getAlternateId(), "SoilThes");
         assertNull(term.getAlternateName());
 
         topicID = "https://secure.umweltbundesamt.at/soil/Theme_35"; // Boden unter COLLECTIONS !
         term = thesaurus.getTerm(topicID, new Locale("en"));
         assertTrue(term != null);
-        assertTrue(term.getName().equals("soil"));
-        assertTrue(term.getType().equals(Term.TermType.DESCRIPTOR));
+        assertEquals(term.getName(), "soil");
+        assertEquals(term.getType(), Term.TermType.DESCRIPTOR);
         // This SoilThes ! ok
-        assertTrue(term.getAlternateId().equals("SoilThes"));
+        assertEquals(term.getAlternateId(), "SoilThes");
         assertNull(term.getAlternateName());
 
         topicID = "https://secure.umweltbundesamt.at/soil/4070"; // humus
         term = thesaurus.getTerm(topicID, new Locale("en"));
         assertTrue(term != null);
-        assertTrue(term.getName().equals("humus"));
-        assertTrue(term.getType().equals(Term.TermType.DESCRIPTOR));
+        assertEquals(term.getName(), "humus");
+        assertEquals(term.getType(), Term.TermType.DESCRIPTOR);
         // ALWAYS "SoilThes" !!!!!!!!? Although this is normal GEMET hierarchy !
-        assertTrue(term.getAlternateId().equals("SoilThes"));
+        assertEquals(term.getAlternateId(), "SoilThes");
         assertNull(term.getAlternateName());
 
         // getHierarchyNextLevel
@@ -151,6 +158,7 @@ public class GsSoilThesaurus_SoilThes_TestLocal extends TestCase {
         assertTrue(terms.length > 0);
     }
 
+    @Test
     public void testGetDetails() throws Exception {
         SNSController controller = new SNSController(fClient, "ags:");
         Topic topic = new Topic();
@@ -207,6 +215,7 @@ public class GsSoilThesaurus_SoilThes_TestLocal extends TestCase {
         assertNull(bla);
     }
 
+    @Test
     public void testTopicForId() throws Exception {
         SNSController controller = new SNSController(fClient, "ags:");
         int[] totalSize = new int[1];
@@ -214,7 +223,7 @@ public class GsSoilThesaurus_SoilThes_TestLocal extends TestCase {
         String id = "https://secure.umweltbundesamt.at/soil/SuperGroup_5499"; // NATURAL ENVIRONMENT, ANTHROPIC ENVIRONMENT
         DetailedTopic[] topicsForId = controller.getTopicForId(id, "/thesa", "plugId", "en", totalSize);
 
-        assertTrue(topicsForId.length == 1);
+        assertEquals(topicsForId.length, 1);
         DetailedTopic dt = topicsForId[0];
 
         assertNotNull(dt);
@@ -246,6 +255,7 @@ public class GsSoilThesaurus_SoilThes_TestLocal extends TestCase {
         assertNull(bla);
     }
 
+    @Test
     public void testTopicsForTerm() throws Exception {
         SNSController controller = new SNSController(fClient, "ags:");
         int[] totalSize = new int[1];
@@ -263,7 +273,7 @@ public class GsSoilThesaurus_SoilThes_TestLocal extends TestCase {
         assertTrue(topicsForTerm.length > 0);
 
         topicsForTerm = controller.getTopicsForTerm("no thesa topic available", 0, 1000, "aId", totalSize, "en", false, false);
-        assertTrue(topicsForTerm.length == 0);
+        assertEquals(topicsForTerm.length, 0);
 
         // ONLY "Boden" CONCEPT topic = http://www.eionet.europa.eu/gemet/concept/7843 !!!
         // No themes: http://www.eionet.europa.eu/gemet/theme/35, http://inspire.jrc.it/theme/16
@@ -275,6 +285,7 @@ public class GsSoilThesaurus_SoilThes_TestLocal extends TestCase {
         assertTrue(topicsForTerm.length > 0);
     }
 
+    @Test
     public void testGetAssociatedTopics() throws Exception {
         SNSController controller = new SNSController(fClient, "ags:");
         int[] totalSize = new int[1];
@@ -291,6 +302,7 @@ public class GsSoilThesaurus_SoilThes_TestLocal extends TestCase {
 		assertTrue(topics.length > 0);
     }
 
+    @Test
     public void testGetDocumentRelatedTopics() throws Exception {
         SNSController controller = new SNSController(fClient, "ags:");
         int[] totalSize = new int[1];
@@ -340,6 +352,7 @@ public class GsSoilThesaurus_SoilThes_TestLocal extends TestCase {
         }
     }
 
+    @Test
     public void testGetHierachy() throws Exception {
         SNSController controller = new SNSController(fClient, "ags:");
 
@@ -404,6 +417,7 @@ public class GsSoilThesaurus_SoilThes_TestLocal extends TestCase {
         assertNull(topicsHierachy[0]);
     }
 
+    @Test
     public void testGetSimilarTerms() throws Exception {
         SNSController controller = new SNSController(fClient, "ags:");
         int[] totalSize = new int[1];
@@ -412,6 +426,7 @@ public class GsSoilThesaurus_SoilThes_TestLocal extends TestCase {
         assertTrue(topicsForTopic.length > 0);
     }
 
+    @Test
     public void testGetTopicFromText() throws Exception {
     	// test terms
         SNSController controller = new SNSController(fClient, "ags:");
@@ -442,10 +457,10 @@ public class GsSoilThesaurus_SoilThes_TestLocal extends TestCase {
 
     	// "invalid" text. NO TERMS !
         text = "yyy xxx zzz";
-        topics = controller.getTopicsForText(text, 100, "/thesa", "aPlugId", "de", totalSize, false);        
-        assertTrue(totalSize[0] == 0);
+        topics = controller.getTopicsForText(text, 100, "/thesa", "aPlugId", "de", totalSize, false);
+        assertEquals(totalSize[0], 0);
         assertNotNull(topics);
-        assertTrue(topics.length == 0);
+        assertEquals(topics.length, 0);
 
     	// test events WITH en !
         topics = controller.getTopicsForText(text, 100, "/event", "aPlugId", "en", totalSize, false);

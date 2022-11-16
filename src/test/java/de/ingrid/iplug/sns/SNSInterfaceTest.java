@@ -35,16 +35,21 @@ import de.ingrid.utils.query.IngridQuery;
 import de.ingrid.utils.query.TermQuery;
 import de.ingrid.utils.queryparser.IDataTypes;
 import de.ingrid.utils.queryparser.QueryStringParser;
-import junit.framework.TestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.text.SimpleDateFormat;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Calendar;
 import java.util.Date;
 
 /**
  *
  */
-public class SNSInterfaceTest extends TestCase {
+public class SNSInterfaceTest {
 
     private static PlugDescription fPlugDescription;
 
@@ -64,8 +69,8 @@ public class SNSInterfaceTest extends TestCase {
 
     static int CURRENT_PAGE = 1;
 
-    protected void setUp() throws Exception {
-        super.setUp();
+    @BeforeEach
+    public void setUp() throws Exception {
 
 //        new JettyStarter(false);
 //        JettyStarter.baseConfig = new Config();
@@ -79,6 +84,7 @@ public class SNSInterfaceTest extends TestCase {
     /**
      * @throws Exception
      */
+    @Test
     public void testGetAnniversaries() throws Exception {
         System.out.println("########## testGetAnniversaries()");
         Calendar cal = Calendar.getInstance();
@@ -127,6 +133,7 @@ public class SNSInterfaceTest extends TestCase {
     /**
      * @throws Exception
      */
+    @Test
     public void testEVENTS_FROM_TERM() throws Exception {
         System.out.println("########## testEVENTS_FROM_TERM()");
         String term = "Reaktorunglück Tschernobyl";
@@ -152,6 +159,7 @@ public class SNSInterfaceTest extends TestCase {
     /**
      * @throws Exception
      */
+    @Test
     public void testEVENTS_FROM_TYPE() throws Exception {
         System.out.println("########## testEVENTS_FROM_TYPE()");
         String term = "";
@@ -181,6 +189,7 @@ public class SNSInterfaceTest extends TestCase {
     /**
      * @throws Exception
      */
+    @Test
     public void testEVENTS_FROM_TYPE_AND_TERM() throws Exception {
         System.out.println("########## testEVENTS_FROM_TYPE_AND_TERM()");
         String term = "Tschernobyl";
@@ -208,6 +217,7 @@ public class SNSInterfaceTest extends TestCase {
     /**
      * @throws Exception
      */
+    @Test
     public void testEVENT_DETAILS() throws Exception {
         System.out.println("########## testEVENT_DETAILS()");
         String term = "Tschernobyl";
