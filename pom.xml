@@ -145,6 +145,12 @@
       <groupId>de.ingrid</groupId>
       <artifactId>ingrid-external-service-wfs</artifactId>
       <version>5.15.0.3324-SNAPSHOT</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.codehaus.groovy</groupId>
+          <artifactId>groovy-all</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>
