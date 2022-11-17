@@ -76,9 +76,12 @@ public class SNSInterfaceTest {
 //        JettyStarter.baseConfig = new Config();
 //        JettyStarter.baseConfig.communicationProxyUrl = "ibus-client-test";
         Configuration configuration = new Configuration();
+        Config baseConfig = new Config();
+        baseConfig.plugdescriptionLocation = "";
 
-        this.fPlug = new SnsPlug(new DefaultMetadataInjector[0], null, configuration, null, null);
+        this.fPlug = new SnsPlug(new DefaultMetadataInjector[0], baseConfig, configuration, null, null);
         this.fPlug.configure(fPlugDescription);
+
     }
 
     /**
