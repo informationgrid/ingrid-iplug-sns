@@ -28,19 +28,26 @@ package de.ingrid.iplug.sns;
 
 import java.util.Set;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * 
  */
-public class SNSIndexingInterfaceTestLocal extends TestCase {
+public class SNSIndexingInterfaceTestLocal {
 
     private SNSIndexingInterface fSnsInterface;
 
     private boolean fToStdout;
 
-    protected void setUp() throws Exception {
-        super.setUp();
+    @BeforeEach
+    public void setUp() throws Exception {
 
         this.fSnsInterface = new SNSIndexingInterface("ms", "m3d1asyl3", "de");
         this.fSnsInterface.setTimeout(180000);
@@ -59,6 +66,7 @@ public class SNSIndexingInterfaceTestLocal extends TestCase {
     /**
      * @throws Exception
      */
+    @Test
     public void testGetReferencesToSpace() throws Exception {
         this.fSnsInterface.getBuzzwords("Halle", 1000, false);
 
@@ -79,6 +87,7 @@ public class SNSIndexingInterfaceTestLocal extends TestCase {
     /**
      * @throws Exception
      */
+    @Test
     public void testGetLocations() throws Exception {
         this.fSnsInterface.getBuzzwords("Gronau Borken", 1000, false);
 
@@ -109,6 +118,7 @@ public class SNSIndexingInterfaceTestLocal extends TestCase {
     /**
      * @throws Exception
      */
+    @Test
     public void testGetReferencesToSpaceBundesland() throws Exception {
         this.fSnsInterface.getBuzzwords("Sachsen", 1000, false);
 
@@ -129,6 +139,7 @@ public class SNSIndexingInterfaceTestLocal extends TestCase {
     /**
      * @throws Exception
      */
+    @Test
     public void testGetReferencesToTime() throws Exception {
         // TIME EVENTS NOT SUPPORTED
         System.out.println("NOT SUPPORTED!");
@@ -143,6 +154,7 @@ public class SNSIndexingInterfaceTestLocal extends TestCase {
     /**
      * @throws Exception
      */
+    @Test
     public void testGetBuzzword() throws Exception {
         String[] result = null;
         final String words = "Waldsterben Wesertal Explosion. "
@@ -175,6 +187,7 @@ public class SNSIndexingInterfaceTestLocal extends TestCase {
     /**
      * @throws Exception
      */
+    @Test
     public void testGetBuzzwordToUrl() throws Exception {
         // VALID URL GERMAN
         String[] result = null;
@@ -232,6 +245,7 @@ public class SNSIndexingInterfaceTestLocal extends TestCase {
     /**
      * @throws Exception
      */
+    @Test
     public void testGetBuzzwordEnglish() throws Exception {
         String[] result = null;
         final String words = "In this year we are all happy. Tschernobyl Frankfurt Water";
@@ -258,6 +272,7 @@ public class SNSIndexingInterfaceTestLocal extends TestCase {
     /**
      * @throws Exception
      */
+    @Test
     public void testGetBuzzwordNotExistent() throws Exception {
         final String[] result = this.fSnsInterface.getBuzzwords("blabla", 1000, false);
         assertNotNull(result);
@@ -267,6 +282,7 @@ public class SNSIndexingInterfaceTestLocal extends TestCase {
     /**
      * @throws Exception
      */
+    @Test
     public void testGetReferencesNotExistent() throws Exception {
         this.fSnsInterface.getBuzzwords("blabla", 1000, false);
 
@@ -278,6 +294,7 @@ public class SNSIndexingInterfaceTestLocal extends TestCase {
     /**
      * @throws Exception
      */
+    @Test
     public void testGetTopicIds() throws Exception {
 //      String url = "http://www.portalu.de/";
         String url = "http://www.spiegel.de/";

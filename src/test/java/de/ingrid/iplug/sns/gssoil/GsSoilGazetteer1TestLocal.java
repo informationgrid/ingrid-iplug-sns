@@ -26,8 +26,15 @@
 
 package de.ingrid.iplug.sns.gssoil;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import de.ingrid.external.sns.SNSClient;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import de.ingrid.iplug.sns.SNSController;
 import de.ingrid.iplug.sns.utils.DetailedTopic;
 import de.ingrid.iplug.sns.utils.Topic;
@@ -35,7 +42,7 @@ import de.ingrid.iplug.sns.utils.Topic;
 /**
  * Tests of GSSoil implementations of Thesaurus/Gazetteer/FullClassify APi !!!
  */
-public class GsSoilGazetteer1TestLocal extends TestCase {
+public class GsSoilGazetteer1TestLocal {
 
     private static SNSClient fClient;
 
@@ -47,8 +54,8 @@ public class GsSoilGazetteer1TestLocal extends TestCase {
         fClient = client;
     }
 
-    protected void setUp() throws Exception {
-        super.setUp();
+    @BeforeEach
+    public void setUp() throws Exception {
 
         fClient = new SNSClient("ms", "m3d1asyl3", "de");
         fClient.setTimeout(180000);
@@ -56,6 +63,7 @@ public class GsSoilGazetteer1TestLocal extends TestCase {
         this.fToStdout = true;
     }
 
+    @Test
     public void testGetDetails() throws Exception {
         SNSController controller = new SNSController(fClient, "ags:");
         Topic topic = new Topic();
@@ -94,6 +102,7 @@ public class GsSoilGazetteer1TestLocal extends TestCase {
         assertNull(bla);
     }
 
+    @Test
     public void testGetAssociatedTopics() throws Exception {
         SNSController controller = new SNSController(fClient, "ags:");
         int[] totalSize = new int[1];        
@@ -110,6 +119,7 @@ public class GsSoilGazetteer1TestLocal extends TestCase {
         assertTrue(topics.length > 0);
     }
 
+    @Test
     public void testGetDocumentRelatedTopics() throws Exception {
         SNSController controller = new SNSController(fClient, "ags:");
         int[] totalSize = new int[1];
@@ -139,6 +149,7 @@ public class GsSoilGazetteer1TestLocal extends TestCase {
 		assertTrue(topics.length < numAllTopics);
     }
 
+    @Test
     public void testGetTopicFromText() throws Exception {
     	// test terms
         SNSController controller = new SNSController(fClient, "ags:");
@@ -153,7 +164,7 @@ public class GsSoilGazetteer1TestLocal extends TestCase {
     	// test locations, "en"
         topics = controller.getTopicsForText(text, 100, "/location", "aPlugId", "en", totalSize, false);
         // no english ?
-        assertTrue(topics.length == 0);
+        assertEquals(topics.length, 0);
 
     	// test ALL TOPICS
         topics = controller.getTopicsForText(text, 100, null, "aPlugId", "de", totalSize, false);

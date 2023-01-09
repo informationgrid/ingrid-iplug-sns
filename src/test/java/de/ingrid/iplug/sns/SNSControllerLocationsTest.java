@@ -31,7 +31,14 @@ package de.ingrid.iplug.sns;
 import de.ingrid.external.sns.SNSClient;
 import de.ingrid.iplug.sns.utils.DetailedTopic;
 import de.ingrid.iplug.sns.utils.Topic;
-import junit.framework.TestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * SNSControllerTest
@@ -43,7 +50,7 @@ import junit.framework.TestCase;
  * @author $Author: ${lastedit}
  * 
  */
-public class SNSControllerLocationsTest extends TestCase {
+public class SNSControllerLocationsTest {
 
     private static SNSClient fClient;
 
@@ -56,10 +63,10 @@ public class SNSControllerLocationsTest extends TestCase {
     }
 
     /**
-     * @see junit.framework.TestCase#setUp()
+     * @see 
      */
-    protected void setUp() throws Exception {
-        super.setUp();
+    @BeforeEach
+    public void setUp() throws Exception {
 
         fClient = new SNSClient("ms", "m3d1asyl3", "de");
         fClient.setTimeout(180000);
@@ -68,6 +75,7 @@ public class SNSControllerLocationsTest extends TestCase {
     /**
      * @throws Exception
      */
+    @Test
     public void testGetAssociatedTopics() throws Exception {
         SNSController controller = new SNSController(fClient, "agsNotation");
         int[] totalSize = new int[1];
@@ -85,6 +93,7 @@ public class SNSControllerLocationsTest extends TestCase {
     /**
      * @throws Exception
      */
+    @Test
     public void testGetDocumentRelatedTopics() throws Exception {
         SNSController controller = new SNSController(fClient, "agsNotation");
         int[] totalSize = new int[1];
@@ -144,6 +153,7 @@ public class SNSControllerLocationsTest extends TestCase {
     /**
      * @throws Exception
      */
+    @Test
     public void testTopicForId() throws Exception {
         SNSController controller = new SNSController(fClient, "agsNotation");
         int[] totalSize = new int[1];
@@ -191,6 +201,7 @@ public class SNSControllerLocationsTest extends TestCase {
     /**
      * @throws Exception
      */
+    @Test
     public void testGetDetails() throws Exception {
         SNSController controller = new SNSController(fClient, "agsNotation");
         Topic topic = new Topic();
@@ -258,6 +269,7 @@ public class SNSControllerLocationsTest extends TestCase {
     /**
      * @throws Exception
      */
+    @Test
     public void testGetTopicFromText() throws Exception {
     	// test terms
         SNSController controller = new SNSController(fClient, "agsNotation");
@@ -285,6 +297,7 @@ public class SNSControllerLocationsTest extends TestCase {
     /**
      * @throws Exception
      */
+    @Test
     public void testGetTopicFromTextNoNativeKey() throws Exception {
         SNSController controller = new SNSController(fClient, "agsNotation");
         String text = "Weser";
@@ -298,6 +311,7 @@ public class SNSControllerLocationsTest extends TestCase {
     /**
      * @throws Exception
      */
+    @Test
     public void testGetSimilarLocationsFromTopicNativeKeyHasLawaPrefix() throws Exception {
         SNSController controller = new SNSController(fClient, "agsNotation");
         String topicId = "https://sns.uba.de/gazetteer/NATURRAUM583";
@@ -305,7 +319,7 @@ public class SNSControllerLocationsTest extends TestCase {
         assertNotNull(topics);
         assertEquals(82, topics.length);
         for (int i = 0; i < topics.length; i++) {
-            assertTrue("Does contain 'lawa:'.", !topics[i].getTopicNativeKey().startsWith("lawa:"));
+            assertFalse(topics[i].getTopicNativeKey().startsWith("lawa:"), "Does contain 'lawa:'.");
         }
     }
 

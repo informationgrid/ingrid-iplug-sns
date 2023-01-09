@@ -34,7 +34,6 @@
       <includes>
         <include>config.properties</include>
         <include>sns.properties</include>
-        <include>ingrid.auth</include>
         <include>log4j2.xml</include>
       </includes>
     </fileSet>
@@ -44,14 +43,14 @@
     </fileSet>
     <fileSet>
       <directory>src/main/webapp</directory>
-      <outputDirectory>${project.artifactId}-${project.version}/webapp</outputDirectory>
+      <outputDirectory>${project.artifactId}-${project.version}/public</outputDirectory>
       <excludes>
         <exclude>**/WEB-INF/jetty-web.xml</exclude>
       </excludes>
     </fileSet>
     <fileSet>
       <directory>target/base-webapp</directory>
-      <outputDirectory>${project.artifactId}-${project.version}/webapp</outputDirectory>
+      <outputDirectory>${project.artifactId}-${project.version}/public</outputDirectory>
     </fileSet>
     <fileSet>
       <directory>src/main/release/ant-installer</directory>
@@ -72,13 +71,6 @@
       <outputDirectory>${project.build.finalName}/doc</outputDirectory>
     </fileSet>
   </fileSets>
-  <files>
-    <file>
-      <source>src/main/release/jetty/jetty-web.xml</source>
-      <outputDirectory>${project.build.finalName}/webapp/WEB-INF</outputDirectory>
-      <filtered>true</filtered>
-    </file>
-  </files>
   <dependencySets>
     <dependencySet>
       <outputDirectory>${project.build.finalName}/lib</outputDirectory>

@@ -7,12 +7,12 @@
  * Licensed under the EUPL, Version 1.1 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
  * EUPL (the "Licence");
- * 
+ *
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * http://ec.europa.eu/idabc/eupl5
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,14 +22,7 @@
  */
 package de.ingrid.iplug.sns;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.ResourceBundle;
-
-import junit.framework.TestCase;
 import de.ingrid.admin.Config;
-import de.ingrid.admin.JettyStarter;
 import de.ingrid.iplug.sns.utils.DetailedTopic;
 import de.ingrid.iplug.sns.utils.Topic;
 import de.ingrid.utils.IngridHit;
@@ -37,17 +30,26 @@ import de.ingrid.utils.IngridHitDetail;
 import de.ingrid.utils.IngridHits;
 import de.ingrid.utils.PlugDescription;
 import de.ingrid.utils.metadata.DefaultMetadataInjector;
-import de.ingrid.utils.metadata.IMetadataInjector;
 import de.ingrid.utils.query.FieldQuery;
 import de.ingrid.utils.query.IngridQuery;
 import de.ingrid.utils.query.TermQuery;
 import de.ingrid.utils.queryparser.IDataTypes;
 import de.ingrid.utils.queryparser.QueryStringParser;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import java.text.SimpleDateFormat;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.Calendar;
+import java.util.Date;
 
 /**
- * 
+ *
  */
-public class SNSInterfaceTest extends TestCase {
+public class SNSInterfaceTest {
 
     private static PlugDescription fPlugDescription;
 
@@ -60,27 +62,32 @@ public class SNSInterfaceTest extends TestCase {
 //        SnsPlug.conf.snsUrlGazetteer = ResourceBundle.getBundle("sns").getString("sns.serviceURL.gazetteer");
 //        SnsPlug.conf.snsUrlChronicle = ResourceBundle.getBundle("sns").getString("sns.serviceURL.chronicle");
     }
+
     private SnsPlug fPlug;
-    
+
     static int HITS_PER_PAGE = 10;
 
     static int CURRENT_PAGE = 1;
 
-    protected void setUp() throws Exception {
-        super.setUp();
-        
-        new JettyStarter(false);
-        JettyStarter.baseConfig = new Config();
-        JettyStarter.baseConfig.communicationProxyUrl = "ibus-client-test";
-        Configuration configuration = new Configuration();
+    @BeforeEach
+    public void setUp() throws Exception {
 
-        this.fPlug = new SnsPlug(new DefaultMetadataInjector[0], null, null, configuration);
+//        new JettyStarter(false);
+//        JettyStarter.baseConfig = new Config();
+//        JettyStarter.baseConfig.communicationProxyUrl = "ibus-client-test";
+        Configuration configuration = new Configuration();
+        Config baseConfig = new Config();
+        baseConfig.plugdescriptionLocation = "";
+
+        this.fPlug = new SnsPlug(new DefaultMetadataInjector[0], baseConfig, configuration, null, null);
         this.fPlug.configure(fPlugDescription);
+
     }
 
     /**
      * @throws Exception
      */
+    @Test
     public void testGetAnniversaries() throws Exception {
         System.out.println("########## testGetAnniversaries()");
         Calendar cal = Calendar.getInstance();
@@ -97,7 +104,6 @@ public class SNSInterfaceTest extends TestCase {
         query.addField(new FieldQuery(true, false, "datatype", IDataTypes.SNS));
         query.putInt(Topic.REQUEST_TYPE, Topic.ANNIVERSARY_FROM_TOPIC);
 
-        
 
         IngridHits hits = this.fPlug.search(query, 0, 10);
         IngridHit[] hitsArray = hits.getHits();
@@ -130,6 +136,7 @@ public class SNSInterfaceTest extends TestCase {
     /**
      * @throws Exception
      */
+    @Test
     public void testEVENTS_FROM_TERM() throws Exception {
         System.out.println("########## testEVENTS_FROM_TERM()");
         String term = "Reaktorunglück Tschernobyl";
@@ -138,7 +145,7 @@ public class SNSInterfaceTest extends TestCase {
         query.addField(new FieldQuery(true, false, "datatype", IDataTypes.SNS));
         query.putInt(Topic.REQUEST_TYPE, Topic.EVENT_FROM_TOPIC);
 
-        IngridHits hits = this.fPlug.search(query, 0,10);
+        IngridHits hits = this.fPlug.search(query, 0, 10);
         IngridHit[] hitsArray = hits.getHits();
         assertNotNull(hitsArray);
         if (hitsArray.length == 0) {
@@ -155,6 +162,7 @@ public class SNSInterfaceTest extends TestCase {
     /**
      * @throws Exception
      */
+    @Test
     public void testEVENTS_FROM_TYPE() throws Exception {
         System.out.println("########## testEVENTS_FROM_TYPE()");
         String term = "";
@@ -163,11 +171,11 @@ public class SNSInterfaceTest extends TestCase {
         IngridQuery query = QueryStringParser.parse(term);
         query.addField(new FieldQuery(true, false, "datatype", IDataTypes.SNS));
         query.putInt(Topic.REQUEST_TYPE, Topic.EVENT_FROM_TOPIC);
-        query.put("eventtype",new String[]{ eventType});
+        query.put("eventtype", new String[]{eventType});
         // Set a date in the future to get all events.
         query.put("t2", "6001-01-01");
 
-        
+
         IngridHits hits = this.fPlug.search(query, 0, 10);
         IngridHit[] hitsArray = hits.getHits();
         assertNotNull(hitsArray);
@@ -184,6 +192,7 @@ public class SNSInterfaceTest extends TestCase {
     /**
      * @throws Exception
      */
+    @Test
     public void testEVENTS_FROM_TYPE_AND_TERM() throws Exception {
         System.out.println("########## testEVENTS_FROM_TYPE_AND_TERM()");
         String term = "Tschernobyl";
@@ -193,7 +202,7 @@ public class SNSInterfaceTest extends TestCase {
         IngridQuery query = QueryStringParser.parse(term);
         query.addField(new FieldQuery(true, false, "datatype", IDataTypes.SNS));
         query.putInt(Topic.REQUEST_TYPE, Topic.EVENT_FROM_TOPIC);
-        query.put("eventtype", new String[] {eventType});
+        query.put("eventtype", new String[]{eventType});
 
         IngridHits hits = this.fPlug.search(query, 0, 10);
         IngridHit[] hitsArray = hits.getHits();
@@ -211,6 +220,7 @@ public class SNSInterfaceTest extends TestCase {
     /**
      * @throws Exception
      */
+    @Test
     public void testEVENT_DETAILS() throws Exception {
         System.out.println("########## testEVENT_DETAILS()");
         String term = "Tschernobyl";
@@ -222,7 +232,7 @@ public class SNSInterfaceTest extends TestCase {
         query.putInt(Topic.REQUEST_TYPE, Topic.EVENT_FROM_TOPIC);
 //        query.put("eventtype", eventType);
 
-      
+
         IngridHits hits = this.fPlug.search(query, 0, 10);
         IngridHit[] hitsArray = hits.getHits();
         assertNotNull(hitsArray);
