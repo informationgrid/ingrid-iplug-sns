@@ -32,25 +32,6 @@
                 http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd
                 http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd">
     
-    
-  <!-- the application context definition for the springapp DispatcherServlet -->
-    <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-        <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"></property>
-        <property name="prefix" value="/WEB-INF/jsp/"></property>
-        <property name="suffix" value=".jsp"></property>
-    </bean>
-
-	<bean id="messageSource"
-		class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
-		<property name="basenames">
-			<list>
-				<value>classpath:messages_base</value>
-                <value>classpath:messages</value>
-			</list>
-		</property>
-		<property name="cacheSeconds" value="0" />
-		<property name="fallbackToSystemLocale" value="false"></property>
-	</bean>
 
     <!-- XML DEFINED BEANS WITH ACCORDING QUALIFIER TO BE AUTOWIRED VIA QUALIFIER ! -->
 
@@ -70,27 +51,4 @@
         </property>
     </bean> -->
 
-    <!-- enable Auto-detecting of components (annotation based configuration including autowire ...) -->
-    <context:component-scan base-package="de.ingrid">
-      <context:exclude-filter type="regex" expression="de\.ingrid\.admin\.elasticsearch\..*"/>
-      <context:exclude-filter type="regex" expression="de\.ingrid\.elasticsearch\.search\..*"/>
-      <context:exclude-filter type="regex" expression="de\.ingrid\.elasticsearch\.ElasticsearchNodeFactoryBean"/>
-      <context:exclude-filter type="regex" expression="de\.ingrid\.elasticsearch\.IndexManager"/>
-      <context:exclude-filter type="regex" expression="de\.ingrid\.elasticsearch\.IBusIndexManager"/>
-      <context:exclude-filter type="regex" expression="de\.ingrid\.elasticsearch\.QueryBuilderService"/>
-      <context:exclude-filter type="regex" expression="de\.ingrid\.elasticsearch\.IndexInfo"/>
-      <context:exclude-filter type="regex" expression="de\.ingrid\.admin\.controller\.IndexController"/>
-      <context:exclude-filter type="regex" expression="de\.ingrid\.admin\.controller\.SchedulingController"/>
-      <context:exclude-filter type="regex" expression="de\.ingrid\.admin\.object\.BasePlug"/>
-    </context:component-scan>
-
-    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver"> 
-        <property name="maxUploadSize" value="100000000"/> 
-    </bean> 
-    
-    <mvc:annotation-driven/>
-    <mvc:resources mapping="/css/**" location="/css/" />
-    <mvc:resources mapping="/img/**" location="/img/" />
-    <mvc:resources mapping="/images/**" location="/images/" />
-    
 </beans>

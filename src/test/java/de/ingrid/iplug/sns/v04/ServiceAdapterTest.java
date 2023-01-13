@@ -2,7 +2,7 @@
  * **************************************************-
  * Ingrid iPlug SNS
  * ==================================================
- * Copyright (C) 2014 - 2022 wemove digital solutions GmbH
+ * Copyright (C) 2014 - 2023 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.1 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -28,7 +28,7 @@
 
 package de.ingrid.iplug.sns.v04;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
 import de.ingrid.external.sns.SNSClient;
 import de.ingrid.iplug.sns.SNSControllerTestLocal;
 import de.ingrid.iplug.sns.SNSServiceClientTest;
@@ -39,13 +39,14 @@ import de.ingrid.iplug.sns.SNSServiceClientTest;
  * 
  * @author hs
  */
-public class ServiceAdapterTest extends TestCase {
+public class ServiceAdapterTest {
 
     /**
      * INGRID-100
      * 
      * @throws Exception
      */
+    @Test
     public void testCommunicationWithSNS() throws Exception {
         SNSControllerTestLocal controller = new SNSControllerTestLocal();
         controller.setSNSClient(new SNSClient("ms", "m3d1asyl3", "de"));

@@ -2,7 +2,7 @@
  * **************************************************-
  * Ingrid iPlug SNS
  * ==================================================
- * Copyright (C) 2014 - 2022 wemove digital solutions GmbH
+ * Copyright (C) 2014 - 2023 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.1 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -32,10 +32,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import org.junit.Ignore;
-
-import junit.framework.TestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import de.ingrid.external.sns.SNSClient;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import de.ingrid.iplug.sns.utils.DetailedTopic;
 import de.ingrid.iplug.sns.utils.Topic;
 
@@ -49,7 +54,7 @@ import de.ingrid.iplug.sns.utils.Topic;
  * @author $Author: ${lastedit}
  * 
  */
-public class SNSControllerTestLocal extends TestCase {
+public class SNSControllerTestLocal {
 
     private static SNSClient fClient;
 
@@ -66,10 +71,10 @@ public class SNSControllerTestLocal extends TestCase {
     }
 
     /**
-     * @see junit.framework.TestCase#setUp()
+     * @see 
      */
-    protected void setUp() throws Exception {
-        super.setUp();
+    @BeforeEach
+    public void setUp() throws Exception {
 
         fClient = new SNSClient("ms", "m3d1asyl3", "de");
         fClient.setTimeout(180000);
@@ -80,6 +85,7 @@ public class SNSControllerTestLocal extends TestCase {
     /**
      * @throws Exception
      */
+    @Test
     public void testTopicsForTerm() throws Exception {
         SNSController controller = new SNSController(fClient, "agsNotation");
         int[] totalSize = new int[1];
@@ -116,6 +122,7 @@ public class SNSControllerTestLocal extends TestCase {
     /**
      * @throws Exception
      */
+    @Test
     public void testGetAssociatedTopics() throws Exception {
         SNSController controller = new SNSController(fClient, "agsNotation");
         int[] totalSize = new int[1];
@@ -136,7 +143,8 @@ public class SNSControllerTestLocal extends TestCase {
     /**
      * @throws Exception
      */
-    @Ignore
+    @Disabled
+    @Test
     public void testGetDocumentRelatedTopics() throws Exception {
         SNSController controller = new SNSController(fClient, "agsNotation");
         int[] totalSize = new int[1];
@@ -196,6 +204,7 @@ public class SNSControllerTestLocal extends TestCase {
     /**
      * @throws Exception
      */
+    @Test
     public void testTopicForId() throws Exception {
         SNSController controller = new SNSController(fClient, "agsNotation");
         int[] totalSize = new int[1];
@@ -281,6 +290,7 @@ public class SNSControllerTestLocal extends TestCase {
     /**
      * @throws Exception
      */
+    @Test
     public void testGetDetails() throws Exception {
         SNSController controller = new SNSController(fClient, "agsNotation");
         Topic topic = new Topic();
@@ -364,6 +374,7 @@ public class SNSControllerTestLocal extends TestCase {
     /**
      * @throws Exception
      */
+    @Test
     public void testGetHierachy() throws Exception {
         SNSController controller = new SNSController(fClient, "agsNotation");
 
@@ -428,6 +439,7 @@ public class SNSControllerTestLocal extends TestCase {
         assertNull(topicsHierachy[0]);
     }
 
+    @Test
     public void testGetHierachyIncludeSiblings() throws Exception {
         SNSController controller = new SNSController(fClient, "agsNotation");
 
@@ -457,6 +469,7 @@ public class SNSControllerTestLocal extends TestCase {
     /**
      * @throws Exception
      */
+    @Test
     public void testGetSimilarTerms() throws Exception {
         SNSController controller = new SNSController(fClient, "agsNotation");
         int[] totalSize = new int[1];
@@ -471,6 +484,7 @@ public class SNSControllerTestLocal extends TestCase {
     /**
      * @throws Exception
      */
+    @Test
     public void testGetTopicFromText() throws Exception {
     	// test terms
         SNSController controller = new SNSController(fClient, "agsNotation");

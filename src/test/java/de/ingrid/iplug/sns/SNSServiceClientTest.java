@@ -2,7 +2,7 @@
  * **************************************************-
  * Ingrid iPlug SNS
  * ==================================================
- * Copyright (C) 2014 - 2022 wemove digital solutions GmbH
+ * Copyright (C) 2014 - 2023 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.1 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -31,20 +31,23 @@ package de.ingrid.iplug.sns;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import junit.framework.TestCase;
-
-import com.hp.hpl.jena.rdf.model.Resource;
-
+import org.junit.jupiter.api.Test;
 import de.ingrid.external.FullClassifyService.FilterType;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import de.ingrid.external.sns.RDFUtils;
 import de.ingrid.external.sns.SNSClient;
+import org.apache.jena.rdf.model.Resource;
 
 /**
  * created on 21.07.2005
  *
  * @author hs
  */
-public class SNSServiceClientTest extends TestCase {
+public class SNSServiceClientTest {
 
     private static SNSClient adapter = null;
 
@@ -64,6 +67,7 @@ public class SNSServiceClientTest extends TestCase {
      *
      * @throws Exception
      */
+    @Test
     public void testFindTopics() throws Exception {
         String queryTerm = null;
         int offset = -1;
@@ -93,6 +97,7 @@ public class SNSServiceClientTest extends TestCase {
      *
      *
      */
+    @Test
     public void testAutoClassify() throws Exception {
         String document = null;
         int maxWords = -1;
@@ -125,6 +130,7 @@ public class SNSServiceClientTest extends TestCase {
     /**
      * @throws Exception
      */
+    @Test
     public void testAnniversary() throws Exception {
     	SNSClient client = new SNSClient("", "", "de", null, null, new URL("https://sns.uba.de/chronik/"));
         Resource fragment = client.anniversary("1976-08-31", "de");
@@ -143,6 +149,7 @@ public class SNSServiceClientTest extends TestCase {
     /**
      * @throws Exception
      */
+    @Test
     public void testGetSimilarTerms() throws Exception {
         Resource fragment = adapter.getSimilarTerms(true, new String[] { "1976-08-31" }, "de");
         assertNotNull(fragment);
@@ -151,12 +158,14 @@ public class SNSServiceClientTest extends TestCase {
     /**
      * @throws Exception
      */
+    @Test
     public void testFindEventsAt() throws Exception {
         Resource eventsRes = adapter.findEvents("query", "contains",
         		null, 0, "1976-08-31", "de", 10);
         assertNotNull(eventsRes);
     }
 
+    @Test
     public void testFindEventsFromTo() throws Exception {
         Resource eventsRes = adapter.findEvents("query", "contains",
         		null, 0, "1976-08-31", "1978-08-31", "de", 10);
@@ -167,6 +176,7 @@ public class SNSServiceClientTest extends TestCase {
      * @throws Exception
      *
      */
+    @Test
     public void testGetHierachy() throws Exception {
         String topicID = "https://sns.uba.de/umthes/_00040282";
         try {
@@ -188,6 +198,7 @@ public class SNSServiceClientTest extends TestCase {
         }
     }
 
+    @Test
     public void testGetHierachyIncludeSiblings() throws Exception {
     	String topicID = "https://sns.uba.de/umthes/_00026981";
         try {

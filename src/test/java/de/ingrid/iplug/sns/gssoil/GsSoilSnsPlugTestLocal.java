@@ -2,7 +2,7 @@
  * **************************************************-
  * Ingrid iPlug SNS
  * ==================================================
- * Copyright (C) 2014 - 2022 wemove digital solutions GmbH
+ * Copyright (C) 2014 - 2023 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.1 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -29,8 +29,14 @@
 package de.ingrid.iplug.sns.gssoil;
 
 import de.ingrid.iplug.sns.Configuration;
-import junit.framework.TestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import de.ingrid.iplug.sns.SnsPlug;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import de.ingrid.iplug.sns.utils.Topic;
 import de.ingrid.utils.IngridHit;
 import de.ingrid.utils.IngridHits;
@@ -44,7 +50,7 @@ import de.ingrid.utils.tool.SNSUtil;
 /**
  * 
  */
-public class GsSoilSnsPlugTestLocal extends TestCase {
+public class GsSoilSnsPlugTestLocal {
     private static PlugDescription fPlugDescription;
 
     static {
@@ -56,14 +62,16 @@ public class GsSoilSnsPlugTestLocal extends TestCase {
         fPlugDescription.putInt("maxWordAnalyzing", 100);
     }
 
-    protected void setUp() throws Exception {
+    @BeforeEach
+    public void setUp() throws Exception {
         configuration = new Configuration();
     }
 
     private Configuration configuration;
 
+    @Test
     public void testTOPIC_FROM_ID() throws Exception {
-    	SnsPlug plug = new SnsPlug(null, null, null, configuration);
+    	SnsPlug plug = new SnsPlug(null, null, configuration, null, null);
         plug.configure(fPlugDescription);
         
 		String marshalledTopicId = SNSUtil.marshallTopicId("http://www.eionet.europa.eu/gemet/supergroup/5499");
@@ -77,15 +85,16 @@ public class GsSoilSnsPlugTestLocal extends TestCase {
         IngridHits hits = plug.search(query, 0, 10);
         IngridHit[] hitsArray = hits.getHits();
         assertNotNull(hitsArray);
-        assertTrue(hitsArray.length == 1);
+        assertEquals(hitsArray.length, 1);
         for (int i = 0; i < hitsArray.length; i++) {
             Topic hit = (Topic) hitsArray[i];
             System.out.println(hit.getTopicName() + ":" + hit.getTopicID() + ":" + hit.getTopicAssoc());
         }
     }
 
+    @Test
     public void testTOPIC_FROM_TEXT() throws Exception {
-    	SnsPlug plug = new SnsPlug(null, null, null, configuration);
+    	SnsPlug plug = new SnsPlug(null, null, configuration, null, null);
         plug.configure(fPlugDescription);
         
         String term = "Lissabon";

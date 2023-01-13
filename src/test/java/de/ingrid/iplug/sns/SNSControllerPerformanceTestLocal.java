@@ -2,7 +2,7 @@
  * **************************************************-
  * Ingrid iPlug SNS
  * ==================================================
- * Copyright (C) 2014 - 2022 wemove digital solutions GmbH
+ * Copyright (C) 2014 - 2023 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.1 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -28,13 +28,14 @@
 
 package de.ingrid.iplug.sns;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import de.ingrid.external.sns.SNSClient;
 
 /**
  * 
  */
-public class SNSControllerPerformanceTestLocal extends TestCase {
+public class SNSControllerPerformanceTestLocal {
 
     private SNSControllerTestLocal fSNSControllerTest;
     
@@ -43,10 +44,10 @@ public class SNSControllerPerformanceTestLocal extends TestCase {
     private final int fMaxLoops = 10;
 
     /**
-     * @see junit.framework.TestCase#setUp()
+     * @see 
      */
-    protected void setUp() throws Exception {
-        super.setUp();
+    @BeforeEach
+    public void setUp() throws Exception {
 
         this.fSNSIndexingInterfaceTest = new SNSIndexingInterfaceTestLocal();
         this.fSNSIndexingInterfaceTest.setSNSIndexingInterface(new SNSIndexingInterface("ms", "m3d1asyl3", "de"));
@@ -61,6 +62,7 @@ public class SNSControllerPerformanceTestLocal extends TestCase {
      * @throws Exception
      * 
      */
+    @Test
     public void testTopicsForTerm100() throws Exception {
         final long start = System.currentTimeMillis();
         for (int i = 0; i < this.fMaxLoops; i++) {
@@ -76,6 +78,7 @@ public class SNSControllerPerformanceTestLocal extends TestCase {
     /**
      * @throws Exception
      */
+    @Test
     public void testGetAssociatedTopics100() throws Exception {
         final long start = System.currentTimeMillis();
         for (int i = 0; i < this.fMaxLoops; i++) {
@@ -91,6 +94,7 @@ public class SNSControllerPerformanceTestLocal extends TestCase {
     /**
      * @throws Exception
      */
+    @Test
     public void testGetDocumentRelatedTopics100() throws Exception {
         final long start = System.currentTimeMillis();
         for (int i = 0; i < this.fMaxLoops; i++) {
@@ -106,6 +110,7 @@ public class SNSControllerPerformanceTestLocal extends TestCase {
     /**
      * @throws Exception
      */
+    @Test
     public void testGetBuzzword100() throws Exception {
         final long start = System.currentTimeMillis();
         for (int i = 0; i < this.fMaxLoops; i++) {

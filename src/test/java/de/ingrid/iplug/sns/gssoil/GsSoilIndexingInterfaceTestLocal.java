@@ -2,7 +2,7 @@
  * **************************************************-
  * Ingrid iPlug SNS
  * ==================================================
- * Copyright (C) 2014 - 2022 wemove digital solutions GmbH
+ * Copyright (C) 2014 - 2023 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.1 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -31,9 +31,17 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.apache.commons.logging.Log;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import org.apache.commons.logging.LogFactory;
 
 import de.ingrid.external.FullClassifyService;
@@ -49,7 +57,7 @@ import de.ingrid.utils.tool.SpringUtil;
 /**
  * 
  */
-public class GsSoilIndexingInterfaceTestLocal extends TestCase {
+public class GsSoilIndexingInterfaceTestLocal {
 
     private static Log log = LogFactory.getLog(GsSoilIndexingInterfaceTestLocal.class);
 
@@ -58,8 +66,8 @@ public class GsSoilIndexingInterfaceTestLocal extends TestCase {
     private boolean fToStdout;
     private String text = "Wasser Boden Fluss Baden-Württemberg berlin frankfurt Bavaria Rhineland-Palatinate Arzberg Thuringia Barmstedt Bremen Bernkastel-Kues Bitterfeld-Wolfen Delbrück Eisenhüttenstadt Flöha Fürth";
 
-    protected void setUp() throws Exception {
-        super.setUp();
+    @BeforeEach
+    public void setUp() throws Exception {
 
         this.fSnsInterface = new SNSIndexingInterface("ms", "m3d1asyl3", "de");
         this.fSnsInterface.setTimeout(180000);
@@ -75,6 +83,7 @@ public class GsSoilIndexingInterfaceTestLocal extends TestCase {
         this.fSnsInterface = iinterface;
     }
 
+    @Test
     public void testFullClassifyDirectly() throws Exception {
         SpringUtil springUtil = new SpringUtil("spring/external-services.xml");
         final Class<FullClassifyService> _fullClassifyService = null;
@@ -180,6 +189,7 @@ public class GsSoilIndexingInterfaceTestLocal extends TestCase {
     /**
      * @throws Exception
      */
+    @Test
     public void testGetReferencesToSpace() throws Exception {
         this.fSnsInterface.getBuzzwords("Berlin", 1000, false);
 
@@ -201,6 +211,7 @@ public class GsSoilIndexingInterfaceTestLocal extends TestCase {
     /**
      * @throws Exception
      */
+    @Test
     public void testGetReferencesToSpaceBundesland() throws Exception {
         this.fSnsInterface.getBuzzwords("Bayern", 1000, false);
 
@@ -221,6 +232,7 @@ public class GsSoilIndexingInterfaceTestLocal extends TestCase {
     /**
      * @throws Exception
      */
+    @Test
     public void testGetLocations() throws Exception {
         this.fSnsInterface.getBuzzwords("Berlin Deutschland", 1000, false);
 
@@ -242,6 +254,7 @@ public class GsSoilIndexingInterfaceTestLocal extends TestCase {
     /**
      * @throws Exception
      */
+    @Test
     public void testGetReferencesToTime() throws Exception {
         this.fSnsInterface.getBuzzwords("Tschernobyl Ohio", 1000, false);
 
@@ -254,6 +267,7 @@ public class GsSoilIndexingInterfaceTestLocal extends TestCase {
     /**
      * @throws Exception
      */
+    @Test
     public void testGetBuzzword() throws Exception {
         String[] result = null;
         final String words = "Waldsterben Wesertal Explosion. "
@@ -287,6 +301,7 @@ public class GsSoilIndexingInterfaceTestLocal extends TestCase {
     /**
      * @throws Exception
      */
+    @Test
     public void testGetBuzzwordToUrl() throws Exception {
         // VALID URL GERMAN
         String[] result = null;
@@ -328,7 +343,7 @@ public class GsSoilIndexingInterfaceTestLocal extends TestCase {
         }
 //        assertNull(result);
         assertNotNull(result);
-        assertTrue(result.length == 0);
+        assertEquals(result.length, 0);
 
 
     	// INVALID URL SYNTAX !
@@ -345,6 +360,7 @@ public class GsSoilIndexingInterfaceTestLocal extends TestCase {
     /**
      * @throws Exception
      */
+    @Test
     public void testGetBuzzwordEnglish() throws Exception {
         String[] result = null;
         final String words = "In this year we are all happy. Tschernobyl Lisbon Soil";
@@ -373,6 +389,7 @@ public class GsSoilIndexingInterfaceTestLocal extends TestCase {
     /**
      * @throws Exception
      */
+    @Test
     public void testGetBuzzwordNotExistent() throws Exception {
         final String[] result = this.fSnsInterface.getBuzzwords("blabla", 1000, false);
         assertNotNull(result);
@@ -382,6 +399,7 @@ public class GsSoilIndexingInterfaceTestLocal extends TestCase {
     /**
      * @throws Exception
      */
+    @Test
     public void testGetReferencesNotExistent() throws Exception {
         this.fSnsInterface.getBuzzwords("blabla", 1000, false);
 
@@ -393,6 +411,7 @@ public class GsSoilIndexingInterfaceTestLocal extends TestCase {
     /**
      * @throws Exception
      */
+    @Test
     public void testGetTopicIds() throws Exception {
 //        this.fSnsInterface.getBuzzwordsToUrl("http://www.portalu.de/", 1000, false, "de");
     	// JUST USE 10 ! 1000 takes "hours" !
@@ -404,6 +423,7 @@ public class GsSoilIndexingInterfaceTestLocal extends TestCase {
         assertTrue(result.length > 0);
     }
 
+    @Test
     public void testUrlAllResults() throws Exception {
         // VALID URL GERMAN
         String[] resultStrings = null;

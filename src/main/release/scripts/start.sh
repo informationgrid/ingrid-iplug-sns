@@ -4,7 +4,7 @@
 # **************************************************-
 # InGrid-iPlug DSC
 # ==================================================
-# Copyright (C) 2014 - 2022 wemove digital solutions GmbH
+# Copyright (C) 2014 - 2023 wemove digital solutions GmbH
 # ==================================================
 # Licensed under the EUPL, Version 1.1 or – as soon they will be
 # approved by the European Commission - subsequent versions of the
@@ -154,7 +154,7 @@ prepareJavaStatement()
 
     # run it
     export CLASSPATH="$CLASSPATH"
-    INGRID_OPTS="-Dingrid_home=$INGRID_HOME $INGRID_OPTS $JAVA_OPTS"
+    INGRID_OPTS="-Dingrid_home=$INGRID_HOME $INGRID_OPTS $JAVA_OPTS --add-opens java.base/java.lang=ALL-UNNAMED"
 }
 
 startIplug()
@@ -172,7 +172,7 @@ startIplug()
   prepareJavaStatement
 
   CLASS=de.ingrid.iplug.sns.SnsPlug
-  
+
   if [ "$RUN_DIRECTLY" ]; then
     exec "$JAVA" $INGRID_OPTS $CLASS
   else
