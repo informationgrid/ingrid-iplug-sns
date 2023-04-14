@@ -34,11 +34,7 @@ import de.ingrid.iplug.sns.utils.Topic;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * SNSControllerTest
@@ -321,6 +317,22 @@ public class SNSControllerLocationsTest {
         for (int i = 0; i < topics.length; i++) {
             assertFalse(topics[i].getTopicNativeKey().startsWith("lawa:"), "Does contain 'lawa:'.");
         }
+    }
+
+    @Test
+    public void testCheckNativeKeyIsArs() throws Exception {
+        // test terms
+        SNSController controller = new SNSController(fClient, "");
+        DetailedTopic[] topics = controller.getTopicsForText("Frankfurt", 100, "/location", "aPlugId", "de", new int[1], false);
+        assertNotNull(topics);
+        assertEquals(4, topics.length);
+        // ags
+        assertNotEquals("06412000", topics[0].getTopicNativeKey());
+        assertNotEquals("12053000", topics[1].getTopicNativeKey());
+        // ars
+        assertEquals("06412", topics[0].getTopicNativeKey());
+        assertEquals("064120000000", topics[1].getTopicNativeKey());
+
     }
 
 }
