@@ -2,12 +2,12 @@
   <parent>
     <artifactId>ingrid-releases-pom</artifactId>
     <groupId>de.ingrid</groupId>
-    <version>6.0.0</version>
+    <version>6.2.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>ingrid-iplug-sns</artifactId>
   <packaging>jar</packaging>
-  <version>6.1.0</version>
+  <version>6.2.0</version>
   <name>InGrid iPlug SNS</name>
   <description>This iPlug is an interface to an SNS service can be queried by the iBus.</description>
   <scm>
@@ -150,7 +150,7 @@
     <dependency>
       <groupId>de.ingrid</groupId>
       <artifactId>ingrid-external-service-wfs</artifactId>
-      <version>6.1.0</version>
+      <version>6.2.0</version>
       <exclusions>
         <exclusion>
           <groupId>org.codehaus.groovy</groupId>
