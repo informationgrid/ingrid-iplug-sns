@@ -130,7 +130,7 @@
     <dependency>
       <groupId>de.ingrid</groupId>
       <artifactId>ingrid-external-service-gemet</artifactId>
-      <version>6.0.0</version>
+      <version>6.3.0-SNAPSHOT</version>
       <exclusions>
         <exclusion>
           <artifactId>slf4j-api</artifactId>
@@ -145,12 +145,12 @@
     <dependency>
       <groupId>de.ingrid</groupId>
       <artifactId>ingrid-external-service-sns</artifactId>
-      <version>6.0.0</version>
+      <version>6.3.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>de.ingrid</groupId>
       <artifactId>ingrid-external-service-wfs</artifactId>
-      <version>6.2.0</version>
+      <version>6.3.0-SNAPSHOT</version>
       <exclusions>
         <exclusion>
           <groupId>org.codehaus.groovy</groupId>
@@ -162,7 +162,7 @@
     <dependency>
       <groupId>commons-fileupload</groupId>
       <artifactId>commons-fileupload</artifactId>
-      <version>1.4</version>
+      <version>1.5</version>
     </dependency>
 
     <!-- backward compatible -->
