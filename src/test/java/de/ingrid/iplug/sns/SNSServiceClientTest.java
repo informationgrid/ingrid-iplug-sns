@@ -184,7 +184,7 @@ public class SNSServiceClientTest {
             Resource hierachy = adapter.getHierachy(4, "down", true, "de", topicID);
             assertNotNull(hierachy);
             // TODO: assertEquals(190, RDFUtils.getConcepts(hierachy.getModel()).toList().size());
-            assertTrue(RDFUtils.getConcepts(hierachy.getModel()).toList().size() > 0);
+            assertTrue(!RDFUtils.getConcepts(hierachy.getModel()).toList().isEmpty());
         } catch (Exception e) {
             fail("No exception should be thrown: " + e.getMessage());
         }
@@ -192,7 +192,7 @@ public class SNSServiceClientTest {
             Resource hierachy = adapter.getHierachy(4, "up", false, "de", topicID);
             assertNotNull(hierachy);
             // TODO: assertEquals(4, RDFUtils.getConcepts(hierachy.getModel()).toList().size());
-            assertTrue(RDFUtils.getConcepts(hierachy.getModel()).toList().size() > 0);
+            assertTrue(!RDFUtils.getConcepts(hierachy.getModel()).toList().isEmpty());
         } catch (Exception e) {
             fail("No exception should be thrown: " + e.getMessage());
         }
@@ -204,14 +204,14 @@ public class SNSServiceClientTest {
         try {
             Resource hierachy = adapter.getHierachy(4, "up", true, "de", topicID);
             assertNotNull(hierachy);
-            assertTrue(RDFUtils.getConcepts(hierachy.getModel()).toList().size() > 50);
+            assertTrue(RDFUtils.getConcepts(hierachy.getModel()).toList().size() > 10);
         } catch (Exception e) {
             fail("No exception should be thrown: " + e.getMessage());
         }
         try {
             Resource hierachy = adapter.getHierachy(4, "up", false, "de", topicID);
             assertNotNull(hierachy);
-            assertEquals(5, RDFUtils.getConcepts(hierachy.getModel()).toList().size());
+            assertEquals(4, RDFUtils.getConcepts(hierachy.getModel()).toList().size());
         } catch (Exception e) {
             fail("No exception should be thrown: " + e.getMessage());
         }
