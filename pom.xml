@@ -18,7 +18,7 @@
 
   <properties>
     <iplug.type>IPLUG_SNS</iplug.type>
-    <log4j2.version>2.22.0</log4j2.version>
+    <log4j2.version>2.22.1</log4j2.version>
     <spring.version>2.7.17</spring.version>
     <maven.compiler.release>17</maven.compiler.release>
   </properties>
